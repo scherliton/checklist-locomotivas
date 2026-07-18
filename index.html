@@ -1,717 +1,722 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Checklist Locomotivas V2</title>
 
 <style>
-
 *{
-box-sizing:border-box;
-font-family:Arial, sans-serif;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-margin:0;
-padding:15px;
-background:#eef3f8;
+    margin:0;
+    background:#f2f4f7;
+    color:#222;
 }
 
-.app{
-max-width:520px;
-margin:auto;
-}
-
-.header{
-background:#003b70;
-color:white;
-padding:20px;
-border-radius:15px 15px 0 0;
-text-align:center;
-}
-
-.header h1{
-margin:0;
-font-size:22px;
+.container{
+    max-width:520px;
+    margin:auto;
+    padding:20px;
 }
 
 .card{
-background:white;
-padding:20px;
-border-radius:0 0 15px 15px;
-box-shadow:0 4px 15px rgba(0,0,0,.15);
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+}
+
+h1{
+    text-align:center;
+    color:#003b71;
+    font-size:24px;
+}
+
+.logo{
+    text-align:center;
+    font-size:30px;
+    margin-bottom:10px;
 }
 
 label{
-display:block;
-font-weight:bold;
-margin-top:15px;
-margin-bottom:6px;
+    display:block;
+    margin-top:15px;
+    font-weight:bold;
 }
 
-input, textarea{
-width:100%;
-padding:13px;
-border-radius:10px;
-border:1px solid #ccc;
-font-size:16px;
+input, select, textarea{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    margin-top:5px;
+    font-size:16px;
 }
 
 textarea{
-height:90px;
-resize:none;
-}
-
-.btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:10px;
-font-size:16px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.btn-trocar{
-background:#777;
-color:white;
-margin-top:10px;
+    resize:none;
+    height:80px;
 }
 
 .item{
-margin-top:15px;
-padding:15px;
-background:#f4f7fa;
-border-radius:12px;
-border-left:5px solid #003b70;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#f7f7f7;
+    padding:12px;
+    border-radius:8px;
+    margin-top:8px;
 }
 
-.item-title{
-font-weight:bold;
-margin-bottom:10px;
+.item span{
+    font-size:15px;
 }
 
-.botoes{
-display:flex;
-gap:10px;
+.item select{
+    width:120px;
+    margin:0;
 }
 
-.botoes button{
-flex:1;
-padding:12px;
-border:none;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
+button{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:#0066cc;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.conforme{
-background:#198754;
-color:white;
+button:disabled{
+    background:#888;
+    cursor:not-allowed;
 }
 
-.nao{
-background:#dc3545;
-color:white;
+#popup{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:rgba(0,0,0,.45);
+    align-items:center;
+    justify-content:center;
+    z-index:999;
 }
 
-.selecionado{
-outline:4px solid #003b70;
+.popup-box{
+    background:white;
+    width:85%;
+    max-width:350px;
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,.3);
 }
 
-.status{
-margin-top:20px;
-padding:15px;
-border-radius:10px;
-text-align:center;
-font-size:18px;
-font-weight:bold;
-background:#d1e7dd;
-color:#0f5132;
+.popup-box h2{
+    color:#008000;
 }
 
-.salvar{
-margin-top:20px;
-background:#003b70;
-color:white;
+.id-gerado{
+    background:#eef6ff;
+    padding:10px;
+    border-radius:8px;
+    font-weight:bold;
+    margin-top:10px;
 }
-
-
-/* POPUP */
-
-.popup{
-
-display:none;
-
-position:fixed;
-
-top:50%;
-
-left:50%;
-
-transform:translate(-50%,-50%);
-
-background:white;
-
-padding:25px;
-
-border-radius:15px;
-
-box-shadow:0 5px 25px rgba(0,0,0,.3);
-
-text-align:center;
-
-width:300px;
-
-z-index:999;
-
-}
-
-
-.popup h2{
-
-color:#198754;
-
-}
-
-
-.popup button{
-
-padding:12px 25px;
-
-border:none;
-
-border-radius:10px;
-
-background:#003b70;
-
-color:white;
-
-font-weight:bold;
-
-}
-
-
-.fundo-popup{
-
-display:none;
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-height:100%;
-
-background:rgba(0,0,0,.4);
-
-z-index:998;
-
-}
-
 
 </style>
 
-</head> 
-  <body>
+</head>
 
+<body>
 
-<div class="app">
-
-
-<div class="header">
-
-<h1>🚂 Checklist Pós-Drenagem</h1>
-
-<div>Locomotivas - V2</div>
-
-</div>
-
+<div class="container">
 
 <div class="card">
 
-
-<label>Colaborador</label>
-
-<input id="colaborador" placeholder="Digite seu nome">
-
-
-<button class="btn btn-trocar" onclick="trocarColaborador()">
-
-Trocar colaborador
-
-</button>
-
-
-
-<label>Locomotiva</label>
-
-<input id="locomotiva" placeholder="Digite a locomotiva">
-
-
-
-<h2>Checklist</h2>
-
-
-<div id="lista"></div>
-
-
-
-<div id="status" class="status">
-
-🟢 CONFORME
-
+<div class="logo">
+🚂
 </div>
 
+<h1>
+Checklist Locomotivas V2
+</h1>
 
 
-<label>Observação</label>
+<label>
+Locomotiva
+</label>
 
-<textarea id="observacao" placeholder="Digite observações se necessário"></textarea>
-
-
-
-<button class="btn salvar" onclick="salvarChecklist()">
-
-💾 SALVAR CHECKLIST
-
-</button>
+<input 
+type="text" 
+id="locomotiva"
+placeholder="Ex: 1304"
+autocomplete="off">
 
 
+<label>
+Colaborador
+</label>
 
-</div>
-
-</div>
-
-
-
-<!-- POPUP -->
-
-<div class="fundo-popup" id="fundoPopup"></div>
+<input 
+type="text" 
+id="colaborador"
+placeholder="Digite seu nome">
 
 
-<div class="popup" id="popup">
+<div id="checklist">
 
-
-<h2>✅ Enviado!</h2>
-
-
-<p id="textoPopup"></p>
-
-
-<button onclick="fecharPopup()">
-
-OK
-
-</button>
-
-
-</div> 
-<script>
-
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
-
-
-const itens = [
-
-["BanheiroLimpo","🚿 Banheiro limpo"],
-
-["BanheiroDrenado","🚽 Banheiro drenado"],
-
-["DescargaFuncionando","🚽 Descarga funcionando"],
-
-["AguaDisponivel","💧 Água disponível"],
-
-["SaboneteLiquido","🧴 Sabonete líquido"],
-
-["PapelHigienico","🧻 Papel higiênico"],
-
-["PapelToalha","🧻 Papel toalha"],
-
-["Iluminacao","💡 Iluminação"],
-
-["PortaFuncionando","🚪 Porta funcionando"],
-
-["CabineLimpa","🧹 Cabine limpa e organizada"]
-
-];
-
-
-let respostas = {};
-
-
-
-function carregarChecklist(){
-
-let html="";
-
-
-itens.forEach(item=>{
-
-
-html += `
 
 <div class="item">
-
-<div class="item-title">
-${item[1]}
+<span>Papel higiênico</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
 </div>
 
 
-<div class="botoes">
+<div class="item">
+<span>Papel assento</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
 
 
-<button class="conforme"
-onclick="marcar('${item[0]}','CONFORME',this)">
+<div class="item">
+<span>Papel mãos</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
 
-✅ CONFORME
 
+<div class="item">
+<span>Detergente</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+<div class="item">
+<span>Sabonete</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+<div class="item">
+<span>Água</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+<div class="item">
+<span>Limpeza cabine</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+<div class="item">
+<span>Lixeira</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+<div class="item">
+<span>Iluminação</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+<div class="item">
+<span>Condição geral</span>
+<select class="check">
+<option>OK</option>
+<option>FALTA</option>
+</select>
+</div>
+
+
+</div>
+
+
+<label>
+Observação
+</label>
+
+<textarea id="observacao"
+placeholder="Digite observações se necessário"></textarea>
+
+
+<button id="btnSalvar" onclick="enviarChecklist()">
+SALVAR CHECKLIST
 </button>
 
 
-<button class="nao"
-onclick="marcar('${item[0]}','NÃO CONFORME',this)">
+</div>
 
-❌ NÃO CONFORME
+</div>
 
+
+<div id="popup">
+
+<div class="popup-box">
+
+<h2>
+✅ Enviado!
+</h2>
+
+<p>
+Checklist registrado com sucesso.
+</p>
+
+<div class="id-gerado" id="idGerado"></div>
+
+<button onclick="fecharPopup()">
+OK
 </button>
 
-
 </div>
 
 </div>
+<script>
 
-`;
+const URL_API = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
 
-});
 
+// ===============================
+// MEMÓRIA DO COLABORADOR
+// ===============================
 
-document.getElementById("lista").innerHTML = html;
+window.onload = function(){
 
-}
+    const colaboradorSalvo = localStorage.getItem("colaborador");
 
+    if(colaboradorSalvo){
+        document.getElementById("colaborador").value = colaboradorSalvo;
+    }
 
-
-
-function marcar(campo,valor,botao){
-
-
-respostas[campo]=valor;
-
-
-let botoes = botao.parentElement.children;
-
-
-for(let b of botoes){
-
-b.classList.remove("selecionado");
-
-}
-
-
-botao.classList.add("selecionado");
-
-
-atualizarStatus();
-
-}
-
-
-
-
-function atualizarStatus(){
-
-
-let pendencia =
-Object.values(respostas)
-.includes("NÃO CONFORME");
-
-
-let status =
-document.getElementById("status");
-
-
-
-if(pendencia){
-
-
-status.innerHTML="🔴 PENDÊNCIA";
-
-status.style.background="#f8d7da";
-
-status.style.color="#842029";
-
-
-}else{
-
-
-status.innerHTML="🟢 CONFORME";
-
-status.style.background="#d1e7dd";
-
-status.style.color="#0f5132";
-
-
-}
-
-
-}
-
-
-
-
-function gerarID(){
-
-
-let data=new Date();
-
-
-return "CHK-"+
-data.getFullYear()+
-(data.getMonth()+1).toString().padStart(2,"0")+
-data.getDate().toString().padStart(2,"0")+
-"-"+
-Date.now();
-
-
-}
-
-
-
-
-
-function trocarColaborador(){
-
-
-let nome = prompt("Digite o novo colaborador");
-
-
-if(nome){
-
-
-document.getElementById("colaborador").value=nome;
-
-
-localStorage.setItem("colaborador",nome);
-
-
-}
-
-
-}
-
-
-
-
-function carregarColaborador(){
-
-
-let nome =
-localStorage.getItem("colaborador");
-
-
-if(nome){
-
-document.getElementById("colaborador").value=nome;
-
-}
-
-
-}
-
-
-
-
-
-function mostrarPopup(status){
-
-
-document.getElementById("textoPopup").innerHTML =
-
-"Checklist salvo com sucesso!<br><br>Status:<br><b>"
-+
-status+
-"</b>";
-
-
-
-document.getElementById("popup").style.display="block";
-
-
-document.getElementById("fundoPopup").style.display="block";
-
-
-}
-
-
-
-
-
-function fecharPopup(){
-
-
-document.getElementById("popup").style.display="none";
-
-
-document.getElementById("fundoPopup").style.display="none";
-
-
-// volta para locomotiva
-
-document.getElementById("locomotiva").focus();
-
-
-}
-
-
-
-
-
-async function salvarChecklist(){
-
-
-let locomotiva =
-document.getElementById("locomotiva").value;
-
-
-let colaborador =
-document.getElementById("colaborador").value;
-
-
-
-if(!locomotiva){
-
-alert("Informe a locomotiva");
-
-return;
-
-}
-
-
-
-if(!colaborador){
-
-alert("Informe o colaborador");
-
-return;
-
-}
-
-
-
-
-itens.forEach(item=>{
-
-
-if(!respostas[item[0]]){
-
-respostas[item[0]]="CONFORME";
-
-}
-
-
-});
-
-
-
-
-let status =
-
-Object.values(respostas)
-.includes("NÃO CONFORME")
-
-?
-
-"PENDÊNCIA"
-
-:
-
-"CONFORME";
-
-
-
-
-
-
-let dados={
-
-
-id:gerarID(),
-
-locomotiva:locomotiva,
-
-colaborador:colaborador,
-
-
-...respostas,
-
-
-status:status,
-
-
-observacao:
-document.getElementById("observacao").value
-
+    document.getElementById("locomotiva").focus();
 
 };
 
 
+// salva colaborador digitado
 
+document.getElementById("colaborador")
+.addEventListener("change", function(){
 
-
-await fetch(URL_SCRIPT,{
-
-method:"POST",
-
-mode:"no-cors",
-
-body:JSON.stringify(dados)
+    localStorage.setItem(
+        "colaborador",
+        this.value
+    );
 
 });
 
 
 
+// ===============================
+// GERADOR DE ID
+// FORMATO:
+// LOCO1304-20260717-001
+// ===============================
 
 
-mostrarPopup(status);
+function gerarID(){
+
+    let loco = document
+    .getElementById("locomotiva")
+    .value
+    .trim();
+
+
+    let data = new Date();
+
+
+    let ano = data.getFullYear();
+
+    let mes = String(
+        data.getMonth()+1
+    ).padStart(2,"0");
+
+
+    let dia = String(
+        data.getDate()
+    ).padStart(2,"0");
+
+
+    let dataAtual =
+    ano + mes + dia;
 
 
 
+    let chave =
+    "contador_" + loco + "_" + dataAtual;
 
 
-document.getElementById("locomotiva").value="";
+    let numero =
+    localStorage.getItem(chave);
 
 
-document.getElementById("observacao").value="";
+
+    if(!numero){
+
+        numero = 1;
+
+    }else{
+
+        numero =
+        Number(numero)+1;
+
+    }
 
 
-respostas={};
+    localStorage.setItem(
+        chave,
+        numero
+    );
 
 
-carregarChecklist();
+
+    numero =
+    String(numero)
+    .padStart(3,"0");
 
 
-atualizarStatus();
 
+    return (
+        "LOCO" +
+        loco +
+        "-" +
+        dataAtual +
+        "-" +
+        numero
+    );
+
+}
+
+
+
+// ===============================
+// ENVIO CHECKLIST
+// ===============================
+
+
+let enviando = false;
+
+
+
+async function enviarChecklist(){
+
+
+    // BLOQUEIO DUPLO ENVIO
+
+    if(enviando){
+
+        return;
+
+    }
+
+
+
+    let locomotiva =
+    document
+    .getElementById("locomotiva")
+    .value
+    .trim();
+
+
+
+    let colaborador =
+    document
+    .getElementById("colaborador")
+    .value
+    .trim();
+
+
+
+    if(!locomotiva){
+
+        alert(
+        "Informe a locomotiva"
+        );
+
+        document
+        .getElementById("locomotiva")
+        .focus();
+
+        return;
+
+    }
+
+
+
+    if(!colaborador){
+
+        alert(
+        "Informe o colaborador"
+        );
+
+        document
+        .getElementById("colaborador")
+        .focus();
+
+        return;
+
+    }
+
+
+
+    enviando = true;
+
+
+
+    let botao =
+    document.getElementById("btnSalvar");
+
+
+    botao.disabled = true;
+
+    botao.innerHTML =
+    "⏳ ENVIANDO...";
+
+
+
+    let idRegistro =
+    gerarID();
+
+
+
+    let itens =
+    document
+    .querySelectorAll(".check");
+
+
+
+    let dados = {
+
+        id:idRegistro,
+
+        locomotiva:locomotiva,
+
+        colaborador:colaborador,
+
+        papelHigienico:
+        itens[0].value,
+
+        papelAssento:
+        itens[1].value,
+
+        papelMaos:
+        itens[2].value,
+
+        detergente:
+        itens[3].value,
+
+        sabonete:
+        itens[4].value,
+
+        agua:
+        itens[5].value,
+
+        limpezaCabine:
+        itens[6].value,
+
+        lixeira:
+        itens[7].value,
+
+        iluminacao:
+        itens[8].value,
+
+        condicaoGeral:
+        itens[9].value,
+
+        observacao:
+        document
+        .getElementById("observacao")
+        .value,
+
+
+        dataHora:
+        new Date()
+        .toLocaleString("pt-BR")
+
+    };
+
+
+
+    // STATUS AUTOMÁTICO
+
+    let pendencia = false;
+
+
+
+    Object.values(dados)
+    .forEach(function(valor){
+
+        if(valor==="FALTA"){
+
+            pendencia=true;
+
+        }
+
+    });
+
+
+
+    dados.status =
+    pendencia ?
+    "PENDÊNCIA" :
+    "OK";
+
+
+
+    try{
+
+
+        await fetch(
+            URL_API,
+            {
+
+                method:"POST",
+
+                body:
+                JSON.stringify(dados)
+
+            }
+        );
+
+
+
+        mostrarPopup(
+            idRegistro
+        );
+
+
+
+        document
+        .getElementById("locomotiva")
+        .value="";
+
+
+        document
+        .getElementById("observacao")
+        .value="";
+
+
+
+        document
+        .getElementById("locomotiva")
+        .focus();
+
+
+
+    }
+
+    catch(e){
+
+
+        alert(
+        "Erro ao enviar checklist"
+        );
+
+
+    }
+
+
+
+    finally{
+
+
+        enviando=false;
+
+
+        botao.disabled=false;
+
+
+        botao.innerHTML=
+        "SALVAR CHECKLIST";
+
+
+    }
+
+
+
+}
+
+// ===============================
+// POPUP CONFIRMAÇÃO
+// ===============================
+
+
+function mostrarPopup(id){
+
+
+    document
+    .getElementById("idGerado")
+    .innerHTML =
+    "ID: " + id;
+
+
+
+    document
+    .getElementById("popup")
+    .style.display =
+    "flex";
 
 
 }
 
 
 
+// fecha popup
+
+function fecharPopup(){
 
 
-carregarChecklist();
+    document
+    .getElementById("popup")
+    .style.display =
+    "none";
 
-carregarColaborador();
+
+    document
+    .getElementById("locomotiva")
+    .focus();
+
+
+}
 
 
 
