@@ -1,169 +1,224 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Checklist Locomotivas V2</title>
 
 <style>
 
-body{
-    margin:0;
-    background:#f1f4f8;
-    font-family:Arial, Helvetica, sans-serif;
+*{
+box-sizing:border-box;
+font-family:Arial, sans-serif;
 }
 
-.container{
-    max-width:520px;
-    margin:auto;
-    padding:15px;
+body{
+margin:0;
+padding:15px;
+background:#eef3f8;
+}
+
+.app{
+max-width:520px;
+margin:auto;
+}
+
+.header{
+background:#003b70;
+color:white;
+padding:20px;
+border-radius:15px 15px 0 0;
+text-align:center;
+}
+
+.header h1{
+margin:0;
+font-size:22px;
 }
 
 .card{
-    background:white;
-    border-radius:15px;
-    padding:20px;
-    box-shadow:0 3px 12px rgba(0,0,0,.15);
-}
-
-h1{
-    text-align:center;
-    color:#003b71;
-    margin-bottom:20px;
-}
-
-.logo{
-    text-align:center;
-    font-size:40px;
+background:white;
+padding:20px;
+border-radius:0 0 15px 15px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
 label{
-    font-weight:bold;
-    display:block;
-    margin-top:15px;
+display:block;
+font-weight:bold;
+margin-top:15px;
+margin-bottom:6px;
 }
 
-input,
-textarea,
-select{
-
-    width:100%;
-    padding:12px;
-    margin-top:6px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    font-size:16px;
-
+input, textarea{
+width:100%;
+padding:13px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
 }
 
 textarea{
-    height:80px;
-    resize:none;
+height:90px;
+resize:none;
 }
 
+.btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn:disabled{
+opacity:.6;
+cursor:not-allowed;
+}
+
+.btn-trocar{
+background:#777;
+color:white;
+margin-top:10px;
+}
 
 .item{
+margin-top:15px;
+padding:15px;
+background:#f4f7fa;
+border-radius:12px;
+border-left:5px solid #003b70;
+}
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#f7f7f7;
-    margin-top:8px;
-    padding:10px;
-    border-radius:8px;
+.item-title{
+font-weight:bold;
+margin-bottom:10px;
+}
 
+.botoes{
+display:flex;
+gap:10px;
+}
+
+.botoes button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.conforme{
+background:#198754;
+color:white;
+}
+
+.nao{
+background:#dc3545;
+color:white;
+}
+
+.selecionado{
+outline:4px solid #003b70;
+}
+
+.status{
+margin-top:20px;
+padding:15px;
+border-radius:10px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+background:#d1e7dd;
+color:#0f5132;
+}
+
+.salvar{
+margin-top:20px;
+background:#003b70;
+color:white;
 }
 
 
-.item select{
-
-    width:120px;
-    margin:0;
-
-}
-
-
-button{
-
-    width:100%;
-    margin-top:20px;
-    padding:15px;
-
-    background:#0066cc;
-    color:white;
-
-    border:none;
-    border-radius:10px;
-
-    font-size:18px;
-    font-weight:bold;
-
-}
-
-
-button:disabled{
-
-    background:#888;
-
-}
-
-
-
-#popup{
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.45);
-
-    align-items:center;
-
-    justify-content:center;
-
-}
-
-
+/* POPUP */
 
 .popup{
 
-    background:white;
+display:none;
 
-    width:85%;
+position:fixed;
 
-    max-width:350px;
+top:50%;
 
-    padding:25px;
+left:50%;
 
-    border-radius:15px;
+transform:translate(-50%,-50%);
 
-    text-align:center;
+background:white;
+
+padding:25px;
+
+border-radius:15px;
+
+box-shadow:0 5px 25px rgba(0,0,0,.3);
+
+text-align:center;
+
+width:300px;
+
+z-index:999;
 
 }
 
 
 .popup h2{
 
-    color:#008000;
+color:#198754;
 
 }
 
 
-.id-box{
+.popup button{
 
-    margin-top:15px;
+padding:12px 25px;
 
-    background:#eef6ff;
+border:none;
 
-    padding:12px;
+border-radius:10px;
 
-    border-radius:8px;
+background:#003b70;
 
-    font-weight:bold;
+color:white;
+
+font-weight:bold;
+
+}
+
+
+.fundo-popup{
+
+display:none;
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(0,0,0,.4);
+
+z-index:998;
 
 }
 
@@ -171,224 +226,93 @@ button:disabled{
 </style>
 
 </head>
-
-
 <body>
 
 
-<div class="container">
+<div class="app">
+
+
+<div class="header">
+
+<h1>🚂 Checklist Pós-Drenagem</h1>
+
+<div>Locomotivas - V2</div>
+
+</div>
 
 
 <div class="card">
 
 
-<div class="logo">
-🚂
-</div>
+<label>Colaborador</label>
+
+<input id="colaborador" placeholder="Digite seu nome">
 
 
-<h1>
-Checklist Locomotivas V2
-</h1>
+<button class="btn btn-trocar" onclick="trocarColaborador()">
 
+Trocar colaborador
 
-
-<label>
-Locomotiva
-</label>
-
-
-<input 
-id="locomotiva"
-type="text"
-placeholder="Ex: 1304"
-autocomplete="off">
+</button>
 
 
 
-<label>
-Colaborador
-</label>
+<label>Locomotiva</label>
 
-
-<input 
-id="colaborador"
-type="text"
-placeholder="Nome do colaborador">
+<input id="locomotiva" placeholder="Digite a locomotiva">
 
 
 
-<div id="listaChecklist">
+<h2>Checklist</h2>
+
+
+<div id="lista"></div>
 
 
 
-<div class="item">
-<span>Papel higiênico</span>
+<div id="status" class="status">
 
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
+🟢 CONFORME
 
 </div>
 
 
 
-<div class="item">
-<span>Papel assento</span>
+<label>Observação</label>
 
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Papel mãos</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Detergente</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-<div class="item">
-<span>Sabonete</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Água</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Limpeza cabine</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Lixeira</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Iluminação</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-<div class="item">
-<span>Condição geral</span>
-
-<select class="check">
-<option>OK</option>
-<option>FALTA</option>
-</select>
-
-</div>
-
-
-
-</div>
-
-
-
-<label>
-Observação
-</label>
-
-
-<textarea 
-id="observacao"
-placeholder="Digite uma observação se necessário">
-</textarea>
+<textarea id="observacao" placeholder="Digite observações se necessário"></textarea>
 
 
 
 <button 
 id="btnSalvar"
-onclick="enviarChecklist()">
+class="btn salvar" 
+onclick="salvarChecklist()">
 
-SALVAR CHECKLIST
+💾 SALVAR CHECKLIST
 
 </button>
 
 
-</div>
 
 </div>
 
-
-<div id="popup">
-
-<div class="popup">
-
-
-<h2>
-✅ Enviado!
-</h2>
-
-
-<p>
-Checklist registrado com sucesso.
-</p>
-
-
-<div class="id-box" id="idGerado">
-
 </div>
+
+
+
+<!-- POPUP -->
+
+<div class="fundo-popup" id="fundoPopup"></div>
+
+
+<div class="popup" id="popup">
+
+
+<h2>✅ Enviado!</h2>
+
+
+<p id="textoPopup"></p>
 
 
 <button onclick="fecharPopup()">
@@ -399,61 +323,414 @@ OK
 
 
 </div>
-
-</div>
 <script>
 
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
 
-const URL_API = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
+
+const itens = [
+
+["BanheiroLimpo","🚿 Banheiro limpo"],
+
+["BanheiroDrenado","🚽 Banheiro drenado"],
+
+["DescargaFuncionando","🚽 Descarga funcionando"],
+
+["AguaDisponivel","💧 Água disponível"],
+
+["SaboneteLiquido","🧴 Sabonete líquido"],
+
+["PapelHigienico","🧻 Papel higiênico"],
+
+["PapelToalha","🧻 Papel toalha"],
+
+["Iluminacao","💡 Iluminação"],
+
+["PortaFuncionando","🚪 Porta funcionando"],
+
+["CabineLimpa","🧹 Cabine limpa e organizada"]
+
+];
 
 
+let respostas = {};
 
 let enviando = false;
 
 
 
-// ===============================
-// CARREGAR COLABORADOR MEMORIZADO
-// ===============================
+
+function carregarChecklist(){
+
+let html="";
 
 
-window.onload = function(){
+itens.forEach(item=>{
 
 
-    let nomeSalvo = localStorage.getItem("colaborador");
+html += `
+
+<div class="item">
+
+<div class="item-title">
+
+${item[1]}
+
+</div>
 
 
-    if(nomeSalvo){
-
-        document
-        .getElementById("colaborador")
-        .value = nomeSalvo;
-
-    }
+<div class="botoes">
 
 
-    document
-    .getElementById("locomotiva")
-    .focus();
+<button class="conforme"
+onclick="marcar('${item[0]}','CONFORME',this)">
+
+✅ CONFORME
+
+</button>
 
 
-};
+<button class="nao"
+onclick="marcar('${item[0]}','NÃO CONFORME',this)">
+
+❌ NÃO CONFORME
+
+</button>
+
+
+</div>
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById("lista").innerHTML = html;
+
+}
 
 
 
 
-// memorizar colaborador
+
+function marcar(campo,valor,botao){
 
 
-document
-.getElementById("colaborador")
-.addEventListener("change",function(){
+respostas[campo]=valor;
 
 
-    localStorage.setItem(
-        "colaborador",
-        this.value.trim()
-    );
+let botoes = botao.parentElement.children;
+
+
+for(let b of botoes){
+
+b.classList.remove("selecionado");
+
+}
+
+
+botao.classList.add("selecionado");
+
+
+atualizarStatus();
+
+}
+
+
+
+
+function atualizarStatus(){
+
+
+let pendencia =
+Object.values(respostas)
+.includes("NÃO CONFORME");
+
+
+let status =
+document.getElementById("status");
+
+
+
+if(pendencia){
+
+
+status.innerHTML="🔴 PENDÊNCIA";
+
+status.style.background="#f8d7da";
+
+status.style.color="#842029";
+
+
+}else{
+
+
+status.innerHTML="🟢 CONFORME";
+
+status.style.background="#d1e7dd";
+
+status.style.color="#0f5132";
+
+
+}
+
+
+}
+
+
+
+
+
+
+function gerarID(){
+
+
+let loco = document
+.getElementById("locomotiva")
+.value
+.trim();
+
+
+
+let agora = new Date();
+
+
+let data =
+
+agora.getFullYear()
+
++
+
+String(agora.getMonth()+1)
+.padStart(2,"0")
+
++
+
+String(agora.getDate())
+.padStart(2,"0");
+
+
+
+let chave =
+"ID_" + loco + "_" + data;
+
+
+
+let numero =
+Number(localStorage.getItem(chave) || 0) + 1;
+
+
+
+localStorage.setItem(chave,numero);
+
+
+
+return (
+
+"LOCO"
+
++
+
+loco
+
++
+
+"-"
+
++
+
+data
+
++
+
+"-"
+
++
+
+String(numero).padStart(3,"0")
+
+);
+
+
+}
+
+
+
+
+
+
+function trocarColaborador(){
+
+
+let nome = prompt("Digite o novo colaborador");
+
+
+if(nome){
+
+
+document.getElementById("colaborador").value=nome;
+
+
+localStorage.setItem("colaborador",nome);
+
+
+}
+
+
+}
+
+
+
+
+
+function carregarColaborador(){
+
+
+let nome =
+localStorage.getItem("colaborador");
+
+
+if(nome){
+
+document.getElementById("colaborador").value=nome;
+
+}
+
+
+}
+
+
+
+
+
+
+function mostrarPopup(status,id){
+
+
+document.getElementById("textoPopup").innerHTML =
+
+"Checklist salvo com sucesso!<br><br>ID:<br><b>"
+
++
+
+id
+
++
+
+"</b><br><br>Status:<br><b>"
+
++
+
+status
+
++
+
+"</b>";
+
+
+
+document.getElementById("popup").style.display="block";
+
+
+document.getElementById("fundoPopup").style.display="block";
+
+
+}
+
+
+
+
+
+
+function fecharPopup(){
+
+
+document.getElementById("popup").style.display="none";
+
+
+document.getElementById("fundoPopup").style.display="none";
+
+
+
+document.getElementById("locomotiva").focus();
+
+
+}
+
+
+
+
+async function salvarChecklist(){
+
+
+
+if(enviando){
+
+return;
+
+}
+
+
+
+let botao =
+document.getElementById("btnSalvar");
+
+
+
+let locomotiva =
+document.getElementById("locomotiva").value.trim();
+
+
+
+let colaborador =
+document.getElementById("colaborador").value.trim();
+
+
+
+if(!locomotiva){
+
+alert("Informe a locomotiva");
+
+return;
+
+}
+
+
+
+if(!colaborador){
+
+alert("Informe o colaborador");
+
+return;
+
+}
+
+
+
+
+enviando=true;
+
+
+botao.disabled=true;
+
+botao.innerHTML="⏳ ENVIANDO...";
+
+botao.style.pointerEvents="none";
+
+
+
+
+
+itens.forEach(item=>{
+
+
+if(!respostas[item[0]]){
+
+respostas[item[0]]="CONFORME";
+
+}
 
 
 });
@@ -462,477 +739,129 @@ document
 
 
 
-// ===============================
-// GERAR ID
-// LOCO1304-20260717-001
-// ===============================
+let status =
 
+Object.values(respostas)
+.includes("NÃO CONFORME")
 
-function gerarID(){
+?
 
+"PENDÊNCIA"
 
-    let loco =
-    document
-    .getElementById("locomotiva")
-    .value
-    .trim();
+:
 
-
-
-    let agora = new Date();
+"CONFORME";
 
 
 
-    let data =
 
-    agora.getFullYear()
 
-    +
-
-    String(
-        agora.getMonth()+1
-    )
-    .padStart(2,"0")
-
-    +
-
-    String(
-        agora.getDate()
-    )
-    .padStart(2,"0");
+let idRegistro = gerarID();
 
 
 
-    let chave =
-    "LOCO_" + loco + "_" + data;
+
+
+let dados={
+
+
+id:idRegistro,
+
+
+locomotiva:locomotiva,
+
+
+colaborador:colaborador,
+
+
+...respostas,
+
+
+status:status,
+
+
+observacao:
+document.getElementById("observacao").value
+
+
+};
 
 
 
-    let seq =
-    Number(
-        localStorage.getItem(chave) || 0
-    ) + 1;
+
+
+try{
+
+
+await fetch(URL_SCRIPT,{
+
+method:"POST",
+
+mode:"no-cors",
+
+body:JSON.stringify(dados)
+
+});
 
 
 
-    localStorage.setItem(
-        chave,
-        seq
-    );
+mostrarPopup(status,idRegistro);
 
 
 
-    return (
+document.getElementById("locomotiva").value="";
 
-        "LOCO"
 
-        +
+document.getElementById("observacao").value="";
 
-        loco
 
-        +
+respostas={};
 
-        "-"
 
-        +
+carregarChecklist();
 
-        data
 
-        +
+atualizarStatus();
 
-        "-"
 
-        +
 
-        String(seq)
-        .padStart(3,"0")
+}
 
-    );
+catch(e){
+
+
+alert("Erro ao salvar checklist");
 
 
 }
 
 
 
+finally{
 
 
+enviando=false;
 
 
-// ===============================
-// ENVIO
-// ===============================
+botao.disabled=false;
 
 
-async function enviarChecklist(){
+botao.style.pointerEvents="auto";
 
 
-
-    if(enviando){
-
-        return;
-
-    }
-
-
-
-    let locomotiva =
-
-    document
-    .getElementById("locomotiva")
-    .value
-    .trim();
-
-
-
-    let colaborador =
-
-    document
-    .getElementById("colaborador")
-    .value
-    .trim();
-
-
-
-
-
-    if(!locomotiva){
-
-
-        alert(
-        "Informe a locomotiva"
-        );
-
-
-        document
-        .getElementById("locomotiva")
-        .focus();
-
-
-        return;
-
-
-    }
-
-
-
-
-    if(!colaborador){
-
-
-        alert(
-        "Informe o colaborador"
-        );
-
-
-        document
-        .getElementById("colaborador")
-        .focus();
-
-
-        return;
-
-
-    }
-
-
-
-
-    enviando = true;
-
-
-
-    let botao =
-    document
-    .getElementById("btnSalvar");
-
-
-
-    botao.disabled = true;
-
-
-    botao.innerHTML =
-    "⏳ ENVIANDO...";
-
-
-
-
-
-    let id = gerarID();
-
-
-
-    let campos =
-
-    document
-    .querySelectorAll(".check");
-
-
-
-
-
-    let dados = {
-
-
-        id:id,
-
-
-        locomotiva:locomotiva,
-
-
-        colaborador:colaborador,
-
-
-        papelHigienico:
-        campos[0].value,
-
-
-        papelAssento:
-        campos[1].value,
-
-
-        papelMaos:
-        campos[2].value,
-
-
-        detergente:
-        campos[3].value,
-
-
-        sabonete:
-        campos[4].value,
-
-
-        agua:
-        campos[5].value,
-
-
-        limpezaCabine:
-        campos[6].value,
-
-
-        lixeira:
-        campos[7].value,
-
-
-        iluminacao:
-        campos[8].value,
-
-
-        condicaoGeral:
-        campos[9].value,
-
-
-
-        observacao:
-
-        document
-        .getElementById("observacao")
-        .value,
-
-
-
-        dataHora:
-
-        new Date()
-        .toLocaleString("pt-BR")
-
-
-    };
-
-
-
-
-
-    let temPendencia = false;
-
-
-
-    campos.forEach(function(item){
-
-
-        if(item.value === "FALTA"){
-
-
-            temPendencia = true;
-
-
-        }
-
-
-    });
-
-
-
-
-    dados.status =
-
-    temPendencia ?
-
-    "PENDÊNCIA"
-
-    :
-
-    "OK";
-
-
-
-
-
-
-
-    try{
-
-
-        let resposta = await fetch(
-
-            URL_API,
-
-            {
-
-
-                method:"POST",
-
-
-                headers:{
-
-
-                    "Content-Type":
-                    "text/plain;charset=utf-8"
-
-
-                },
-
-
-                body:
-
-                JSON.stringify(dados)
-
-
-            }
-
-
-        );
-
-
-
-
-
-        if(!resposta.ok){
-
-
-            throw new Error(
-            "Falha no envio"
-            );
-
-
-        }
-
-
-
-
-
-        mostrarPopup(id);
-
-
-
-
-
-        document
-        .getElementById("locomotiva")
-        .value="";
-
-
-
-        document
-        .getElementById("observacao")
-        .value="";
-
-
-
-
-
-    }
-
-
-    catch(erro){
-
-
-        alert(
-        "Erro ao enviar checklist"
-        );
-
-
-    }
-
-
-    finally{
-
-
-        enviando=false;
-
-
-        botao.disabled=false;
-
-
-        botao.innerHTML =
-        "SALVAR CHECKLIST";
-
-
-    }
-
-
-
-}
-
-
-// ===============================
-// POPUP DE CONFIRMAÇÃO
-// ===============================
-
-
-function mostrarPopup(id){
-
-
-    document
-    .getElementById("idGerado")
-    .innerHTML =
-
-    "ID: " + id;
-
-
-
-    document
-    .getElementById("popup")
-    .style.display = "flex";
-
+botao.innerHTML="💾 SALVAR CHECKLIST";
 
 
 }
 
 
 
-// ===============================
-// FECHAR POPUP
-// ===============================
-
-
-function fecharPopup(){
-
-
-    document
-    .getElementById("popup")
-    .style.display = "none";
-
-
-
-    document
-    .getElementById("locomotiva")
-    .focus();
-
-
-
 }
 
+
+carregarChecklist();
+
+carregarColaborador();
 
 
 </script>
