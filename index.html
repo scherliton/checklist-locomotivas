@@ -1,286 +1,368 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Checklist Locomotivas V2</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
 
 body{
     margin:0;
-    background:#f2f4f7;
-    color:#222;
+    background:#f1f4f8;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 .container{
     max-width:520px;
     margin:auto;
-    padding:20px;
+    padding:15px;
 }
 
 .card{
     background:white;
     border-radius:15px;
     padding:20px;
-    box-shadow:0 3px 10px rgba(0,0,0,.15);
+    box-shadow:0 3px 12px rgba(0,0,0,.15);
 }
 
 h1{
     text-align:center;
     color:#003b71;
-    font-size:24px;
+    margin-bottom:20px;
 }
 
 .logo{
     text-align:center;
-    font-size:30px;
-    margin-bottom:10px;
+    font-size:40px;
 }
 
 label{
+    font-weight:bold;
     display:block;
     margin-top:15px;
-    font-weight:bold;
 }
 
-input, select, textarea{
+input,
+textarea,
+select{
+
     width:100%;
     padding:12px;
+    margin-top:6px;
     border-radius:8px;
     border:1px solid #ccc;
-    margin-top:5px;
     font-size:16px;
+
 }
 
 textarea{
-    resize:none;
     height:80px;
+    resize:none;
 }
+
 
 .item{
+
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     background:#f7f7f7;
-    padding:12px;
-    border-radius:8px;
     margin-top:8px;
+    padding:10px;
+    border-radius:8px;
+
 }
 
-.item span{
-    font-size:15px;
-}
 
 .item select{
+
     width:120px;
     margin:0;
+
 }
 
+
 button{
+
     width:100%;
     margin-top:20px;
     padding:15px;
-    border:none;
-    border-radius:10px;
+
     background:#0066cc;
     color:white;
+
+    border:none;
+    border-radius:10px;
+
     font-size:18px;
     font-weight:bold;
-    cursor:pointer;
+
 }
+
 
 button:disabled{
+
     background:#888;
-    cursor:not-allowed;
+
 }
+
+
 
 #popup{
+
     display:none;
+
     position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
+
+    inset:0;
+
     background:rgba(0,0,0,.45);
+
     align-items:center;
+
     justify-content:center;
-    z-index:999;
+
 }
 
-.popup-box{
+
+
+.popup{
+
     background:white;
+
     width:85%;
+
     max-width:350px;
+
     padding:25px;
+
     border-radius:15px;
+
     text-align:center;
-    box-shadow:0 5px 20px rgba(0,0,0,.3);
+
 }
 
-.popup-box h2{
+
+.popup h2{
+
     color:#008000;
+
 }
 
-.id-gerado{
+
+.id-box{
+
+    margin-top:15px;
+
     background:#eef6ff;
-    padding:10px;
+
+    padding:12px;
+
     border-radius:8px;
+
     font-weight:bold;
-    margin-top:10px;
+
 }
+
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
+
 <div class="card">
+
 
 <div class="logo">
 🚂
 </div>
+
 
 <h1>
 Checklist Locomotivas V2
 </h1>
 
 
+
 <label>
 Locomotiva
 </label>
 
+
 <input 
-type="text" 
 id="locomotiva"
+type="text"
 placeholder="Ex: 1304"
 autocomplete="off">
+
 
 
 <label>
 Colaborador
 </label>
 
+
 <input 
-type="text" 
 id="colaborador"
-placeholder="Digite seu nome">
+type="text"
+placeholder="Nome do colaborador">
 
 
-<div id="checklist">
+
+<div id="listaChecklist">
+
 
 
 <div class="item">
 <span>Papel higiênico</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Papel assento</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Papel mãos</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Detergente</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
 
 
 <div class="item">
 <span>Sabonete</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Água</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Limpeza cabine</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Lixeira</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Iluminação</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
+
 
 
 <div class="item">
 <span>Condição geral</span>
+
 <select class="check">
 <option>OK</option>
 <option>FALTA</option>
 </select>
+
 </div>
 
 
+
 </div>
+
 
 
 <label>
 Observação
 </label>
 
-<textarea id="observacao"
-placeholder="Digite observações se necessário"></textarea>
+
+<textarea 
+id="observacao"
+placeholder="Digite uma observação se necessário">
+</textarea>
 
 
-<button id="btnSalvar" onclick="enviarChecklist()">
+
+<button 
+id="btnSalvar"
+onclick="enviarChecklist()">
+
 SALVAR CHECKLIST
+
 </button>
 
 
@@ -291,156 +373,199 @@ SALVAR CHECKLIST
 
 <div id="popup">
 
-<div class="popup-box">
+<div class="popup">
+
 
 <h2>
 ✅ Enviado!
 </h2>
 
+
 <p>
 Checklist registrado com sucesso.
 </p>
 
-<div class="id-gerado" id="idGerado"></div>
+
+<div class="id-box" id="idGerado">
+
+</div>
+
 
 <button onclick="fecharPopup()">
+
 OK
+
 </button>
+
 
 </div>
 
 </div>
 <script>
 
+
 const URL_API = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
 
-
-// ===============================
-// MEMÓRIA DO COLABORADOR
-// ===============================
-
-window.onload = function(){
-
-    const colaboradorSalvo = localStorage.getItem("colaborador");
-
-    if(colaboradorSalvo){
-        document.getElementById("colaborador").value = colaboradorSalvo;
-    }
-
-    document.getElementById("locomotiva").focus();
-
-};
-
-
-// salva colaborador digitado
-
-document.getElementById("colaborador")
-.addEventListener("change", function(){
-
-    localStorage.setItem(
-        "colaborador",
-        this.value
-    );
-
-});
-
-
-
-// ===============================
-// GERADOR DE ID
-// FORMATO:
-// LOCO1304-20260717-001
-// ===============================
-
-
-function gerarID(){
-
-    let loco = document
-    .getElementById("locomotiva")
-    .value
-    .trim();
-
-
-    let data = new Date();
-
-
-    let ano = data.getFullYear();
-
-    let mes = String(
-        data.getMonth()+1
-    ).padStart(2,"0");
-
-
-    let dia = String(
-        data.getDate()
-    ).padStart(2,"0");
-
-
-    let dataAtual =
-    ano + mes + dia;
-
-
-
-    let chave =
-    "contador_" + loco + "_" + dataAtual;
-
-
-    let numero =
-    localStorage.getItem(chave);
-
-
-
-    if(!numero){
-
-        numero = 1;
-
-    }else{
-
-        numero =
-        Number(numero)+1;
-
-    }
-
-
-    localStorage.setItem(
-        chave,
-        numero
-    );
-
-
-
-    numero =
-    String(numero)
-    .padStart(3,"0");
-
-
-
-    return (
-        "LOCO" +
-        loco +
-        "-" +
-        dataAtual +
-        "-" +
-        numero
-    );
-
-}
-
-
-
-// ===============================
-// ENVIO CHECKLIST
-// ===============================
 
 
 let enviando = false;
 
 
 
+// ===============================
+// CARREGAR COLABORADOR MEMORIZADO
+// ===============================
+
+
+window.onload = function(){
+
+
+    let nomeSalvo = localStorage.getItem("colaborador");
+
+
+    if(nomeSalvo){
+
+        document
+        .getElementById("colaborador")
+        .value = nomeSalvo;
+
+    }
+
+
+    document
+    .getElementById("locomotiva")
+    .focus();
+
+
+};
+
+
+
+
+// memorizar colaborador
+
+
+document
+.getElementById("colaborador")
+.addEventListener("change",function(){
+
+
+    localStorage.setItem(
+        "colaborador",
+        this.value.trim()
+    );
+
+
+});
+
+
+
+
+
+// ===============================
+// GERAR ID
+// LOCO1304-20260717-001
+// ===============================
+
+
+function gerarID(){
+
+
+    let loco =
+    document
+    .getElementById("locomotiva")
+    .value
+    .trim();
+
+
+
+    let agora = new Date();
+
+
+
+    let data =
+
+    agora.getFullYear()
+
+    +
+
+    String(
+        agora.getMonth()+1
+    )
+    .padStart(2,"0")
+
+    +
+
+    String(
+        agora.getDate()
+    )
+    .padStart(2,"0");
+
+
+
+    let chave =
+    "LOCO_" + loco + "_" + data;
+
+
+
+    let seq =
+    Number(
+        localStorage.getItem(chave) || 0
+    ) + 1;
+
+
+
+    localStorage.setItem(
+        chave,
+        seq
+    );
+
+
+
+    return (
+
+        "LOCO"
+
+        +
+
+        loco
+
+        +
+
+        "-"
+
+        +
+
+        data
+
+        +
+
+        "-"
+
+        +
+
+        String(seq)
+        .padStart(3,"0")
+
+    );
+
+
+}
+
+
+
+
+
+
+
+// ===============================
+// ENVIO
+// ===============================
+
+
 async function enviarChecklist(){
 
 
-    // BLOQUEIO DUPLO ENVIO
 
     if(enviando){
 
@@ -451,6 +576,7 @@ async function enviarChecklist(){
 
 
     let locomotiva =
+
     document
     .getElementById("locomotiva")
     .value
@@ -459,6 +585,7 @@ async function enviarChecklist(){
 
 
     let colaborador =
+
     document
     .getElementById("colaborador")
     .value
@@ -466,35 +593,47 @@ async function enviarChecklist(){
 
 
 
+
+
     if(!locomotiva){
+
 
         alert(
         "Informe a locomotiva"
         );
 
+
         document
         .getElementById("locomotiva")
         .focus();
 
+
         return;
 
+
     }
+
 
 
 
     if(!colaborador){
 
+
         alert(
         "Informe o colaborador"
         );
+
 
         document
         .getElementById("colaborador")
         .focus();
 
+
         return;
 
+
     }
+
 
 
 
@@ -503,131 +642,205 @@ async function enviarChecklist(){
 
 
     let botao =
-    document.getElementById("btnSalvar");
+    document
+    .getElementById("btnSalvar");
+
 
 
     botao.disabled = true;
+
 
     botao.innerHTML =
     "⏳ ENVIANDO...";
 
 
 
-    let idRegistro =
-    gerarID();
+
+
+    let id = gerarID();
 
 
 
-    let itens =
+    let campos =
+
     document
     .querySelectorAll(".check");
 
 
 
+
+
     let dados = {
 
-        id:idRegistro,
+
+        id:id,
+
 
         locomotiva:locomotiva,
 
+
         colaborador:colaborador,
 
+
         papelHigienico:
-        itens[0].value,
+        campos[0].value,
+
 
         papelAssento:
-        itens[1].value,
+        campos[1].value,
+
 
         papelMaos:
-        itens[2].value,
+        campos[2].value,
+
 
         detergente:
-        itens[3].value,
+        campos[3].value,
+
 
         sabonete:
-        itens[4].value,
+        campos[4].value,
+
 
         agua:
-        itens[5].value,
+        campos[5].value,
+
 
         limpezaCabine:
-        itens[6].value,
+        campos[6].value,
+
 
         lixeira:
-        itens[7].value,
+        campos[7].value,
+
 
         iluminacao:
-        itens[8].value,
+        campos[8].value,
+
 
         condicaoGeral:
-        itens[9].value,
+        campos[9].value,
+
+
 
         observacao:
+
         document
         .getElementById("observacao")
         .value,
 
 
+
         dataHora:
+
         new Date()
         .toLocaleString("pt-BR")
+
 
     };
 
 
 
-    // STATUS AUTOMÁTICO
-
-    let pendencia = false;
 
 
+    let temPendencia = false;
 
-    Object.values(dados)
-    .forEach(function(valor){
 
-        if(valor==="FALTA"){
 
-            pendencia=true;
+    campos.forEach(function(item){
+
+
+        if(item.value === "FALTA"){
+
+
+            temPendencia = true;
+
 
         }
+
 
     });
 
 
 
+
     dados.status =
-    pendencia ?
-    "PENDÊNCIA" :
+
+    temPendencia ?
+
+    "PENDÊNCIA"
+
+    :
+
     "OK";
+
+
+
+
 
 
 
     try{
 
 
-        await fetch(
+        let resposta = await fetch(
+
             URL_API,
+
             {
+
 
                 method:"POST",
 
+
+                headers:{
+
+
+                    "Content-Type":
+                    "text/plain;charset=utf-8"
+
+
+                },
+
+
                 body:
+
                 JSON.stringify(dados)
 
+
             }
+
+
         );
 
 
 
-        mostrarPopup(
-            idRegistro
-        );
+
+
+        if(!resposta.ok){
+
+
+            throw new Error(
+            "Falha no envio"
+            );
+
+
+        }
+
+
+
+
+
+        mostrarPopup(id);
+
+
 
 
 
         document
         .getElementById("locomotiva")
         .value="";
+
 
 
         document
@@ -636,15 +849,12 @@ async function enviarChecklist(){
 
 
 
-        document
-        .getElementById("locomotiva")
-        .focus();
-
 
 
     }
 
-    catch(e){
+
+    catch(erro){
 
 
         alert(
@@ -653,7 +863,6 @@ async function enviarChecklist(){
 
 
     }
-
 
 
     finally{
@@ -665,7 +874,7 @@ async function enviarChecklist(){
         botao.disabled=false;
 
 
-        botao.innerHTML=
+        botao.innerHTML =
         "SALVAR CHECKLIST";
 
 
@@ -675,8 +884,9 @@ async function enviarChecklist(){
 
 }
 
+
 // ===============================
-// POPUP CONFIRMAÇÃO
+// POPUP DE CONFIRMAÇÃO
 // ===============================
 
 
@@ -686,34 +896,39 @@ function mostrarPopup(id){
     document
     .getElementById("idGerado")
     .innerHTML =
+
     "ID: " + id;
 
 
 
     document
     .getElementById("popup")
-    .style.display =
-    "flex";
+    .style.display = "flex";
+
 
 
 }
 
 
 
-// fecha popup
+// ===============================
+// FECHAR POPUP
+// ===============================
+
 
 function fecharPopup(){
 
 
     document
     .getElementById("popup")
-    .style.display =
-    "none";
+    .style.display = "none";
+
 
 
     document
     .getElementById("locomotiva")
     .focus();
+
 
 
 }
