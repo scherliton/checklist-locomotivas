@@ -1,336 +1,540 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checklist Pós-Drenagem</title>
+<title>Checklist Locomotivas V2</title>
+
 
 <style>
-body{
-font-family:Arial,sans-serif;
-background:#f5f7fa;
-margin:0;
-padding:20px
+
+*{
+box-sizing:border-box;
+font-family:Arial, sans-serif;
 }
+
+
+body{
+
+margin:0;
+padding:15px;
+
+background:#eef3f8;
+
+}
+
+
+.app{
+
+max-width:520px;
+
+margin:auto;
+
+}
+
+
+.header{
+
+background:#003b70;
+
+color:white;
+
+padding:20px;
+
+border-radius:15px 15px 0 0;
+
+text-align:center;
+
+}
+
+
+.header h1{
+
+margin:0;
+
+font-size:22px;
+
+}
+
 
 .card{
-max-width:500px;
-margin:auto;
+
 background:white;
-border-radius:15px;
+
 padding:20px;
-box-shadow:0 4px 15px rgba(0,0,0,0.1)
+
+border-radius:0 0 15px 15px;
+
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+
 }
 
-h1{
-text-align:center;
-color:#003366
-}
-
-h2{
-color:#003366
-}
 
 label{
+
+font-weight:bold;
+
 display:block;
+
 margin-top:15px;
-font-weight:bold
+
+margin-bottom:6px;
+
 }
 
-input,textarea{
+
+input, textarea{
+
 width:100%;
-padding:12px;
+
+padding:13px;
+
+border-radius:10px;
+
 border:1px solid #ccc;
-border-radius:8px;
-box-sizing:border-box
+
+font-size:16px;
+
 }
+
+
+textarea{
+
+height:90px;
+
+resize:none;
+
+}
+
+
+.btn{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:10px;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+
+.btn-trocar{
+
+background:#777;
+
+color:white;
+
+margin-top:10px;
+
+}
+
 
 .item{
+
 margin-top:15px;
-padding:10px;
-background:#f0f4f8;
-border-radius:8px
+
+padding:15px;
+
+background:#f4f7fa;
+
+border-radius:12px;
+
+border-left:5px solid #003b70;
+
 }
+
+
+.item-title{
+
+font-weight:bold;
+
+margin-bottom:10px;
+
+}
+
 
 .botoes{
+
 display:flex;
+
 gap:10px;
-margin-top:10px
+
 }
 
-button{
+
+.botoes button{
+
 flex:1;
+
 padding:12px;
+
 border:none;
+
 border-radius:8px;
+
 font-weight:bold;
-cursor:pointer
+
+cursor:pointer;
+
 }
 
-.conf{
-background:#2e8b57;
+
+.conforme{
+
+background:#198754;
+
 color:white;
+
 }
+
 
 .nao{
-background:#c0392b;
+
+background:#dc3545;
+
 color:white;
+
 }
+
 
 .selecionado{
-outline:4px solid #003366;
+
+outline:4px solid #003b70;
+
 }
 
-.salvar{
-width:100%;
-margin-top:20px;
-background:#003366;
-color:white;
-font-size:16px
-}
 
 .status{
+
 margin-top:20px;
+
 padding:15px;
+
 border-radius:10px;
+
 text-align:center;
+
+font-size:18px;
+
 font-weight:bold;
-background:#d4edda;
-color:#155724;
+
+background:#d1e7dd;
+
+color:#0f5132;
+
 }
 
-#mensagem{
-margin-top:15px;
-text-align:center;
-font-weight:bold;
+
+.salvar{
+
+margin-top:20px;
+
+background:#003b70;
+
+color:white;
+
 }
+
+
+#mensagem{
+
+text-align:center;
+
+font-weight:bold;
+
+margin-top:15px;
+
+}
+
+
 </style>
+
 
 </head>
 
+
 <body>
 
-<div class="card">
+
+<div class="app">
+
+
+<div class="header">
 
 <h1>🚂 Checklist Pós-Drenagem</h1>
 
-<label>Locomotiva</label>
-<input id="locomotiva" placeholder="Ex: 1304">
+<div>Locomotivas - V2</div>
+
+</div>
+
+
+<div class="card">
 
 
 <label>Colaborador</label>
-<input id="colaborador">
 
-<button onclick="trocarColaborador()" style="margin-top:10px;background:#777;color:white">
+<input id="colaborador" placeholder="Digite seu nome">
+
+
+<button class="btn btn-trocar" onclick="trocarColaborador()">
+
 Trocar colaborador
+
 </button>
 
 
-<h2>Itens de Verificação</h2>
+<label>Locomotiva</label>
+
+<input id="locomotiva" placeholder="Ex: 1304">
+
+
+<h2>Checklist</h2>
 
 
 <div id="lista"></div>
 
 
-<div class="status" id="status">
+<div id="status" class="status">
+
 🟢 CONFORME
+
 </div>
 
 
-<label>Observações</label>
-<textarea id="observacao"></textarea>
+<label>Observação</label>
+
+<textarea id="observacao" placeholder="Digite observações se necessário"></textarea>
 
 
-<button class="salvar" onclick="enviarChecklist()">
+<button class="btn salvar" onclick="salvarChecklist()">
+
 💾 SALVAR CHECKLIST
+
 </button>
 
 
 <div id="mensagem"></div>
+
+
+</div>
 
 </div>
 
 
 <script>
 
-const URL_SCRIPT="https://script.google.com/macros/s/AKfycbyN9dkyn9OqQHC3fHKD8mdKtxcyr81Cc4_OtGwfPbWfk_03uFPT0MQVBko-9DbP1F-gBw/exec";
+
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
 
 
-let itens=[
+const itens=[
+
 ["BanheiroLimpo","🚿 Banheiro limpo"],
+
 ["BanheiroDrenado","🚽 Banheiro drenado"],
+
+["DescargaFuncionando","🚽 Descarga funcionando"],
+
 ["AguaDisponivel","💧 Água disponível"],
+
 ["SaboneteLiquido","🧴 Sabonete líquido"],
+
 ["PapelHigienico","🧻 Papel higiênico"],
+
 ["PapelToalha","🧻 Papel toalha"],
+
 ["Iluminacao","💡 Iluminação"],
+
 ["PortaFuncionando","🚪 Porta funcionando"],
+
 ["CabineLimpa","🧹 Cabine limpa e organizada"]
+
 ];
 
 
 let respostas={};
 
-
-function carregar(){
+function carregarChecklist(){
 
 let html="";
 
-itens.forEach(i=>{
+
+itens.forEach(item=>{
+
 
 html+=`
 
 <div class="item">
 
-<label>${i[1]}</label>
+
+<div class="item-title">
+
+${item[1]}
+
+</div>
+
 
 <div class="botoes">
 
-<button class="conf" onclick="marcar('${i[0]}','CONFORME',this)">
-● CONFORME
+
+<button class="conforme" onclick="marcar('${item[0]}','CONFORME',this)">
+
+✅ CONFORME
+
 </button>
 
-<button class="nao" onclick="marcar('${i[0]}','NÃO CONFORME',this)">
-● NÃO CONFORME
+
+<button class="nao" onclick="marcar('${item[0]}','NÃO CONFORME',this)">
+
+❌ NÃO CONFORME
+
 </button>
+
 
 </div>
 
+
 </div>
+
 
 `;
 
+
 });
+
 
 document.getElementById("lista").innerHTML=html;
 
+
 }
+
 
 
 function marcar(campo,valor,botao){
 
+
 respostas[campo]=valor;
+
 
 let botoes=botao.parentElement.children;
 
+
 for(let b of botoes){
+
 b.classList.remove("selecionado");
+
 }
+
 
 botao.classList.add("selecionado");
 
+
 atualizarStatus();
 
+
 }
+
 
 
 function atualizarStatus(){
 
-let pendencia=false;
 
-for(let item in respostas){
+let pendencia = Object.values(respostas)
+.includes("NÃO CONFORME");
 
-if(respostas[item]=="NÃO CONFORME"){
-pendencia=true;
-}
 
-}
+let status=document.getElementById("status");
+
 
 if(pendencia){
 
-document.getElementById("status").innerHTML="🔴 PENDÊNCIA";
-document.getElementById("status").style.background="#f8d7da";
-document.getElementById("status").style.color="#721c24";
+
+status.innerHTML="🔴 PENDÊNCIA";
+
+status.style.background="#f8d7da";
+
+status.style.color="#842029";
+
 
 }else{
 
-document.getElementById("status").innerHTML="🟢 CONFORME";
-document.getElementById("status").style.background="#d4edda";
-document.getElementById("status").style.color="#155724";
+
+status.innerHTML="🟢 CONFORME";
+
+status.style.background="#d1e7dd";
+
+status.style.color="#0f5132";
+
 
 }
 
-}
-
-
-
-async function enviarChecklist(){
-
-
-let locomotiva=document.getElementById("locomotiva").value;
-
-let colaborador=document.getElementById("colaborador").value;
-
-
-if(!locomotiva){
-alert("Informe a locomotiva");
-return;
-}
-
-
-if(!colaborador){
-alert("Informe o colaborador");
-return;
-}
-
-
-itens.forEach(i=>{
-
-if(!respostas[i[0]]){
-respostas[i[0]]="CONFORME";
-}
-
-});
-
-
-let dados={
-
-locomotiva,
-colaborador,
-
-...respostas,
-
-status:
-Object.values(respostas).includes("NÃO CONFORME")
-?"PENDÊNCIA":"CONFORME",
-
-observacao:
-document.getElementById("observacao").value
-
-};
-
-
-await fetch(URL_SCRIPT,{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify(dados)
-});
-
-
-alert("✅ Checklist salvo com sucesso!");
-
-
-document.getElementById("locomotiva").value="";
-document.getElementById("observacao").value="";
-
-
-respostas={};
-
-carregar();
-
-atualizarStatus();
-
-
-document.getElementById("locomotiva").focus();
 
 }
 
 
 
-function trocarColaborador(){
+function gerarID(){
 
-let nome=prompt("Novo colaborador:");
+
+let agora=new Date();
+
+
+let ano=agora.getFullYear();
+
+
+let mes=String(agora.getMonth()+1).padStart(2,"0");
+
+
+let dia=String(agora.getDate()).padStart(2,"0");
+
+
+let hora=String(agora.getHours()).padStart(2,"0");
+
+
+let minuto=String(agora.getMinutes()).padStart(2,"0");
+
+
+return "CHK-"+ano+mes+dia+"-"+hora+minuto;
+
+
+}
+
+
+
+function salvarColaborador(){
+
+
+let nome=document.getElementById("colaborador").value;
+
+
+if(nome){
+
+localStorage.setItem("colaborador",nome);
+
+}
+
+
+}
+
+
+
+function carregarColaborador(){
+
+
+let nome=localStorage.getItem("colaborador");
+
 
 if(nome){
 
@@ -338,13 +542,169 @@ document.getElementById("colaborador").value=nome;
 
 }
 
+
 }
 
 
-carregar();
+
+function trocarColaborador(){
+
+
+let nome=prompt("Digite o novo colaborador");
+
+
+if(nome){
+
+
+document.getElementById("colaborador").value=nome;
+
+
+localStorage.setItem("colaborador",nome);
+
+
+}
+
+
+}
+
+
+
+async function salvarChecklist(){
+
+
+let locomotiva=document.getElementById("locomotiva").value;
+
+
+let colaborador=document.getElementById("colaborador").value;
+
+
+
+if(!locomotiva){
+
+alert("Informe a locomotiva");
+
+return;
+
+}
+
+
+
+if(!colaborador){
+
+alert("Informe o colaborador");
+
+return;
+
+}
+
+
+
+salvarColaborador();
+
+
+
+itens.forEach(item=>{
+
+
+if(!respostas[item[0]]){
+
+
+respostas[item[0]]="CONFORME";
+
+
+}
+
+
+});
+
+
+
+let status = Object.values(respostas)
+.includes("NÃO CONFORME")
+?
+"PENDÊNCIA"
+:
+"CONFORME";
+
+
+
+let dados={
+
+
+id:gerarID(),
+
+
+locomotiva:locomotiva,
+
+
+colaborador:colaborador,
+
+
+...respostas,
+
+
+status:status,
+
+
+observacao:
+document.getElementById("observacao").value
+
+
+};
+
+
+
+console.log(dados);
+
+
+
+fetch(URL_SCRIPT,{
+
+method:"POST",
+
+mode:"no-cors",
+
+body:JSON.stringify(dados)
+
+
+});
+
+
+
+document.getElementById("mensagem").innerHTML=
+
+"✅ Checklist enviado! Status: "+status;
+
+
+
+document.getElementById("locomotiva").value="";
+
+
+document.getElementById("observacao").value="";
+
+
+respostas={};
+
+
+carregarChecklist();
+
+
+atualizarStatus();
+
+
+
+}
+
+
+
+carregarChecklist();
+
+carregarColaborador();
 
 
 </script>
 
+
 </body>
+
 </html>
