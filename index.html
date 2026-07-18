@@ -9,7 +9,6 @@
 
 <title>Checklist Locomotivas V2</title>
 
-
 <style>
 
 *{
@@ -17,255 +16,212 @@ box-sizing:border-box;
 font-family:Arial, sans-serif;
 }
 
-
 body{
-
 margin:0;
 padding:15px;
-
 background:#eef3f8;
-
 }
-
 
 .app{
-
 max-width:520px;
-
 margin:auto;
-
 }
-
 
 .header{
-
 background:#003b70;
-
 color:white;
-
 padding:20px;
-
 border-radius:15px 15px 0 0;
-
 text-align:center;
-
 }
-
 
 .header h1{
-
 margin:0;
-
 font-size:22px;
+}
 
+.card{
+background:white;
+padding:20px;
+border-radius:0 0 15px 15px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-top:15px;
+margin-bottom:6px;
+}
+
+input, textarea{
+width:100%;
+padding:13px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+textarea{
+height:90px;
+resize:none;
+}
+
+.btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-trocar{
+background:#777;
+color:white;
+margin-top:10px;
+}
+
+.item{
+margin-top:15px;
+padding:15px;
+background:#f4f7fa;
+border-radius:12px;
+border-left:5px solid #003b70;
+}
+
+.item-title{
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.botoes{
+display:flex;
+gap:10px;
+}
+
+.botoes button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.conforme{
+background:#198754;
+color:white;
+}
+
+.nao{
+background:#dc3545;
+color:white;
+}
+
+.selecionado{
+outline:4px solid #003b70;
+}
+
+.status{
+margin-top:20px;
+padding:15px;
+border-radius:10px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+background:#d1e7dd;
+color:#0f5132;
+}
+
+.salvar{
+margin-top:20px;
+background:#003b70;
+color:white;
 }
 
 
-.card{
+/* POPUP */
+
+.popup{
+
+display:none;
+
+position:fixed;
+
+top:50%;
+
+left:50%;
+
+transform:translate(-50%,-50%);
 
 background:white;
 
-padding:20px;
+padding:25px;
 
-border-radius:0 0 15px 15px;
+border-radius:15px;
 
-box-shadow:0 4px 15px rgba(0,0,0,.15);
-
-}
-
-
-label{
-
-font-weight:bold;
-
-display:block;
-
-margin-top:15px;
-
-margin-bottom:6px;
-
-}
-
-
-input, textarea{
-
-width:100%;
-
-padding:13px;
-
-border-radius:10px;
-
-border:1px solid #ccc;
-
-font-size:16px;
-
-}
-
-
-textarea{
-
-height:90px;
-
-resize:none;
-
-}
-
-
-.btn{
-
-width:100%;
-
-padding:14px;
-
-border:none;
-
-border-radius:10px;
-
-font-size:16px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-}
-
-
-.btn-trocar{
-
-background:#777;
-
-color:white;
-
-margin-top:10px;
-
-}
-
-
-.item{
-
-margin-top:15px;
-
-padding:15px;
-
-background:#f4f7fa;
-
-border-radius:12px;
-
-border-left:5px solid #003b70;
-
-}
-
-
-.item-title{
-
-font-weight:bold;
-
-margin-bottom:10px;
-
-}
-
-
-.botoes{
-
-display:flex;
-
-gap:10px;
-
-}
-
-
-.botoes button{
-
-flex:1;
-
-padding:12px;
-
-border:none;
-
-border-radius:8px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-}
-
-
-.conforme{
-
-background:#198754;
-
-color:white;
-
-}
-
-
-.nao{
-
-background:#dc3545;
-
-color:white;
-
-}
-
-
-.selecionado{
-
-outline:4px solid #003b70;
-
-}
-
-
-.status{
-
-margin-top:20px;
-
-padding:15px;
-
-border-radius:10px;
+box-shadow:0 5px 25px rgba(0,0,0,.3);
 
 text-align:center;
 
-font-size:18px;
+width:300px;
 
-font-weight:bold;
-
-background:#d1e7dd;
-
-color:#0f5132;
+z-index:999;
 
 }
 
 
-.salvar{
+.popup h2{
 
-margin-top:20px;
+color:#198754;
+
+}
+
+
+.popup button{
+
+padding:12px 25px;
+
+border:none;
+
+border-radius:10px;
 
 background:#003b70;
 
 color:white;
 
+font-weight:bold;
+
 }
 
 
-#mensagem{
+.fundo-popup{
 
-text-align:center;
+display:none;
 
-font-weight:bold;
+position:fixed;
 
-margin-top:15px;
+top:0;
+
+left:0;
+
+width:100%;
+
+height:100%;
+
+background:rgba(0,0,0,.4);
+
+z-index:998;
 
 }
 
 
 </style>
 
-
-</head>
-
-
-<body>
+</head> 
+  <body>
 
 
 <div class="app">
@@ -295,15 +251,18 @@ Trocar colaborador
 </button>
 
 
+
 <label>Locomotiva</label>
 
-<input id="locomotiva" placeholder="Ex: 1304">
+<input id="locomotiva" placeholder="Digite a locomotiva">
+
 
 
 <h2>Checklist</h2>
 
 
 <div id="lista"></div>
+
 
 
 <div id="status" class="status">
@@ -313,9 +272,11 @@ Trocar colaborador
 </div>
 
 
+
 <label>Observação</label>
 
 <textarea id="observacao" placeholder="Digite observações se necessário"></textarea>
+
 
 
 <button class="btn salvar" onclick="salvarChecklist()">
@@ -325,21 +286,41 @@ Trocar colaborador
 </button>
 
 
-<div id="mensagem"></div>
-
 
 </div>
 
 </div>
 
 
+
+<!-- POPUP -->
+
+<div class="fundo-popup" id="fundoPopup"></div>
+
+
+<div class="popup" id="popup">
+
+
+<h2>✅ Enviado!</h2>
+
+
+<p id="textoPopup"></p>
+
+
+<button onclick="fecharPopup()">
+
+OK
+
+</button>
+
+
+</div> 
 <script>
-
 
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
 
 
-const itens=[
+const itens = [
 
 ["BanheiroLimpo","🚿 Banheiro limpo"],
 
@@ -364,7 +345,9 @@ const itens=[
 ];
 
 
-let respostas={};
+let respostas = {};
+
+
 
 function carregarChecklist(){
 
@@ -374,29 +357,28 @@ let html="";
 itens.forEach(item=>{
 
 
-html+=`
+html += `
 
 <div class="item">
 
-
 <div class="item-title">
-
 ${item[1]}
-
 </div>
 
 
 <div class="botoes">
 
 
-<button class="conforme" onclick="marcar('${item[0]}','CONFORME',this)">
+<button class="conforme"
+onclick="marcar('${item[0]}','CONFORME',this)">
 
 ✅ CONFORME
 
 </button>
 
 
-<button class="nao" onclick="marcar('${item[0]}','NÃO CONFORME',this)">
+<button class="nao"
+onclick="marcar('${item[0]}','NÃO CONFORME',this)">
 
 ❌ NÃO CONFORME
 
@@ -405,20 +387,17 @@ ${item[1]}
 
 </div>
 
-
 </div>
 
-
 `;
-
 
 });
 
 
-document.getElementById("lista").innerHTML=html;
-
+document.getElementById("lista").innerHTML = html;
 
 }
+
 
 
 
@@ -428,7 +407,7 @@ function marcar(campo,valor,botao){
 respostas[campo]=valor;
 
 
-let botoes=botao.parentElement.children;
+let botoes = botao.parentElement.children;
 
 
 for(let b of botoes){
@@ -443,19 +422,22 @@ botao.classList.add("selecionado");
 
 atualizarStatus();
 
-
 }
+
 
 
 
 function atualizarStatus(){
 
 
-let pendencia = Object.values(respostas)
+let pendencia =
+Object.values(respostas)
 .includes("NÃO CONFORME");
 
 
-let status=document.getElementById("status");
+let status =
+document.getElementById("status");
+
 
 
 if(pendencia){
@@ -485,72 +467,31 @@ status.style.color="#0f5132";
 
 
 
+
 function gerarID(){
 
 
-let agora=new Date();
+let data=new Date();
 
 
-let ano=agora.getFullYear();
-
-
-let mes=String(agora.getMonth()+1).padStart(2,"0");
-
-
-let dia=String(agora.getDate()).padStart(2,"0");
-
-
-let hora=String(agora.getHours()).padStart(2,"0");
-
-
-let minuto=String(agora.getMinutes()).padStart(2,"0");
-
-
-return "CHK-"+ano+mes+dia+"-"+hora+minuto;
+return "CHK-"+
+data.getFullYear()+
+(data.getMonth()+1).toString().padStart(2,"0")+
+data.getDate().toString().padStart(2,"0")+
+"-"+
+Date.now();
 
 
 }
 
 
-
-function salvarColaborador(){
-
-
-let nome=document.getElementById("colaborador").value;
-
-
-if(nome){
-
-localStorage.setItem("colaborador",nome);
-
-}
-
-
-}
-
-
-
-function carregarColaborador(){
-
-
-let nome=localStorage.getItem("colaborador");
-
-
-if(nome){
-
-document.getElementById("colaborador").value=nome;
-
-}
-
-
-}
 
 
 
 function trocarColaborador(){
 
 
-let nome=prompt("Digite o novo colaborador");
+let nome = prompt("Digite o novo colaborador");
 
 
 if(nome){
@@ -569,13 +510,80 @@ localStorage.setItem("colaborador",nome);
 
 
 
+
+function carregarColaborador(){
+
+
+let nome =
+localStorage.getItem("colaborador");
+
+
+if(nome){
+
+document.getElementById("colaborador").value=nome;
+
+}
+
+
+}
+
+
+
+
+
+function mostrarPopup(status){
+
+
+document.getElementById("textoPopup").innerHTML =
+
+"Checklist salvo com sucesso!<br><br>Status:<br><b>"
++
+status+
+"</b>";
+
+
+
+document.getElementById("popup").style.display="block";
+
+
+document.getElementById("fundoPopup").style.display="block";
+
+
+}
+
+
+
+
+
+function fecharPopup(){
+
+
+document.getElementById("popup").style.display="none";
+
+
+document.getElementById("fundoPopup").style.display="none";
+
+
+// volta para locomotiva
+
+document.getElementById("locomotiva").focus();
+
+
+}
+
+
+
+
+
 async function salvarChecklist(){
 
 
-let locomotiva=document.getElementById("locomotiva").value;
+let locomotiva =
+document.getElementById("locomotiva").value;
 
 
-let colaborador=document.getElementById("colaborador").value;
+let colaborador =
+document.getElementById("colaborador").value;
 
 
 
@@ -599,18 +607,13 @@ return;
 
 
 
-salvarColaborador();
-
-
 
 itens.forEach(item=>{
 
 
 if(!respostas[item[0]]){
 
-
 respostas[item[0]]="CONFORME";
-
 
 }
 
@@ -619,12 +622,22 @@ respostas[item[0]]="CONFORME";
 
 
 
-let status = Object.values(respostas)
+
+let status =
+
+Object.values(respostas)
 .includes("NÃO CONFORME")
+
 ?
+
 "PENDÊNCIA"
+
 :
+
 "CONFORME";
+
+
+
 
 
 
@@ -633,9 +646,7 @@ let dados={
 
 id:gerarID(),
 
-
 locomotiva:locomotiva,
-
 
 colaborador:colaborador,
 
@@ -654,11 +665,9 @@ document.getElementById("observacao").value
 
 
 
-console.log(dados);
 
 
-
-fetch(URL_SCRIPT,{
+await fetch(URL_SCRIPT,{
 
 method:"POST",
 
@@ -666,14 +675,15 @@ mode:"no-cors",
 
 body:JSON.stringify(dados)
 
-
 });
 
 
 
-document.getElementById("mensagem").innerHTML=
 
-"✅ Checklist enviado! Status: "+status;
+
+mostrarPopup(status);
+
+
 
 
 
@@ -697,9 +707,12 @@ atualizarStatus();
 
 
 
+
+
 carregarChecklist();
 
 carregarColaborador();
+
 
 
 </script>
