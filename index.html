@@ -13,7 +13,7 @@
 
 *{
 box-sizing:border-box;
-font-family:Arial, sans-serif;
+font-family:Arial,sans-serif;
 }
 
 body{
@@ -54,20 +54,25 @@ margin-top:15px;
 margin-bottom:6px;
 }
 
-input, textarea{
+input,textarea{
+
 width:100%;
 padding:13px;
 border-radius:10px;
 border:1px solid #ccc;
 font-size:16px;
+
 }
 
 textarea{
+
 height:90px;
 resize:none;
+
 }
 
 .btn{
+
 width:100%;
 padding:14px;
 border:none;
@@ -75,61 +80,81 @@ border-radius:10px;
 font-size:16px;
 font-weight:bold;
 cursor:pointer;
+
 }
 
 .btn:disabled{
+
 opacity:.6;
 cursor:not-allowed;
+
 }
 
 .btn-trocar{
+
 background:#777;
 color:white;
 margin-top:10px;
+
 }
 
 .item{
+
 margin-top:15px;
 padding:15px;
 background:#f4f7fa;
 border-radius:12px;
 border-left:5px solid #003b70;
+
 }
 
 .item-title{
+
 font-weight:bold;
 margin-bottom:10px;
+
 }
 
 .botoes{
+
 display:flex;
 gap:10px;
+
 }
 
 .botoes button{
+
 flex:1;
 padding:12px;
 border:none;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
+
 }
 
 .conforme{
+
 background:#198754;
 color:white;
+
 }
 
 .nao{
+
 background:#dc3545;
 color:white;
+
 }
 
 .selecionado{
+
 outline:4px solid #003b70;
+
 }
 
 .status{
+
 margin-top:20px;
 padding:15px;
 border-radius:10px;
@@ -138,41 +163,33 @@ font-size:18px;
 font-weight:bold;
 background:#d1e7dd;
 color:#0f5132;
+
 }
 
 .salvar{
+
 margin-top:20px;
 background:#003b70;
 color:white;
+
 }
 
 
-/* POPUP */
+/* popup */
 
 .popup{
 
 display:none;
-
 position:fixed;
-
 top:50%;
-
 left:50%;
-
 transform:translate(-50%,-50%);
-
 background:white;
-
 padding:25px;
-
 border-radius:15px;
-
 box-shadow:0 5px 25px rgba(0,0,0,.3);
-
 text-align:center;
-
 width:300px;
-
 z-index:999;
 
 }
@@ -188,15 +205,10 @@ color:#198754;
 .popup button{
 
 padding:12px 25px;
-
 border:none;
-
 border-radius:10px;
-
 background:#003b70;
-
 color:white;
-
 font-weight:bold;
 
 }
@@ -205,23 +217,15 @@ font-weight:bold;
 .fundo-popup{
 
 display:none;
-
 position:fixed;
-
 top:0;
-
 left:0;
-
 width:100%;
-
 height:100%;
-
 background:rgba(0,0,0,.4);
-
 z-index:998;
 
 }
-
 
 </style>
 
@@ -246,10 +250,17 @@ z-index:998;
 
 <label>Colaborador</label>
 
-<input id="colaborador" placeholder="Digite seu nome">
+<input 
+id="colaborador" 
+placeholder="Digite o nome do colaborador"
+autocomplete="name"
+oninput="validarColaborador(this)"
+>
 
 
-<button class="btn btn-trocar" onclick="trocarColaborador()">
+<button 
+class="btn btn-trocar" 
+onclick="trocarColaborador()">
 
 Trocar colaborador
 
@@ -259,8 +270,12 @@ Trocar colaborador
 
 <label>Locomotiva</label>
 
-<input id="locomotiva" placeholder="Digite a locomotiva">
-
+<input 
+id="locomotiva"
+type="number"
+inputmode="numeric"
+placeholder="Digite o número da locomotiva"
+>
 
 
 <h2>Checklist</h2>
@@ -280,13 +295,16 @@ Trocar colaborador
 
 <label>Observação</label>
 
-<textarea id="observacao" placeholder="Digite observações se necessário"></textarea>
+<textarea 
+id="observacao"
+placeholder="Digite observações se necessário">
+</textarea>
 
 
 
 <button 
 id="btnSalvar"
-class="btn salvar" 
+class="btn salvar"
 onclick="salvarChecklist()">
 
 💾 SALVAR CHECKLIST
@@ -301,26 +319,20 @@ onclick="salvarChecklist()">
 
 
 
-<!-- POPUP -->
-
 <div class="fundo-popup" id="fundoPopup"></div>
 
 
 <div class="popup" id="popup">
 
-
 <h2>✅ Enviado!</h2>
 
-
 <p id="textoPopup"></p>
-
 
 <button onclick="fecharPopup()">
 
 OK
 
 </button>
-
 
 </div>
 <script>
@@ -359,6 +371,72 @@ let enviando = false;
 
 
 
+function validarColaborador(campo){
+
+campo.value = campo.value.replace(/[^a-zA-ZÀ-ÿ\s]/g,"");
+
+salvarMemoriaColaborador();
+
+}
+
+
+
+
+function salvarMemoriaColaborador(){
+
+let nome = document.getElementById("colaborador").value.trim();
+
+if(nome){
+
+localStorage.setItem("colaborador",nome);
+
+}
+
+}
+
+
+
+
+function carregarColaborador(){
+
+let nome = localStorage.getItem("colaborador");
+
+if(nome){
+
+document.getElementById("colaborador").value = nome;
+
+}
+
+}
+
+
+
+
+function trocarColaborador(){
+
+let nome = prompt("Digite o novo colaborador");
+
+
+if(nome){
+
+nome = nome.replace(/[^a-zA-ZÀ-ÿ\s]/g,"").trim();
+
+
+if(nome){
+
+document.getElementById("colaborador").value = nome;
+
+localStorage.setItem("colaborador",nome);
+
+}
+
+}
+
+
+}
+
+
+
 
 function carregarChecklist(){
 
@@ -383,6 +461,7 @@ ${item[1]}
 
 
 <button class="conforme"
+
 onclick="marcar('${item[0]}','CONFORME',this)">
 
 ✅ CONFORME
@@ -391,6 +470,7 @@ onclick="marcar('${item[0]}','CONFORME',this)">
 
 
 <button class="nao"
+
 onclick="marcar('${item[0]}','NÃO CONFORME',this)">
 
 ❌ NÃO CONFORME
@@ -409,9 +489,8 @@ onclick="marcar('${item[0]}','NÃO CONFORME',this)">
 
 document.getElementById("lista").innerHTML = html;
 
+
 }
-
-
 
 
 
@@ -421,7 +500,7 @@ function marcar(campo,valor,botao){
 respostas[campo]=valor;
 
 
-let botoes = botao.parentElement.children;
+let botoes=botao.parentElement.children;
 
 
 for(let b of botoes){
@@ -436,6 +515,7 @@ botao.classList.add("selecionado");
 
 atualizarStatus();
 
+
 }
 
 
@@ -444,18 +524,15 @@ atualizarStatus();
 function atualizarStatus(){
 
 
-let pendencia =
-Object.values(respostas)
+let pendencia = Object.values(respostas)
 .includes("NÃO CONFORME");
 
 
-let status =
-document.getElementById("status");
+let status=document.getElementById("status");
 
 
 
 if(pendencia){
-
 
 status.innerHTML="🔴 PENDÊNCIA";
 
@@ -478,20 +555,12 @@ status.style.color="#0f5132";
 
 
 }
-
-
-
-
-
-
 function gerarID(){
-
 
 let loco = document
 .getElementById("locomotiva")
 .value
 .trim();
-
 
 
 let agora = new Date();
@@ -513,95 +582,30 @@ String(agora.getDate())
 
 
 
-let chave =
-"ID_" + loco + "_" + data;
+let chave = "ID_"+loco+"_"+data;
 
 
-
-let numero =
-Number(localStorage.getItem(chave) || 0) + 1;
-
+let numero = Number(localStorage.getItem(chave) || 0) + 1;
 
 
 localStorage.setItem(chave,numero);
 
 
 
-return (
-
-"LOCO"
-
+return "LOCO"
 +
-
 loco
-
 +
-
 "-"
-
 +
-
 data
-
 +
-
 "-"
-
 +
-
-String(numero).padStart(3,"0")
-
-);
+String(numero).padStart(3,"0");
 
 
 }
-
-
-
-
-
-
-function trocarColaborador(){
-
-
-let nome = prompt("Digite o novo colaborador");
-
-
-if(nome){
-
-
-document.getElementById("colaborador").value=nome;
-
-
-localStorage.setItem("colaborador",nome);
-
-
-}
-
-
-}
-
-
-
-
-
-function carregarColaborador(){
-
-
-let nome =
-localStorage.getItem("colaborador");
-
-
-if(nome){
-
-document.getElementById("colaborador").value=nome;
-
-}
-
-
-}
-
-
 
 
 
@@ -633,12 +637,10 @@ status
 
 document.getElementById("popup").style.display="block";
 
-
 document.getElementById("fundoPopup").style.display="block";
 
 
 }
-
 
 
 
@@ -653,7 +655,6 @@ document.getElementById("popup").style.display="none";
 document.getElementById("fundoPopup").style.display="none";
 
 
-
 document.getElementById("locomotiva").focus();
 
 
@@ -662,8 +663,8 @@ document.getElementById("locomotiva").focus();
 
 
 
-async function salvarChecklist(){
 
+async function salvarChecklist(){
 
 
 if(enviando){
@@ -674,8 +675,7 @@ return;
 
 
 
-let botao =
-document.getElementById("btnSalvar");
+let botao=document.getElementById("btnSalvar");
 
 
 
@@ -689,6 +689,8 @@ document.getElementById("colaborador").value.trim();
 
 
 
+
+
 if(!locomotiva){
 
 alert("Informe a locomotiva");
@@ -696,6 +698,19 @@ alert("Informe a locomotiva");
 return;
 
 }
+
+
+
+if(!/^[0-9]+$/.test(locomotiva)){
+
+
+alert("A locomotiva deve conter somente números");
+
+return;
+
+
+}
+
 
 
 
@@ -709,17 +724,27 @@ return;
 
 
 
+if(!/^[A-Za-zÀ-ÿ\s]+$/.test(colaborador)){
+
+
+alert("O colaborador deve conter somente texto");
+
+return;
+
+
+}
+
+
+
+
 
 enviando=true;
 
 
 botao.disabled=true;
 
+
 botao.innerHTML="⏳ ENVIANDO...";
-
-botao.style.pointerEvents="none";
-
-
 
 
 
@@ -728,7 +753,9 @@ itens.forEach(item=>{
 
 if(!respostas[item[0]]){
 
+
 respostas[item[0]]="CONFORME";
+
 
 }
 
@@ -789,7 +816,6 @@ document.getElementById("observacao").value
 
 
 
-
 try{
 
 
@@ -830,7 +856,7 @@ atualizarStatus();
 catch(e){
 
 
-alert("Erro ao salvar checklist");
+alert("Erro ao enviar checklist");
 
 
 }
@@ -846,9 +872,6 @@ enviando=false;
 botao.disabled=false;
 
 
-botao.style.pointerEvents="auto";
-
-
 botao.innerHTML="💾 SALVAR CHECKLIST";
 
 
@@ -857,6 +880,8 @@ botao.innerHTML="💾 SALVAR CHECKLIST";
 
 
 }
+
+
 
 
 carregarChecklist();
@@ -870,3 +895,4 @@ carregarColaborador();
 </body>
 
 </html>
+
