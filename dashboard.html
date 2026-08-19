@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dashboard - Checklist Banheiro</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #eef3f8;
+      color: #1f2937;
+    }
+
+    .topo {
+      background: #003b70;
+      color: white;
+      padding: 24px 18px;
+    }
+
+    .topo-conteudo {
+      max-width: 1180px;
+      margin: auto;
+    }
+
+    .topo h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .topo p {
+      margin: 6px 0 0;
+      opacity: 0.85;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: auto;
+      padding: 22px 15px 40px;
+    }
+
+    .filtros {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .campo label {
+      display: block;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .campo input,
+    .campo select {
+      width: 100%;
+      padding: 11px;
+      border-radius: 8px;
+      border: 1px solid #ccd4dd;
+      font-size: 14px;
+      background: white;
+    }
+
+    .acoes {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      padding: 11px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-azul {
+      background: #003b70;
+      color: white;
+    }
+
+    .btn-cinza {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .card-titulo {
+      font-size: 13px;
+      font-weight: bold;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .card-valor {
+      font-size: 32px;
+      font-weight: 800;
+      color: #003b70;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: #8a94a3;
+      margin-top: 5px;
+    }
+
+    .verde .card-valor {
+      color: #198754;
+    }
+
+    .vermelho .card-valor {
+      color: #dc3545;
+    }
+
+    .laranja .card-valor {
+      color: #d97706;
+    }
+
+    .grid-duplo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .secao {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .secao h2 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      color: #003b70;
+    }
+
+    .secao-descricao {
+      font-size: 13px;
+      color: #7a8492;
+      margin-bottom: 18px;
+    }
+
+    .ranking-item {
+      margin-bottom: 16px;
+    }
+
+    .ranking-cabecalho {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .ranking-nome {
+      font-weight: bold;
+    }
+
+    .ranking-numero {
+      font-weight: bold;
+      color: #003b70;
+    }
+
+    .barra {
+      background: #edf0f3;
+      height: 9px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .barra-preenchida {
+      height: 100%;
+      background: #003b70;
+      border-radius: 20px;
+    }
+
+    .tabela-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th {
+      text-align: left;
+      background: #f4f7fa;
+      color: #52606d;
+      font-size: 13px;
+      padding: 11px;
+    }
+
+    td {
+      padding: 11px;
+      border-bottom: 1px solid #edf0f3;
+      font-size: 14px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .status-conforme {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .status-pendencia {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    .carregando {
+      text-align: center;
+      padding: 50px;
+      color: #6b7280;
+      font-weight: bold;
+    }
+
+    .erro {
+      background: #f8d7da;
+      color: #842029;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .vazio {
+      color: #8a94a3;
+      font-size: 14px;
+    }
+
+    @media(max-width: 850px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-duplo {
+        grid-template-columns: 1fr;
+      }
+
+      .filtros {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width: 520px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .filtros {
+        grid-template-columns: 1fr;
+      }
+
+      .topo h1 {
+        font-size: 21px;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="topo">
+    <div class="topo-conteudo">
+
+      <h1>🚂 Dashboard - Checklist Banheiro</h1>
+
+      <p>
+        Acompanhamento das condições dos banheiros das locomotivas
+      </p>
+
+    </div>
+  </div>
+
+
+  <div class="container">
+
+    <div id="erro" class="erro"></div>
+
+
+    <!-- FILTROS -->
+
+    <div class="filtros">
+
+      <div class="campo">
+        <label>Data inicial</label>
+        <input type="date" id="dataInicial">
+      </div>
+
+      <div class="campo">
+        <label>Data final</label>
+        <input type="date" id="dataFinal">
+      </div>
+
+      <div class="campo">
+        <label>Locomotiva</label>
+        <input
+          type="text"
+          id="filtroLocomotiva"
+          placeholder="Ex: 1304"
+        >
+      </div>
+
+      <div class="acoes">
+
+        <button
+          class="btn-azul"
+          onclick="aplicarFiltros()"
+        >
+          🔍 Filtrar
+        </button>
+
+        <button
+          class="btn-cinza"
+          onclick="limparFiltros()"
+        >
+          Limpar
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div id="carregando" class="carregando">
+
+      ⏳ Carregando dados...
+
+    </div>
+
+
+    <div id="conteudo" style="display:none;">
+
+
+      <!-- INDICADORES -->
+
+      <div class="cards">
+
+        <div class="card">
+
+          <div class="card-titulo">
+            TOTAL DE CHECKLISTS
+          </div>
+
+          <div
+            class="card-valor"
+            id="totalChecklists"
+          >
+            0
+          </div>
+
+          <div class="card-sub">
+            Registros realizados
+          </div>
+
+        </div>
+
+
+        <div class="card verde">
+
+          <div class="card-titulo">
+            CONFORMES
+          </div>
+
+          <div
+            class="card-valor"
+            id="totalConformes"
+          >
+            0
+          </div>
+
+          <div class="card-sub">
+            Checklists sem pendência
+          </div>
+
+        </div>
+
+
+        <div class="card vermelho">
+
+          <div class="card-titulo">
+            PENDÊNCIAS
+          </div>
+
+          <div
+            class="card-valor"
+            id="totalPendencias"
+          >
+            0
+          </div>
+
+          <div class="card-sub">
+            Checklists com não conformidade
+          </div>
+
+        </div>
+
+
+        <div class="card laranja">
+
+          <div class="card-titulo">
+            TAXA DE CONFORMIDADE
+          </div>
+
+          <div
+            class="card-valor"
+            id="taxaConformidade"
+          >
+            0%
+          </div>
+
+          <div class="card-sub">
+            Percentual conforme
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- RANKINGS -->
+
+      <div class="grid-duplo">
+
+
+        <div class="secao">
+
+          <h2>
+            ⚠️ Principais pendências
+          </h2>
+
+          <div class="secao-descricao">
+            Itens com maior quantidade de não conformidades.
+          </div>
+
+          <div id="rankingItens"></div>
+
+        </div>
+
+
+        <div class="secao">
+
+          <h2>
+            🚂 Locomotivas com mais pendências
+          </h2>
+
+          <div class="secao-descricao">
+            Locomotivas com maior quantidade de checklists pendentes.
+          </div>
+
+          <div id="rankingLocomotivas"></div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ÚLTIMOS REGISTROS -->
+
+      <div class="secao">
+
+        <h2>
+          📋 Últimos registros
+        </h2>
+
+        <div class="secao-descricao">
+          Últimos checklists encontrados no período selecionado.
+        </div>
+
+        <div class="tabela-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Data</th>
+
+                <th>Locomotiva</th>
+
+                <th>Colaborador</th>
+
+                <th>Status</th>
+
+                <th>Observação</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="tabelaRegistros"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+<script>
+
+const URL_API =
+"https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
+
+
+const ITENS = [
+
+  {
+    campo:"BanheiroLimpo",
+    nome:"Banheiro limpo"
+  },
+
+  {
+    campo:"BanheiroDrenado",
+    nome:"Banheiro drenado"
+  },
+
+  {
+    campo:"DescargaFuncionando",
+    nome:"Descarga funcionando"
+  },
+
+  {
+    campo:"AguaDisponivel",
+    nome:"Água disponível"
+  },
+
+  {
+    campo:"SaboneteLiquido",
+    nome:"Sabonete líquido"
+  },
+
+  {
+    campo:"PapelHigienico",
+    nome:"Papel higiênico"
+  },
+
+  {
+    campo:"PapelToalha",
+    nome:"Papel toalha"
+  },
+
+  {
+    campo:"Iluminacao",
+    nome:"Iluminação"
+  },
+
+  {
+    campo:"PortaFuncionando",
+    nome:"Porta funcionando"
+  },
+
+  {
+    campo:"CabineLimpa",
+    nome:"Cabine limpa e organizada"
+  }
+
+];
+
+
+let todosRegistros = [];
+
+let registrosFiltrados = [];
+
+
+
+async function carregarDados(){
+
+  document.getElementById("carregando")
+  .style.display="block";
+
+  document.getElementById("conteudo")
+  .style.display="none";
+
+
+  try{
+
+    const resposta =
+    await fetch(URL_API);
+
+
+    if(!resposta.ok){
+
+      throw new Error(
+        "Não foi possível acessar a API."
+      );
+
+    }
+
+
+    const dados =
+    await resposta.json();
+
+
+    todosRegistros =
+    Array.isArray(dados.registros)
+    ? dados.registros
+    : [];
+
+
+    registrosFiltrados =
+    [...todosRegistros];
+
+
+    atualizarDashboard();
+
+
+    document.getElementById("erro")
+    .style.display="none";
+
+
+  }
+
+  catch(erro){
+
+    console.error(erro);
+
+
+    const caixaErro =
+    document.getElementById("erro");
+
+
+    caixaErro.innerHTML =
+    "❌ Erro ao carregar os dados do Dashboard.";
+
+
+    caixaErro.style.display="block";
+
+  }
+
+  finally{
+
+    document.getElementById("carregando")
+    .style.display="none";
+
+
+    document.getElementById("conteudo")
+    .style.display="block";
+
+  }
+
+}
+
+
+
+function converterData(valor){
+
+  if(!valor){
+
+    return null;
+
+  }
+
+
+  const data =
+  new Date(valor);
+
+
+  if(
+    Number.isNaN(
+      data.getTime()
+    )
+  ){
+
+    return null;
+
+  }
+
+
+  return data;
+
+}
+
+
+
+function formatarData(valor){
+
+  const data =
+  converterData(valor);
+
+
+  if(!data){
+
+    return "-";
+
+  }
+
+
+  return data
+  .toLocaleString(
+    "pt-BR",
+    {
+      dateStyle:"short",
+      timeStyle:"short"
+    }
+  );
+
+}
+
+
+
+function normalizar(valor){
+
+  return String(
+    valor || ""
+  )
+  .trim()
+  .toUpperCase();
+
+}
+
+
+
+function aplicarFiltros(){
+
+  const inicial =
+  document
+  .getElementById("dataInicial")
+  .value;
+
+
+  const final =
+  document
+  .getElementById("dataFinal")
+  .value;
+
+
+  const loco =
+  document
+  .getElementById("filtroLocomotiva")
+  .value
+  .trim();
+
+
+  registrosFiltrados =
+  todosRegistros.filter(
+    registro => {
+
+      const data =
+      converterData(
+        registro.dataHora
+      );
+
+
+      if(inicial){
+
+        const inicio =
+        new Date(
+          inicial + "T00:00:00"
+        );
+
+
+        if(
+          !data ||
+          data < inicio
+        ){
+
+          return false;
+
+        }
+
+      }
+
+
+      if(final){
+
+        const fim =
+        new Date(
+          final + "T23:59:59"
+        );
+
+
+        if(
+          !data ||
+          data > fim
+        ){
+
+          return false;
+
+        }
+
+      }
+
+
+      if(
+        loco &&
+        !String(
+          registro.locomotiva || ""
+        ).includes(loco)
+      ){
+
+        return false;
+
+      }
+
+
+      return true;
+
+    }
+  );
+
+
+  atualizarDashboard();
+
+}
+
+
+
+function limparFiltros(){
+
+  document
+  .getElementById("dataInicial")
+  .value="";
+
+
+  document
+  .getElementById("dataFinal")
+  .value="";
+
+
+  document
+  .getElementById("filtroLocomotiva")
+  .value="";
+
+
+  registrosFiltrados =
+  [...todosRegistros];
+
+
+  atualizarDashboard();
+
+}
+
+
+
+function atualizarDashboard(){
+
+  atualizarIndicadores();
+
+  atualizarRankingItens();
+
+  atualizarRankingLocomotivas();
+
+  atualizarTabela();
+
+}
+
+
+
+function atualizarIndicadores(){
+
+  const total =
+  registrosFiltrados.length;
+
+
+  const conformes =
+  registrosFiltrados
+  .filter(
+    r =>
+    normalizar(r.status)
+    ===
+    "CONFORME"
+  )
+  .length;
+
+
+  const pendencias =
+  registrosFiltrados
+  .filter(
+    r =>
+    normalizar(r.status)
+    ===
+    "PENDÊNCIA"
+  )
+  .length;
+
+
+  const taxa =
+  total > 0
+
+  ?
+
+  (
+    conformes /
+    total *
+    100
+  )
+
+  :
+
+  0;
+
+
+  document
+  .getElementById(
+    "totalChecklists"
+  )
+  .innerText =
+  total;
+
+
+  document
+  .getElementById(
+    "totalConformes"
+  )
+  .innerText =
+  conformes;
+
+
+  document
+  .getElementById(
+    "totalPendencias"
+  )
+  .innerText =
+  pendencias;
+
+
+  document
+  .getElementById(
+    "taxaConformidade"
+  )
+  .innerText =
+  taxa.toFixed(1)
+  +
+  "%";
+
+}
+
+
+
+function atualizarRankingItens(){
+
+  const contagem={};
+
+
+  ITENS.forEach(
+    item => {
+
+      contagem[
+        item.campo
+      ]=0;
+
+    }
+  );
+
+
+  registrosFiltrados
+  .forEach(
+    registro => {
+
+      ITENS.forEach(
+        item => {
+
+          if(
+            normalizar(
+              registro[
+                item.campo
+              ]
+            )
+            ===
+            "NÃO CONFORME"
+          ){
+
+            contagem[
+              item.campo
+            ]++;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  const ranking =
+  ITENS
+  .map(
+    item => ({
+
+      nome:item.nome,
+
+      total:
+      contagem[
+        item.campo
+      ]
+
+    })
+  )
+  .filter(
+    item =>
+    item.total > 0
+  )
+  .sort(
+    (a,b) =>
+    b.total-a.total
+  );
+
+
+  const container =
+  document
+  .getElementById(
+    "rankingItens"
+  );
+
+
+  if(
+    ranking.length === 0
+  ){
+
+    container.innerHTML =
+    '<div class="vazio">Nenhuma pendência encontrada.</div>';
+
+    return;
+
+  }
+
+
+  const maior =
+  ranking[0].total;
+
+
+  container.innerHTML =
+  ranking
+  .slice(0,10)
+  .map(
+    item => {
+
+      const percentual =
+      (
+        item.total /
+        maior
+      ) * 100;
+
+
+      return `
+
+      <div class="ranking-item">
+
+        <div class="ranking-cabecalho">
+
+          <div class="ranking-nome">
+            ${item.nome}
+          </div>
+
+          <div class="ranking-numero">
+            ${item.total}
+          </div>
+
+        </div>
+
+        <div class="barra">
+
+          <div
+            class="barra-preenchida"
+            style="width:${percentual}%"
+          >
+          </div>
+
+        </div>
+
+      </div>
+
+      `;
+
+    }
+  )
+  .join("");
+
+}
+
+
+
+function atualizarRankingLocomotivas(){
+
+  const contagem={};
+
+
+  registrosFiltrados
+
+  .filter(
+    r =>
+    normalizar(r.status)
+    ===
+    "PENDÊNCIA"
+  )
+
+  .forEach(
+    registro => {
+
+      const loco =
+      String(
+        registro.locomotiva
+        ||
+        "SEM IDENTIFICAÇÃO"
+      );
+
+
+      contagem[loco] =
+      (
+        contagem[loco]
+        ||
+        0
+      )
+      +
+      1;
+
+    }
+  );
+
+
+  const ranking =
+  Object.entries(
+    contagem
+  )
+  .map(
+    ([loco,total]) => ({
+
+      loco,
+      total
+
+    })
+  )
+  .sort(
+    (a,b) =>
+    b.total-a.total
+  );
+
+
+  const container =
+  document
+  .getElementById(
+    "rankingLocomotivas"
+  );
+
+
+  if(
+    ranking.length === 0
+  ){
+
+    container.innerHTML =
+    '<div class="vazio">Nenhuma locomotiva com pendência.</div>';
+
+    return;
+
+  }
+
+
+  const maior =
+  ranking[0].total;
+
+
+  container.innerHTML =
+  ranking
+  .slice(0,10)
+  .map(
+    item => {
+
+      const percentual =
+      (
+        item.total /
+        maior
+      ) * 100;
+
+
+      return `
+
+      <div class="ranking-item">
+
+        <div class="ranking-cabecalho">
+
+          <div class="ranking-nome">
+            🚂 ${item.loco}
+          </div>
+
+          <div class="ranking-numero">
+            ${item.total}
+          </div>
+
+        </div>
+
+        <div class="barra">
+
+          <div
+            class="barra-preenchida"
+            style="width:${percentual}%"
+          >
+          </div>
+
+        </div>
+
+      </div>
+
+      `;
+
+    }
+  )
+  .join("");
+
+}
+
+
+
+function atualizarTabela(){
+
+  const tabela =
+  document
+  .getElementById(
+    "tabelaRegistros"
+  );
+
+
+  const ordenados =
+  [...registrosFiltrados]
+  .sort(
+    (a,b) => {
+
+      const dataA =
+      converterData(
+        a.dataHora
+      );
+
+
+      const dataB =
+      converterData(
+        b.dataHora
+      );
+
+
+      return (
+        dataB?.getTime()
+        ||
+        0
+      )
+      -
+      (
+        dataA?.getTime()
+        ||
+        0
+      );
+
+    }
+  )
+  .slice(0,20);
+
+
+  if(
+    ordenados.length === 0
+  ){
+
+    tabela.innerHTML = `
+
+      <tr>
+
+        <td colspan="5">
+          Nenhum registro encontrado.
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+
+  tabela.innerHTML =
+  ordenados
+  .map(
+    registro => {
+
+      const pendencia =
+      normalizar(
+        registro.status
+      )
+      ===
+      "PENDÊNCIA";
+
+
+      const classe =
+      pendencia
+
+      ?
+
+      "status-pendencia"
+
+      :
+
+      "status-conforme";
+
+
+      const status =
+      pendencia
+
+      ?
+
+      "🔴 PENDÊNCIA"
+
+      :
+
+      "🟢 CONFORME";
+
+
+      return `
+
+      <tr>
+
+        <td>
+          ${formatarData(
+            registro.dataHora
+          )}
+        </td>
+
+        <td>
+          <b>
+            ${registro.locomotiva || "-"}
+          </b>
+        </td>
+
+        <td>
+          ${registro.colaborador || "-"}
+        </td>
+
+        <td>
+
+          <span
+            class="status ${classe}"
+          >
+            ${status}
+          </span>
+
+        </td>
+
+        <td>
+          ${registro.observacao || "-"}
+        </td>
+
+      </tr>
+
+      `;
+
+    }
+  )
+  .join("");
+
+}
+
+
+
+carregarDados();
+
+</script>
+
+
+</body>
+
+</html>
