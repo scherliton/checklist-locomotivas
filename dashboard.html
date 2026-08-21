@@ -271,7 +271,198 @@
       font-size: 14px;
     }
 
+
+    /* EVOLUÇÃO MENSAL — V2 PREMIUM */
+
+    .bloco-evolucao {
+      margin-bottom: 20px;
+    }
+
+    .titulo-bloco {
+      margin: 0 0 12px;
+      color: #003b70;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .graficos-premium {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .grafico-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+      min-width: 0;
+    }
+
+    .grafico-topo {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .grafico-titulo {
+      margin: 0;
+      color: #003b70;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .grafico-subtitulo {
+      margin-top: 4px;
+      color: #7a8492;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .grafico-legenda {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .legenda-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legenda-cor {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .legenda-azul {
+      background: #0b6db7;
+    }
+
+    .legenda-verde {
+      background: #198754;
+    }
+
+    .legenda-mes-a {
+      background: #003b70;
+    }
+
+    .legenda-mes-b {
+      background: #4f9fd8;
+    }
+
+    .canvas-wrap {
+      width: 100%;
+      height: 280px;
+      position: relative;
+    }
+
+    #graficoEvolucao {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .comparativo-itens {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .comparativo-vazio {
+      color: #8a94a3;
+      font-size: 14px;
+      padding: 22px 0;
+    }
+
+    .comparativo-cabecalho {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.15fr) 1fr;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #edf0f3;
+      color: #7a8492;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    .comparativo-linha {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.15fr) 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .comparativo-nome {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.2;
+    }
+
+    .comparativo-barras {
+      display: grid;
+      gap: 5px;
+    }
+
+    .barra-mes {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .barra-trilho {
+      height: 8px;
+      border-radius: 999px;
+      background: #edf0f3;
+      overflow: hidden;
+    }
+
+    .barra-mes-a,
+    .barra-mes-b {
+      height: 100%;
+      border-radius: 999px;
+      min-width: 0;
+    }
+
+    .barra-mes-a {
+      background: #003b70;
+    }
+
+    .barra-mes-b {
+      background: #4f9fd8;
+    }
+
+    .barra-valor {
+      min-width: 20px;
+      text-align: right;
+      font-size: 11px;
+      font-weight: 800;
+      color: #52606d;
+    }
+
+    .rodape-grafico {
+      margin-top: 12px;
+      color: #8a94a3;
+      font-size: 11px;
+    }
+
     @media(max-width: 850px) {
+      .graficos-premium {
+        grid-template-columns: 1fr;
+      }
+
       .cards {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -342,6 +533,12 @@
           type="text"
           id="filtroLocomotiva"
           placeholder="Ex: 1304"
+          inputmode="numeric"
+          maxlength="4"
+          pattern="[0-9]*"
+          autocomplete="off"
+          oninput="this.value=this.value.replace(/\\D/g,'').slice(0,4)"
+          onkeydown="if(event.key==='Enter'){ event.preventDefault(); aplicarFiltros(); }"
         >
       </div>
 
@@ -456,6 +653,89 @@
           <div class="card-sub">
             Percentual conforme
           </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- EVOLUÇÃO MENSAL — V2 PREMIUM -->
+
+      <div class="bloco-evolucao">
+
+        <h2 class="titulo-bloco">
+          📈 Evolução mensal do checklist
+        </h2>
+
+        <div class="graficos-premium">
+
+
+          <div class="grafico-card">
+
+            <div class="grafico-topo">
+
+              <div>
+                <h3 class="grafico-titulo">
+                  Quantidade de inspeções e conformidade
+                </h3>
+
+                <div class="grafico-subtitulo">
+                  Evolução mensal dos checklists e da taxa de conformidade.
+                </div>
+              </div>
+
+            </div>
+
+            <div class="canvas-wrap">
+              <canvas id="graficoEvolucao"></canvas>
+            </div>
+
+            <div class="grafico-legenda">
+
+              <span class="legenda-item">
+                <span class="legenda-cor legenda-azul"></span>
+                Inspeções
+              </span>
+
+              <span class="legenda-item">
+                <span class="legenda-cor legenda-verde"></span>
+                Taxa de conformidade
+              </span>
+
+            </div>
+
+            <div class="rodape-grafico" id="rodapeEvolucao"></div>
+
+          </div>
+
+
+          <div class="grafico-card">
+
+            <div class="grafico-topo">
+
+              <div>
+                <h3 class="grafico-titulo">
+                  Não conformidades por item
+                </h3>
+
+                <div class="grafico-subtitulo">
+                  Comparação entre os dois meses mais recentes do período.
+                </div>
+              </div>
+
+            </div>
+
+            <div id="comparativoItens" class="comparativo-itens"></div>
+
+            <div class="grafico-legenda" id="legendaComparativo"></div>
+
+            <div class="rodape-grafico">
+              Quanto maior a barra, maior a recorrência do item.
+            </div>
+
+          </div>
+
 
         </div>
 
@@ -616,6 +896,8 @@ let registrosFiltrados = [];
 
 async function carregarDados(){
 
+  let carregouComSucesso = false;
+
   document.getElementById("carregando")
   .style.display="block";
 
@@ -652,7 +934,7 @@ async function carregarDados(){
     [...todosRegistros];
 
 
-    atualizarDashboard();
+    carregouComSucesso = true;
 
 
     document.getElementById("erro")
@@ -686,6 +968,21 @@ async function carregarDados(){
 
     document.getElementById("conteudo")
     .style.display="block";
+
+
+    if(carregouComSucesso){
+
+      requestAnimationFrame(() => {
+
+        requestAnimationFrame(() => {
+
+          atualizarDashboard();
+
+        });
+
+      });
+
+    }
 
   }
 
@@ -887,6 +1184,8 @@ function atualizarDashboard(){
 
   atualizarIndicadores();
 
+  atualizarGraficosPremium();
+
   atualizarRankingItens();
 
   atualizarRankingLocomotivas();
@@ -894,6 +1193,989 @@ function atualizarDashboard(){
   atualizarTabela();
 
 }
+
+
+
+
+function chaveMes(data){
+
+  return (
+    data.getFullYear()
+    +
+    "-"
+    +
+    String(data.getMonth()+1).padStart(2,"0")
+  );
+
+}
+
+
+
+function rotuloMes(chave){
+
+  const partes =
+  String(chave).split("-");
+
+
+  const ano =
+  Number(partes[0]);
+
+
+  const mes =
+  Number(partes[1]) - 1;
+
+
+  const data =
+  new Date(ano,mes,1);
+
+
+  const nome =
+  new Intl.DateTimeFormat(
+    "pt-BR",
+    {
+      month:"short"
+    }
+  )
+  .format(data)
+  .replace(".","");
+
+
+  return (
+    nome.charAt(0).toUpperCase()
+    +
+    nome.slice(1)
+    +
+    "/"
+    +
+    String(ano).slice(-2)
+  );
+
+}
+
+
+
+function montarResumoMensal(){
+
+  const mapa={};
+
+
+  registrosFiltrados.forEach(
+    registro => {
+
+      const data =
+      converterData(
+        registro.dataHora
+      );
+
+
+      if(!data){
+
+        return;
+
+      }
+
+
+      const chave =
+      chaveMes(data);
+
+
+      if(!mapa[chave]){
+
+        mapa[chave]={
+          chave:chave,
+          total:0,
+          conformes:0,
+          pendencias:0
+        };
+
+      }
+
+
+      mapa[chave].total++;
+
+
+      if(
+        normalizar(registro.status)
+        ===
+        "CONFORME"
+      ){
+
+        mapa[chave].conformes++;
+
+      }
+
+
+      if(
+        normalizar(registro.status)
+        ===
+        "PENDÊNCIA"
+      ){
+
+        mapa[chave].pendencias++;
+
+      }
+
+    }
+  );
+
+
+  return Object
+  .values(mapa)
+  .sort(
+    (a,b) =>
+    a.chave.localeCompare(b.chave)
+  )
+  .map(
+    item => ({
+
+      ...item,
+
+      taxa:
+      item.total > 0
+      ?
+      (
+        item.conformes /
+        item.total *
+        100
+      )
+      :
+      0
+
+    })
+  );
+
+}
+
+
+
+function atualizarGraficosPremium(){
+
+  const resumo =
+  montarResumoMensal();
+
+
+  desenharGraficoEvolucao(
+    resumo.slice(-6)
+  );
+
+
+  atualizarComparativoItens(
+    resumo
+  );
+
+}
+
+
+
+function desenharGraficoEvolucao(dados){
+
+  const canvas =
+  document
+  .getElementById(
+    "graficoEvolucao"
+  );
+
+
+  const rodape =
+  document
+  .getElementById(
+    "rodapeEvolucao"
+  );
+
+
+  if(!canvas){
+
+    return;
+
+  }
+
+
+  const contexto =
+  canvas.getContext("2d");
+
+
+  const larguraCss =
+  canvas.parentElement.clientWidth;
+
+
+  const alturaCss =
+  canvas.parentElement.clientHeight;
+
+
+  const dpr =
+  window.devicePixelRatio || 1;
+
+
+  canvas.width =
+  Math.round(
+    larguraCss * dpr
+  );
+
+
+  canvas.height =
+  Math.round(
+    alturaCss * dpr
+  );
+
+
+  canvas.style.width =
+  larguraCss + "px";
+
+
+  canvas.style.height =
+  alturaCss + "px";
+
+
+  contexto.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+
+  contexto.clearRect(
+    0,
+    0,
+    larguraCss,
+    alturaCss
+  );
+
+
+  if(dados.length === 0){
+
+    contexto.fillStyle =
+    "#8a94a3";
+
+
+    contexto.font =
+    "14px Arial";
+
+
+    contexto.textAlign =
+    "center";
+
+
+    contexto.fillText(
+      "Nenhum dado no período selecionado.",
+      larguraCss / 2,
+      alturaCss / 2
+    );
+
+
+    rodape.innerText="";
+
+    return;
+
+  }
+
+
+  const margem={
+    esquerda:42,
+    direita:18,
+    topo:18,
+    baixo:42
+  };
+
+
+  const larguraGrafico =
+  larguraCss
+  -
+  margem.esquerda
+  -
+  margem.direita;
+
+
+  const alturaGrafico =
+  alturaCss
+  -
+  margem.topo
+  -
+  margem.baixo;
+
+
+  const maxTotal =
+  Math.max(
+    ...dados.map(
+      item => item.total
+    ),
+    1
+  );
+
+
+  const topoEscala =
+  Math.max(
+    5,
+    Math.ceil(
+      maxTotal / 5
+    ) * 5
+  );
+
+
+  contexto.font =
+  "11px Arial";
+
+
+  contexto.textBaseline =
+  "middle";
+
+
+  contexto.strokeStyle =
+  "#e6ebf0";
+
+
+  contexto.lineWidth=1;
+
+
+  contexto.fillStyle =
+  "#7a8492";
+
+
+  contexto.textAlign =
+  "right";
+
+
+  for(
+    let i=0;
+    i<=4;
+    i++
+  ){
+
+    const valor =
+    topoEscala
+    -
+    (
+      topoEscala / 4 * i
+    );
+
+
+    const y =
+    margem.topo
+    +
+    (
+      alturaGrafico / 4 * i
+    );
+
+
+    contexto.beginPath();
+
+    contexto.moveTo(
+      margem.esquerda,
+      y
+    );
+
+    contexto.lineTo(
+      margem.esquerda
+      +
+      larguraGrafico,
+      y
+    );
+
+    contexto.stroke();
+
+
+    contexto.fillText(
+      String(
+        Math.round(valor)
+      ),
+      margem.esquerda - 8,
+      y
+    );
+
+  }
+
+
+  const larguraGrupo =
+  larguraGrafico /
+  dados.length;
+
+
+  const larguraBarra =
+  Math.min(
+    42,
+    larguraGrupo * .44
+  );
+
+
+  const pontos=[];
+
+
+  dados.forEach(
+    (item,index) => {
+
+      const centroX =
+      margem.esquerda
+      +
+      larguraGrupo * index
+      +
+      larguraGrupo / 2;
+
+
+      const alturaBarra =
+      (
+        item.total /
+        topoEscala
+      )
+      *
+      alturaGrafico;
+
+
+      const yBarra =
+      margem.topo
+      +
+      alturaGrafico
+      -
+      alturaBarra;
+
+
+      contexto.fillStyle =
+      "#0b6db7";
+
+
+      contexto.beginPath();
+
+      if(contexto.roundRect){
+
+        contexto.roundRect(
+          centroX
+          -
+          larguraBarra / 2,
+          yBarra,
+          larguraBarra,
+          alturaBarra,
+          6
+        );
+
+      }else{
+
+        contexto.rect(
+          centroX
+          -
+          larguraBarra / 2,
+          yBarra,
+          larguraBarra,
+          alturaBarra
+        );
+
+      }
+
+      contexto.fill();
+
+
+      contexto.fillStyle =
+      "#003b70";
+
+
+      contexto.font =
+      "bold 11px Arial";
+
+
+      contexto.textAlign =
+      "center";
+
+
+      contexto.textBaseline =
+      "bottom";
+
+
+      contexto.fillText(
+        String(item.total),
+        centroX,
+        Math.max(
+          margem.topo + 10,
+          yBarra - 5
+        )
+      );
+
+
+      contexto.fillStyle =
+      "#6b7280";
+
+
+      contexto.font =
+      "11px Arial";
+
+
+      contexto.textBaseline =
+      "top";
+
+
+      contexto.fillText(
+        rotuloMes(
+          item.chave
+        ),
+        centroX,
+        margem.topo
+        +
+        alturaGrafico
+        +
+        12
+      );
+
+
+      const yTaxa =
+      margem.topo
+      +
+      alturaGrafico
+      -
+      (
+        item.taxa /
+        100
+        *
+        alturaGrafico
+      );
+
+
+      pontos.push({
+        x:centroX,
+        y:yTaxa,
+        taxa:item.taxa
+      });
+
+    }
+  );
+
+
+  if(pontos.length > 1){
+
+    contexto.strokeStyle =
+    "#198754";
+
+
+    contexto.lineWidth=3;
+
+
+    contexto.beginPath();
+
+
+    pontos.forEach(
+      (ponto,index) => {
+
+        if(index === 0){
+
+          contexto.moveTo(
+            ponto.x,
+            ponto.y
+          );
+
+        }else{
+
+          contexto.lineTo(
+            ponto.x,
+            ponto.y
+          );
+
+        }
+
+      }
+    );
+
+
+    contexto.stroke();
+
+  }
+
+
+  pontos.forEach(
+    ponto => {
+
+      contexto.fillStyle =
+      "#198754";
+
+
+      contexto.beginPath();
+
+      contexto.arc(
+        ponto.x,
+        ponto.y,
+        4,
+        0,
+        Math.PI * 2
+      );
+
+      contexto.fill();
+
+
+      contexto.font =
+      "bold 10px Arial";
+
+
+      contexto.textAlign =
+      "center";
+
+
+      contexto.textBaseline =
+      "bottom";
+
+
+      contexto.fillText(
+        ponto.taxa.toFixed(0)
+        +
+        "%",
+        ponto.x,
+        ponto.y - 7
+      );
+
+    }
+  );
+
+
+  const primeiro =
+  dados[0];
+
+
+  const ultimo =
+  dados[dados.length-1];
+
+
+  if(
+    primeiro
+    &&
+    ultimo
+    &&
+    dados.length > 1
+  ){
+
+    const diferenca =
+    ultimo.taxa
+    -
+    primeiro.taxa;
+
+
+    const sinal =
+    diferenca > 0
+    ?
+    "+"
+    :
+    "";
+
+
+    rodape.innerText =
+    "Variação da conformidade no período: "
+    +
+    sinal
+    +
+    diferenca.toFixed(1)
+    +
+    " p.p.";
+
+  }else{
+
+    rodape.innerText =
+    "Taxa de conformidade do mês: "
+    +
+    ultimo.taxa.toFixed(1)
+    +
+    "%.";
+
+  }
+
+}
+
+
+
+function atualizarComparativoItens(resumoMensal){
+
+  const container =
+  document
+  .getElementById(
+    "comparativoItens"
+  );
+
+
+  const legenda =
+  document
+  .getElementById(
+    "legendaComparativo"
+  );
+
+
+  if(!container){
+
+    return;
+
+  }
+
+
+  if(resumoMensal.length === 0){
+
+    container.innerHTML =
+    '<div class="comparativo-vazio">Nenhum dado no período selecionado.</div>';
+
+
+    legenda.innerHTML="";
+
+    return;
+
+  }
+
+
+  const meses =
+  resumoMensal
+  .slice(-2)
+  .map(
+    item => item.chave
+  );
+
+
+  const mesA =
+  meses.length === 2
+  ?
+  meses[0]
+  :
+  null;
+
+
+  const mesB =
+  meses[
+    meses.length-1
+  ];
+
+
+  const contagem={};
+
+
+  ITENS.forEach(
+    item => {
+
+      contagem[item.campo]={
+        nome:item.nome,
+        a:0,
+        b:0
+      };
+
+    }
+  );
+
+
+  registrosFiltrados.forEach(
+    registro => {
+
+      const data =
+      converterData(
+        registro.dataHora
+      );
+
+
+      if(!data){
+
+        return;
+
+      }
+
+
+      const mes =
+      chaveMes(data);
+
+
+      ITENS.forEach(
+        item => {
+
+          if(
+            normalizar(
+              registro[
+                item.campo
+              ]
+            )
+            !==
+            "NÃO CONFORME"
+          ){
+
+            return;
+
+          }
+
+
+          if(
+            mesA
+            &&
+            mes === mesA
+          ){
+
+            contagem[
+              item.campo
+            ].a++;
+
+          }
+
+
+          if(
+            mes === mesB
+          ){
+
+            contagem[
+              item.campo
+            ].b++;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  const linhas =
+  Object
+  .values(contagem)
+  .sort(
+    (a,b) =>
+    (
+      b.a + b.b
+    )
+    -
+    (
+      a.a + a.b
+    )
+  );
+
+
+  const maior =
+  Math.max(
+    ...linhas.map(
+      item =>
+      Math.max(
+        item.a,
+        item.b
+      )
+    ),
+    1
+  );
+
+
+  container.innerHTML = `
+
+    <div class="comparativo-cabecalho">
+
+      <div>Item</div>
+
+      <div>Quantidade</div>
+
+    </div>
+
+    ${
+      linhas
+      .map(
+        item => {
+
+          const larguraA =
+          item.a / maior * 100;
+
+
+          const larguraB =
+          item.b / maior * 100;
+
+
+          return `
+
+            <div class="comparativo-linha">
+
+              <div class="comparativo-nome">
+                ${item.nome}
+              </div>
+
+              <div class="comparativo-barras">
+
+                ${
+                  mesA
+                  ?
+                  `
+                  <div class="barra-mes">
+
+                    <div class="barra-trilho">
+                      <div
+                        class="barra-mes-a"
+                        style="width:${larguraA}%"
+                      ></div>
+                    </div>
+
+                    <div class="barra-valor">
+                      ${item.a}
+                    </div>
+
+                  </div>
+                  `
+                  :
+                  ""
+                }
+
+                <div class="barra-mes">
+
+                  <div class="barra-trilho">
+                    <div
+                      class="barra-mes-b"
+                      style="width:${larguraB}%"
+                    ></div>
+                  </div>
+
+                  <div class="barra-valor">
+                    ${item.b}
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      )
+      .join("")
+    }
+
+  `;
+
+
+  legenda.innerHTML = `
+
+    ${
+      mesA
+      ?
+      `
+      <span class="legenda-item">
+        <span class="legenda-cor legenda-mes-a"></span>
+        ${rotuloMes(mesA)}
+      </span>
+      `
+      :
+      ""
+    }
+
+    <span class="legenda-item">
+      <span class="legenda-cor legenda-mes-b"></span>
+      ${rotuloMes(mesB)}
+    </span>
+
+  `;
+
+}
+
+
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    if(
+      registrosFiltrados.length
+      ||
+      todosRegistros.length
+    ){
+
+      desenharGraficoEvolucao(
+        montarResumoMensal()
+        .slice(-6)
+      );
+
+    }
+
+  }
+);
 
 
 
