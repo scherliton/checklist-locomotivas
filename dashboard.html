@@ -361,7 +361,7 @@
 
     .canvas-wrap {
       width: 100%;
-      height: 280px;
+      height: 330px;
       position: relative;
     }
 
@@ -457,6 +457,72 @@
       color: #8a94a3;
       font-size: 11px;
     }
+
+    #rodapeEvolucao {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border: 1px solid #b8e0c8;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #eefaf3, #f8fcfa);
+      color: #147a43;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    #rodapeEvolucao strong {
+      color: #087a3a;
+      font-size: 15px;
+    }
+
+    #rodapeEvolucao .variacao-linha {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    #rodapeEvolucao .variacao-icone {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    #rodapeEvolucao .variacao-badge {
+      margin-left: auto;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #dff4e7;
+      color: #087a3a;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    #rodapeEvolucao .variacao-badge.queda {
+      background: #fde8e8;
+      color: #b42318;
+    }
+
+    #rodapeEvolucao .variacao-badge.estavel {
+      background: #eef1f4;
+      color: #5b6573;
+    }
+
+    .nota-pp {
+      margin-top: 9px;
+      color: #8a94a3;
+      font-size: 10.5px;
+      line-height: 1.35;
+    }
+
+    @media(max-width: 520px) {
+      .canvas-wrap {
+        height: 300px;
+      }
+
+      #rodapeEvolucao .variacao-badge {
+        margin-left: 0;
+      }
+    }
+
 
     @media(max-width: 850px) {
       .graficos-premium {
@@ -706,6 +772,10 @@
             </div>
 
             <div class="rodape-grafico" id="rodapeEvolucao"></div>
+
+            <div class="nota-pp">
+              ℹ️ p.p. = pontos percentuais. A taxa de conformidade compara o primeiro e o último mês do período selecionado.
+            </div>
 
           </div>
 
@@ -1370,23 +1440,15 @@ function atualizarGraficosPremium(){
 function desenharGraficoEvolucao(dados){
 
   const canvas =
-  document
-  .getElementById(
-    "graficoEvolucao"
-  );
+  document.getElementById("graficoEvolucao");
 
 
   const rodape =
-  document
-  .getElementById(
-    "rodapeEvolucao"
-  );
+  document.getElementById("rodapeEvolucao");
 
 
   if(!canvas){
-
     return;
-
   }
 
 
@@ -1395,11 +1457,17 @@ function desenharGraficoEvolucao(dados){
 
 
   const larguraCss =
-  canvas.parentElement.clientWidth;
+  Math.max(
+    1,
+    canvas.parentElement.clientWidth
+  );
 
 
   const alturaCss =
-  canvas.parentElement.clientHeight;
+  Math.max(
+    1,
+    canvas.parentElement.clientHeight
+  );
 
 
   const dpr =
@@ -1465,18 +1533,29 @@ function desenharGraficoEvolucao(dados){
     );
 
 
-    rodape.innerText="";
+    rodape.innerHTML="";
 
     return;
 
   }
 
 
+  const compacto =
+  larguraCss < 520;
+
+
   const margem={
-    esquerda:42,
-    direita:18,
-    topo:18,
-    baixo:42
+    esquerda:
+    compacto ? 42 : 48,
+
+    direita:
+    compacto ? 42 : 52,
+
+    topo:
+    compacto ? 42 : 46,
+
+    baixo:
+    44
   };
 
 
@@ -1505,51 +1584,72 @@ function desenharGraficoEvolucao(dados){
   );
 
 
+  const passoBase =
+  maxTotal <= 25
+  ?
+  5
+  :
+  maxTotal <= 100
+  ?
+  20
+  :
+  25;
+
+
   const topoEscala =
-  Math.max(
-    5,
-    Math.ceil(
-      maxTotal / 5
-    ) * 5
-  );
+  Math.ceil(
+    maxTotal /
+    passoBase
+  )
+  *
+  passoBase;
 
 
+  // títulos dos dois eixos
   contexto.font =
-  "11px Arial";
+  "bold 10px Arial";
 
 
   contexto.textBaseline =
   "middle";
 
 
-  contexto.strokeStyle =
-  "#e6ebf0";
+  contexto.fillStyle =
+  "#0b63b6";
 
 
-  contexto.lineWidth=1;
+  contexto.textAlign =
+  "left";
+
+
+  contexto.fillText(
+    "INSPEÇÕES",
+    margem.esquerda,
+    14
+  );
 
 
   contexto.fillStyle =
-  "#7a8492";
+  "#078f45";
 
 
   contexto.textAlign =
   "right";
 
 
+  contexto.fillText(
+    "CONFORMIDADE (%)",
+    larguraCss - margem.direita,
+    14
+  );
+
+
+  // grade + eixos
   for(
     let i=0;
     i<=4;
     i++
   ){
-
-    const valor =
-    topoEscala
-    -
-    (
-      topoEscala / 4 * i
-    );
-
 
     const y =
     margem.topo
@@ -1559,28 +1659,104 @@ function desenharGraficoEvolucao(dados){
     );
 
 
+    const valorInspecoes =
+    topoEscala
+    -
+    (
+      topoEscala / 4 * i
+    );
+
+
+    const valorTaxa =
+    100
+    -
+    (
+      25 * i
+    );
+
+
+    contexto.save();
+
+
+    contexto.setLineDash(
+      i === 4
+      ?
+      []
+      :
+      [4,5]
+    );
+
+
+    contexto.strokeStyle =
+    i === 4
+    ?
+    "#d7dee7"
+    :
+    "#e3e9ef";
+
+
+    contexto.lineWidth=1;
+
+
     contexto.beginPath();
+
 
     contexto.moveTo(
       margem.esquerda,
       y
     );
 
+
     contexto.lineTo(
-      margem.esquerda
-      +
-      larguraGrafico,
+      larguraCss - margem.direita,
       y
     );
+
 
     contexto.stroke();
 
 
+    contexto.restore();
+
+
+    contexto.font =
+    "11px Arial";
+
+
+    contexto.textBaseline =
+    "middle";
+
+
+    contexto.fillStyle =
+    "#748195";
+
+
+    contexto.textAlign =
+    "right";
+
+
     contexto.fillText(
       String(
-        Math.round(valor)
+        Math.round(
+          valorInspecoes
+        )
       ),
       margem.esquerda - 8,
+      y
+    );
+
+
+    contexto.fillStyle =
+    "#0b8f48";
+
+
+    contexto.textAlign =
+    "left";
+
+
+    contexto.fillText(
+      valorTaxa + "%",
+      larguraCss - margem.direita + 8,
       y
     );
 
@@ -1594,8 +1770,8 @@ function desenharGraficoEvolucao(dados){
 
   const larguraBarra =
   Math.min(
-    42,
-    larguraGrupo * .44
+    compacto ? 38 : 54,
+    larguraGrupo * .34
   );
 
 
@@ -1630,11 +1806,44 @@ function desenharGraficoEvolucao(dados){
       alturaBarra;
 
 
+      // sombra da barra
+      contexto.save();
+
+      contexto.shadowColor =
+      "rgba(0,59,112,.12)";
+
+      contexto.shadowBlur=8;
+
+      contexto.shadowOffsetY=3;
+
+
+      const gradiente =
+      contexto.createLinearGradient(
+        0,
+        yBarra,
+        0,
+        margem.topo + alturaGrafico
+      );
+
+
+      gradiente.addColorStop(
+        0,
+        "#1682cf"
+      );
+
+
+      gradiente.addColorStop(
+        1,
+        "#0a67ad"
+      );
+
+
       contexto.fillStyle =
-      "#0b6db7";
+      gradiente;
 
 
       contexto.beginPath();
+
 
       if(contexto.roundRect){
 
@@ -1645,7 +1854,7 @@ function desenharGraficoEvolucao(dados){
           yBarra,
           larguraBarra,
           alturaBarra,
-          6
+          [8,8,4,4]
         );
 
       }else{
@@ -1661,15 +1870,20 @@ function desenharGraficoEvolucao(dados){
 
       }
 
+
       contexto.fill();
 
 
+      contexto.restore();
+
+
+      // número das inspeções
       contexto.fillStyle =
       "#003b70";
 
 
       contexto.font =
-      "bold 11px Arial";
+      "bold 12px Arial";
 
 
       contexto.textAlign =
@@ -1684,14 +1898,15 @@ function desenharGraficoEvolucao(dados){
         String(item.total),
         centroX,
         Math.max(
-          margem.topo + 10,
-          yBarra - 5
+          margem.topo + 12,
+          yBarra - 7
         )
       );
 
 
+      // mês
       contexto.fillStyle =
-      "#6b7280";
+      "#657286";
 
 
       contexto.font =
@@ -1715,6 +1930,7 @@ function desenharGraficoEvolucao(dados){
       );
 
 
+      // posição da taxa em escala própria (0 a 100)
       const yTaxa =
       margem.topo
       +
@@ -1731,20 +1947,41 @@ function desenharGraficoEvolucao(dados){
       pontos.push({
         x:centroX,
         y:yTaxa,
-        taxa:item.taxa
+        taxa:item.taxa,
+        indice:index
       });
 
     }
   );
 
 
+  // linha da conformidade
   if(pontos.length > 1){
 
+    contexto.save();
+
+
     contexto.strokeStyle =
-    "#008f4c";
+    "#069447";
 
 
-    contexto.lineWidth=5;
+    contexto.lineWidth =
+    compacto ? 4 : 5;
+
+
+    contexto.lineCap =
+    "round";
+
+
+    contexto.lineJoin =
+    "round";
+
+
+    contexto.shadowColor =
+    "rgba(6,148,71,.15)";
+
+
+    contexto.shadowBlur=5;
 
 
     contexto.beginPath();
@@ -1775,18 +2012,32 @@ function desenharGraficoEvolucao(dados){
 
     contexto.stroke();
 
+
+    contexto.restore();
+
   }
 
 
+  // marcadores e percentuais
   pontos.forEach(
-    ponto => {
+    (ponto,index) => {
 
-      // círculo branco externo
+      contexto.save();
+
+
+      contexto.shadowColor =
+      "rgba(0,0,0,.12)";
+
+
+      contexto.shadowBlur=5;
+
+
       contexto.fillStyle =
       "#ffffff";
 
 
       contexto.beginPath();
+
 
       contexto.arc(
         ponto.x,
@@ -1796,50 +2047,101 @@ function desenharGraficoEvolucao(dados){
         Math.PI * 2
       );
 
+
       contexto.fill();
 
 
-      // círculo verde interno
+      contexto.shadowColor =
+      "transparent";
+
+
       contexto.fillStyle =
-      "#008f4c";
+      "#069447";
 
 
       contexto.beginPath();
 
+
       contexto.arc(
         ponto.x,
         ponto.y,
-        5,
+        4.5,
         0,
         Math.PI * 2
       );
 
+
       contexto.fill();
 
 
+      contexto.restore();
+
+
       contexto.fillStyle =
-      "#007a40";
+      "#067a3c";
 
 
       contexto.font =
       "bold 13px Arial";
 
 
-      contexto.textAlign =
-      "center";
-
-
       contexto.textBaseline =
       "bottom";
 
 
-      contexto.fillText(
-        ponto.taxa.toFixed(0)
-        +
-        "%",
-        ponto.x,
-        ponto.y - 7
-      );
+      // primeiro valor vai à esquerda; último à direita.
+      // evita sobreposição com o topo da barra.
+      if(
+        pontos.length > 1
+        &&
+        index === 0
+      ){
+
+        contexto.textAlign =
+        "right";
+
+
+        contexto.fillText(
+          ponto.taxa.toFixed(0)
+          +
+          "%",
+          ponto.x - 10,
+          ponto.y - 8
+        );
+
+      }else if(
+        pontos.length > 1
+        &&
+        index === pontos.length-1
+      ){
+
+        contexto.textAlign =
+        "left";
+
+
+        contexto.fillText(
+          ponto.taxa.toFixed(0)
+          +
+          "%",
+          ponto.x + 10,
+          ponto.y - 8
+        );
+
+      }else{
+
+        contexto.textAlign =
+        "center";
+
+
+        contexto.fillText(
+          ponto.taxa.toFixed(0)
+          +
+          "%",
+          ponto.x,
+          ponto.y - 9
+        );
+
+      }
 
     }
   );
@@ -1875,27 +2177,88 @@ function desenharGraficoEvolucao(dados){
     "";
 
 
-    rodape.innerText =
-    "Variação da conformidade no período: "
-    +
-    sinal
-    +
-    diferenca.toFixed(1)
-    +
-    " p.p.";
+    const classe =
+    diferenca > 0
+    ?
+    ""
+    :
+    diferenca < 0
+    ?
+    "queda"
+    :
+    "estavel";
+
+
+    const badge =
+    diferenca > 0
+    ?
+    "↗ Melhora"
+    :
+    diferenca < 0
+    ?
+    "↘ Queda"
+    :
+    "→ Estável";
+
+
+    rodape.innerHTML = `
+
+      <div class="variacao-linha">
+
+        <span class="variacao-icone">
+          ${
+            diferenca > 0
+            ?
+            "↗"
+            :
+            diferenca < 0
+            ?
+            "↘"
+            :
+            "→"
+          }
+        </span>
+
+        <span>
+          Variação da conformidade no período:
+          <strong>
+            ${sinal}${diferenca.toFixed(1)} p.p.
+          </strong>
+        </span>
+
+        <span class="variacao-badge ${classe}">
+          ${badge}
+        </span>
+
+      </div>
+
+    `;
 
   }else{
 
-    rodape.innerText =
-    "Taxa de conformidade do mês: "
-    +
-    ultimo.taxa.toFixed(1)
-    +
-    "%.";
+    rodape.innerHTML = `
+
+      <div class="variacao-linha">
+
+        <span class="variacao-icone">
+          ✓
+        </span>
+
+        <span>
+          Taxa de conformidade do mês:
+          <strong>
+            ${ultimo.taxa.toFixed(1)}%
+          </strong>
+        </span>
+
+      </div>
+
+    `;
 
   }
 
 }
+
 
 
 
