@@ -1741,10 +1741,10 @@ function desenharGraficoEvolucao(dados){
   if(pontos.length > 1){
 
     contexto.strokeStyle =
-    "#198754";
+    "#008f4c";
 
 
-    contexto.lineWidth=3;
+    contexto.lineWidth=5;
 
 
     contexto.beginPath();
@@ -1781,8 +1781,9 @@ function desenharGraficoEvolucao(dados){
   pontos.forEach(
     ponto => {
 
+      // círculo branco externo
       contexto.fillStyle =
-      "#198754";
+      "#ffffff";
 
 
       contexto.beginPath();
@@ -1790,7 +1791,7 @@ function desenharGraficoEvolucao(dados){
       contexto.arc(
         ponto.x,
         ponto.y,
-        4,
+        8,
         0,
         Math.PI * 2
       );
@@ -1798,8 +1799,30 @@ function desenharGraficoEvolucao(dados){
       contexto.fill();
 
 
+      // círculo verde interno
+      contexto.fillStyle =
+      "#008f4c";
+
+
+      contexto.beginPath();
+
+      contexto.arc(
+        ponto.x,
+        ponto.y,
+        5,
+        0,
+        Math.PI * 2
+      );
+
+      contexto.fill();
+
+
+      contexto.fillStyle =
+      "#007a40";
+
+
       contexto.font =
-      "bold 10px Arial";
+      "bold 13px Arial";
 
 
       contexto.textAlign =
