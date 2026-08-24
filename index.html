@@ -227,6 +227,61 @@ z-index:998;
 
 }
 
+
+/* OFFLINE / SINCRONIZAÇÃO */
+
+.conexao-box{
+margin-top:14px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding:10px 12px;
+border-radius:10px;
+background:#f4f7fa;
+font-size:13px;
+font-weight:bold;
+color:#52606d;
+}
+
+.conexao-status{
+display:inline-flex;
+align-items:center;
+gap:7px;
+}
+
+.conexao-bolinha{
+width:9px;
+height:9px;
+border-radius:50%;
+background:#198754;
+}
+
+.conexao-offline .conexao-bolinha{
+background:#d97706;
+}
+
+.conexao-sync .conexao-bolinha{
+background:#0d6efd;
+}
+
+.pendentes-badge{
+font-weight:normal;
+color:#6b7280;
+font-size:12px;
+}
+
+.btn-sync{
+margin-top:10px;
+background:#0d6efd;
+color:white;
+display:none;
+}
+
+.popup.offline h2{
+color:#d97706;
+}
+
 </style>
 
 </head>
@@ -246,6 +301,36 @@ z-index:998;
 
 
 <div class="card">
+
+<div id="conexaoBox" class="conexao-box">
+
+<div class="conexao-status">
+
+<span class="conexao-bolinha"></span>
+
+<span id="textoConexao">🟢 Online</span>
+
+</div>
+
+<div id="pendentesBadge" class="pendentes-badge">
+
+0 pendentes
+
+</div>
+
+</div>
+
+
+<button
+id="btnSincronizar"
+class="btn btn-sync"
+onclick="sincronizarPendentes()">
+
+🔄 SINCRONIZAR PENDENTES
+
+</button>
+
+
 
 
 <label>Colaborador</label>
@@ -324,7 +409,7 @@ onclick="salvarChecklist()">
 
 <div class="popup" id="popup">
 
-<h2>✅ Enviado!</h2>
+<h2 id="tituloPopup">✅ Enviado!</h2>
 
 <p id="textoPopup"></p>
 
@@ -368,6 +453,440 @@ const itens = [
 let respostas = {};
 
 let enviando = false;
+
+const CHAVE_PENDENTES = "checklistPendentesV2";
+
+let sincronizando = false;
+
+
+
+
+function obterPendentes(){
+
+try{
+
+const lista =
+JSON.parse(
+localStorage.getItem(CHAVE_PENDENTES)
+||
+"[]"
+);
+
+return Array.isArray(lista)
+?
+lista
+:
+[];
+
+}
+catch(e){
+
+return [];
+
+}
+
+}
+
+
+
+
+function salvarPendentes(lista){
+
+localStorage.setItem(
+CHAVE_PENDENTES,
+JSON.stringify(lista)
+);
+
+atualizarStatusConexao();
+
+}
+
+
+
+
+function adicionarPendente(dados){
+
+const lista =
+obterPendentes();
+
+
+if(
+!lista.some(
+item => item.id === dados.id
+)
+){
+
+lista.push({
+...dados,
+_salvoEm:new Date().toISOString()
+});
+
+salvarPendentes(lista);
+
+}
+
+}
+
+
+
+
+function atualizarStatusConexao(){
+
+const box =
+document.getElementById("conexaoBox");
+
+const texto =
+document.getElementById("textoConexao");
+
+const badge =
+document.getElementById("pendentesBadge");
+
+const btn =
+document.getElementById("btnSincronizar");
+
+
+if(
+!box
+||
+!texto
+||
+!badge
+||
+!btn
+){
+
+return;
+
+}
+
+
+const pendentes =
+obterPendentes();
+
+
+badge.innerText =
+
+pendentes.length === 1
+
+?
+
+"1 pendente"
+
+:
+
+`${pendentes.length} pendentes`;
+
+
+box.classList.remove(
+"conexao-offline",
+"conexao-sync"
+);
+
+
+if(sincronizando){
+
+box.classList.add(
+"conexao-sync"
+);
+
+texto.innerText =
+"🔄 Sincronizando...";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+if(navigator.onLine){
+
+texto.innerText =
+"🟢 Online";
+
+btn.style.display =
+
+pendentes.length > 0
+
+?
+
+"block"
+
+:
+
+"none";
+
+}
+else{
+
+box.classList.add(
+"conexao-offline"
+);
+
+texto.innerText =
+"🟠 Offline";
+
+btn.style.display =
+"none";
+
+}
+
+}
+
+
+
+
+function limparFormularioDepoisDeSalvar(){
+
+document.getElementById(
+"locomotiva"
+).value="";
+
+
+document.getElementById(
+"observacao"
+).value="";
+
+
+respostas={};
+
+
+carregarChecklist();
+
+
+atualizarStatus();
+
+}
+
+
+
+
+function mostrarPopupOffline(status,id){
+
+const popup =
+document.getElementById("popup");
+
+const titulo =
+document.getElementById("tituloPopup");
+
+
+popup.classList.add(
+"offline"
+);
+
+
+titulo.innerHTML =
+"📱 Salvo no aparelho";
+
+
+document.getElementById(
+"textoPopup"
+).innerHTML =
+
+"Sem conexão no momento.<br><br>"
+
++
+
+"O checklist foi salvo neste aparelho e será sincronizado quando a internet voltar.<br><br>ID:<br><b>"
+
++
+
+id
+
++
+
+"</b><br><br>Status:<br><b>"
+
++
+
+status
+
++
+
+"</b>";
+
+
+document.getElementById(
+"popup"
+).style.display="block";
+
+
+document.getElementById(
+"fundoPopup"
+).style.display="block";
+
+}
+
+
+
+
+function mostrarPopupOnline(status,id){
+
+const popup =
+document.getElementById("popup");
+
+const titulo =
+document.getElementById("tituloPopup");
+
+
+popup.classList.remove(
+"offline"
+);
+
+
+titulo.innerHTML =
+"✅ Enviado!";
+
+
+mostrarPopup(
+status,
+id
+);
+
+}
+
+
+
+
+async function enviarRegistro(dados){
+
+await fetch(
+URL_SCRIPT,
+{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify(dados)
+}
+);
+
+}
+
+
+
+
+async function sincronizarPendentes(){
+
+if(
+sincronizando
+||
+!navigator.onLine
+){
+
+return;
+
+}
+
+
+const lista =
+obterPendentes();
+
+
+if(
+lista.length === 0
+){
+
+atualizarStatusConexao();
+
+return;
+
+}
+
+
+sincronizando=true;
+
+atualizarStatusConexao();
+
+
+const restantes=[];
+
+
+for(
+const item
+of lista
+){
+
+try{
+
+const dadosEnvio={
+...item
+};
+
+
+delete dadosEnvio._salvoEm;
+
+
+await enviarRegistro(
+dadosEnvio
+);
+
+}
+catch(e){
+
+restantes.push(
+item
+);
+
+}
+
+}
+
+
+salvarPendentes(
+restantes
+);
+
+
+sincronizando=false;
+
+
+atualizarStatusConexao();
+
+
+if(
+restantes.length === 0
+){
+
+alert(
+"✅ Registros pendentes sincronizados com sucesso!"
+);
+
+}
+
+}
+
+
+
+
+window.addEventListener(
+"online",
+()=>{
+
+atualizarStatusConexao();
+
+setTimeout(
+()=>{
+
+sincronizarPendentes();
+
+},
+700
+);
+
+}
+);
+
+
+
+
+window.addEventListener(
+"offline",
+()=>{
+
+atualizarStatusConexao();
+
+}
+);
 
 
 
@@ -675,7 +1194,8 @@ return;
 
 
 
-let botao=document.getElementById("btnSalvar");
+let botao =
+document.getElementById("btnSalvar");
 
 
 
@@ -703,11 +1223,9 @@ return;
 
 if(!/^[0-9]+$/.test(locomotiva)){
 
-
 alert("A locomotiva deve conter somente números");
 
 return;
-
 
 }
 
@@ -726,11 +1244,9 @@ return;
 
 if(!/^[A-Za-zÀ-ÿ\s]+$/.test(colaborador)){
 
-
 alert("O colaborador deve conter somente texto");
 
 return;
-
 
 }
 
@@ -744,7 +1260,17 @@ enviando=true;
 botao.disabled=true;
 
 
-botao.innerHTML="⏳ ENVIANDO...";
+botao.innerHTML =
+
+navigator.onLine
+
+?
+
+"⏳ ENVIANDO..."
+
+:
+
+"💾 SALVANDO NO APARELHO...";
 
 
 
@@ -761,6 +1287,7 @@ respostas[item[0]]="CONFORME";
 
 
 });
+
 
 
 
@@ -783,7 +1310,10 @@ Object.values(respostas)
 
 
 
-let idRegistro = gerarID();
+
+let idRegistro =
+gerarID();
+
 
 
 
@@ -816,53 +1346,74 @@ document.getElementById("observacao").value
 
 
 
+
 try{
 
 
-await fetch(URL_SCRIPT,{
-
-method:"POST",
-
-mode:"no-cors",
-
-body:JSON.stringify(dados)
-
-});
+if(!navigator.onLine){
 
 
-
-mostrarPopup(status,idRegistro);
-
-
-
-document.getElementById("locomotiva").value="";
+adicionarPendente(
+dados
+);
 
 
-document.getElementById("observacao").value="";
+mostrarPopupOffline(
+status,
+idRegistro
+);
 
 
-respostas={};
+limparFormularioDepoisDeSalvar();
 
 
-carregarChecklist();
-
-
-atualizarStatus();
-
+return;
 
 
 }
 
+
+
+
+try{
+
+
+await enviarRegistro(
+dados
+);
+
+
+mostrarPopupOnline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+}
 catch(e){
 
 
-alert("Erro ao enviar checklist");
+adicionarPendente(
+dados
+);
+
+
+mostrarPopupOffline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
 
 
 }
 
 
-
+}
 finally{
 
 
@@ -872,7 +1423,11 @@ enviando=false;
 botao.disabled=false;
 
 
-botao.innerHTML="💾 SALVAR CHECKLIST";
+botao.innerHTML =
+"💾 SALVAR CHECKLIST";
+
+
+atualizarStatusConexao();
 
 
 }
@@ -880,7 +1435,6 @@ botao.innerHTML="💾 SALVAR CHECKLIST";
 
 
 }
-
 
 
 
@@ -889,8 +1443,54 @@ carregarChecklist();
 carregarColaborador();
 
 
+atualizarStatusConexao();
+
+
+if(navigator.onLine){
+
+setTimeout(
+()=>{
+
+sincronizarPendentes();
+
+},
+1000
+);
+
+}
+
+
 </script>
 
+
+
+<script>
+
+if(
+"serviceWorker"
+in navigator
+){
+
+window.addEventListener(
+"load",
+()=>{
+
+navigator.serviceWorker
+.register("./service-worker.js")
+.catch(
+err =>
+console.error(
+"Service Worker:",
+err
+)
+);
+
+}
+);
+
+}
+
+</script>
 
 </body>
 
