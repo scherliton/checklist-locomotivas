@@ -583,7 +583,17 @@ box.classList.remove(
 );
 
 
+/*
+MODO CLEAN:
+- Online + 0 pendentes = bloco oculto.
+- Offline = bloco visível.
+- Sincronizando = bloco visível.
+- Online com pendentes = bloco visível até concluir a sincronização.
+*/
+
 if(sincronizando){
+
+box.style.display="flex";
 
 box.classList.add(
 "conexao-sync"
@@ -600,25 +610,9 @@ return;
 }
 
 
-if(navigator.onLine){
+if(!navigator.onLine){
 
-texto.innerText =
-"🟢 Online";
-
-btn.style.display =
-
-pendentes.length > 0
-
-?
-
-"block"
-
-:
-
-"none";
-
-}
-else{
+box.style.display="flex";
 
 box.classList.add(
 "conexao-offline"
@@ -630,10 +624,33 @@ texto.innerText =
 btn.style.display =
 "none";
 
-}
+return;
 
 }
 
+
+if(pendentes.length > 0){
+
+box.style.display="flex";
+
+texto.innerText =
+"🟢 Online";
+
+btn.style.display =
+"block";
+
+return;
+
+}
+
+
+/* Online, sincronizado e sem pendências: volta ao visual original */
+
+box.style.display="none";
+
+btn.style.display="none";
+
+}
 
 
 
@@ -1477,6 +1494,13 @@ window.addEventListener(
 
 navigator.serviceWorker
 .register("./service-worker.js")
+.then(
+registro => {
+
+registro.update();
+
+}
+)
 .catch(
 err =>
 console.error(
