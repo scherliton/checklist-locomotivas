@@ -465,6 +465,10 @@ const CHAVE_PENDENTES = "checklistPendentesV2";
 
 let sincronizando = false;
 
+let conexaoDisponivel = navigator.onLine;
+
+let timerConexao = null;
+
 
 
 
@@ -534,6 +538,86 @@ salvarPendentes(lista);
 
 }
 
+
+
+
+
+async function verificarConexaoReal(atualizarTela=true){
+
+const controller =
+new AbortController();
+
+const timeout =
+setTimeout(
+()=> controller.abort(),
+3500
+);
+
+try{
+
+await fetch(
+"./service-worker.js?ping="
++
+Date.now(),
+{
+method:"GET",
+cache:"no-store",
+signal:controller.signal
+}
+);
+
+conexaoDisponivel=true;
+
+}
+catch(e){
+
+conexaoDisponivel=false;
+
+}
+finally{
+
+clearTimeout(timeout);
+
+}
+
+
+if(atualizarTela){
+
+atualizarStatusConexao();
+
+}
+
+
+return conexaoDisponivel;
+
+}
+
+
+
+
+function iniciarMonitorConexao(){
+
+if(timerConexao){
+
+clearInterval(timerConexao);
+
+}
+
+
+verificarConexaoReal();
+
+
+timerConexao =
+setInterval(
+()=>{
+
+verificarConexaoReal();
+
+},
+4000
+);
+
+}
 
 
 
@@ -617,7 +701,7 @@ return;
 }
 
 
-if(!navigator.onLine){
+if(!conexaoDisponivel){
 
 box.style.display="flex";
 
@@ -886,15 +970,28 @@ window.addEventListener(
 "online",
 ()=>{
 
+conexaoDisponivel=true;
+
 atualizarStatusConexao();
 
 setTimeout(
 ()=>{
 
+verificarConexaoReal()
+.then(
+online => {
+
+if(online){
+
 sincronizarPendentes();
 
+}
+
+}
+);
+
 },
-700
+500
 );
 
 }
@@ -906,6 +1003,8 @@ sincronizarPendentes();
 window.addEventListener(
 "offline",
 ()=>{
+
+conexaoDisponivel=false;
 
 atualizarStatusConexao();
 
@@ -1286,7 +1385,7 @@ botao.disabled=true;
 
 botao.innerHTML =
 
-navigator.onLine
+conexaoDisponivel
 
 ?
 
@@ -1374,7 +1473,7 @@ document.getElementById("observacao").value
 try{
 
 
-if(!navigator.onLine){
+if(!conexaoDisponivel){
 
 
 adicionarPendente(
@@ -1469,19 +1568,28 @@ carregarColaborador();
 
 atualizarStatusConexao();
 
+iniciarMonitorConexao();
 
-if(navigator.onLine){
 
 setTimeout(
 ()=>{
 
+verificarConexaoReal()
+.then(
+online => {
+
+if(online){
+
 sincronizarPendentes();
+
+}
+
+}
+);
 
 },
 1000
 );
-
-}
 
 
 </script>
