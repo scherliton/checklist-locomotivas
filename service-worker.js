@@ -1,5 +1,5 @@
 const CACHE_NAME =
-"checklist-locomotivas-v2-offline-3";
+"checklist-locomotivas-v2-offline-4";
 
 const APP_SHELL = [
   "./",
@@ -68,17 +68,43 @@ self.addEventListener(
     const request =
       event.request;
 
-
     const url =
       new URL(request.url);
 
 
     /*
-      O Service Worker só trabalha
-      com arquivos do próprio GitHub Pages.
+      TESTE REAL DE CONEXÃO
 
-      APIs externas, como o Google Apps Script,
-      NÃO entram no cache.
+      Essa requisição nunca utiliza o cache.
+      Se a internet cair, o fetch falha e o
+      index consegue identificar o modo offline.
+    */
+
+    if(
+      url.origin === self.location.origin
+      &&
+      url.searchParams.has("ping")
+    ){
+
+      event.respondWith(
+
+        fetch(
+          request,
+          {
+            cache:"no-store"
+          }
+        )
+
+      );
+
+      return;
+
+    }
+
+
+    /*
+      APIs externas, como Google Apps Script,
+      não são interceptadas nem armazenadas.
     */
 
     if(
@@ -107,11 +133,11 @@ self.addEventListener(
     /*
       HTML = NETWORK FIRST
 
-      Online:
-      sempre busca a versão mais nova.
+      Com internet:
+      busca sempre a versão mais recente.
 
-      Offline:
-      usa a versão salva no cache.
+      Sem internet:
+      utiliza a versão armazenada no cache.
     */
 
     if(isHtml){
@@ -174,10 +200,10 @@ self.addEventListener(
 
 
     /*
-      Arquivos locais = CACHE FIRST
+      ARQUIVOS LOCAIS = CACHE FIRST
 
-      Mantém o checklist disponível offline
-      sem interferir nas consultas da API.
+      Mantém o checklist disponível mesmo
+      quando não houver conexão.
     */
 
     event.respondWith(
