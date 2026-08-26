@@ -69,19 +69,17 @@ self.addEventListener(
       event.request;
 
 
-    /*
-      IMPORTANTE:
-      O Service Worker só trabalha com arquivos
-      do próprio GitHub Pages.
-
-      APIs externas, como o Google Apps Script,
-      passam direto para a internet e NÃO entram
-      no cache.
-    */
-
     const url =
       new URL(request.url);
 
+
+    /*
+      O Service Worker só trabalha
+      com arquivos do próprio GitHub Pages.
+
+      APIs externas, como o Google Apps Script,
+      NÃO entram no cache.
+    */
 
     if(
       request.method !== "GET"
@@ -109,11 +107,11 @@ self.addEventListener(
     /*
       HTML = NETWORK FIRST
 
-      Com internet:
+      Online:
       sempre busca a versão mais nova.
 
-      Sem internet:
-      utiliza a versão salva no cache.
+      Offline:
+      usa a versão salva no cache.
     */
 
     if(isHtml){
