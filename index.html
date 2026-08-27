@@ -1024,13 +1024,45 @@ salvarMemoriaColaborador();
 
 
 
+
+function formatarNome(nome){
+
+let texto =
+String(nome || "")
+.trim()
+.toLocaleLowerCase("pt-BR");
+
+if(!texto){
+return "";
+}
+
+return texto
+.split(/\s+/)
+.map(
+palavra =>
+palavra.charAt(0).toLocaleUpperCase("pt-BR")
++
+palavra.slice(1)
+)
+.join(" ");
+
+}
+
+
+
 function salvarMemoriaColaborador(){
 
-let nome = document.getElementById("colaborador").value.trim();
+let nome =
+formatarNome(
+document.getElementById("colaborador").value
+);
 
 if(nome){
 
-localStorage.setItem("colaborador",nome);
+localStorage.setItem(
+"colaborador",
+nome
+);
 
 }
 
@@ -1061,7 +1093,10 @@ let nome = prompt("Digite o novo colaborador");
 
 if(nome){
 
-nome = nome.replace(/[^a-zA-ZÀ-ÿ\s]/g,"").trim();
+nome =
+formatarNome(
+nome.replace(/[^a-zA-ZÀ-ÿ\s]/g,"")
+);
 
 
 if(nome){
@@ -1328,7 +1363,9 @@ document.getElementById("locomotiva").value.trim();
 
 
 let colaborador =
-document.getElementById("colaborador").value.trim();
+formatarNome(
+document.getElementById("colaborador").value
+);
 
 
 
@@ -1372,6 +1409,16 @@ alert("O colaborador deve conter somente texto");
 return;
 
 }
+
+document.getElementById(
+"colaborador"
+).value =
+colaborador;
+
+localStorage.setItem(
+"colaborador",
+colaborador
+);
 
 
 
