@@ -364,9 +364,12 @@ Trocar colaborador
 
 <input 
 id="locomotiva"
-type="number"
+type="text"
 inputmode="numeric"
+pattern="[0-9]*"
+autocomplete="off"
 placeholder="Digite o número da locomotiva"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')"
 >
 
 
@@ -483,11 +486,52 @@ localStorage.getItem(CHAVE_PENDENTES)
 "[]"
 );
 
-return Array.isArray(lista)
-?
-lista
-:
-[];
+if(!Array.isArray(lista)){
+
+return [];
+
+}
+
+
+/*
+Remove possíveis duplicidades antigas
+da fila offline usando o ID do registro.
+*/
+const ids = new Set();
+
+const unicos =
+lista.filter(item=>{
+
+if(
+!item
+||
+!item.id
+||
+ids.has(item.id)
+){
+
+return false;
+
+}
+
+ids.add(item.id);
+
+return true;
+
+});
+
+
+if(unicos.length !== lista.length){
+
+localStorage.setItem(
+CHAVE_PENDENTES,
+JSON.stringify(unicos)
+);
+
+}
+
+
+return unicos;
 
 }
 catch(e){
@@ -509,6 +553,23 @@ JSON.stringify(lista)
 );
 
 atualizarStatusConexao();
+
+}
+
+
+
+
+function removerPendentePorId(id){
+
+const lista =
+obterPendentes()
+.filter(
+item => item.id !== id
+);
+
+salvarPendentes(
+lista
+);
 
 }
 
@@ -906,7 +967,7 @@ sincronizando=true;
 atualizarStatusConexao();
 
 
-const restantes=[];
+let houveFalha = false;
 
 
 for(
@@ -928,21 +989,25 @@ await enviarRegistro(
 dadosEnvio
 );
 
+
+/*
+Retira o registro da fila logo depois
+do envio. Assim, se a página for fechada
+durante a sincronização, os registros já
+enviados não permanecem na fila.
+*/
+removerPendentePorId(
+item.id
+);
+
 }
 catch(e){
 
-restantes.push(
-item
-);
+houveFalha = true;
 
 }
 
 }
-
-
-salvarPendentes(
-restantes
-);
 
 
 sincronizando=false;
@@ -952,7 +1017,9 @@ atualizarStatusConexao();
 
 
 if(
-restantes.length === 0
+!houveFalha
+&&
+obterPendentes().length === 0
 ){
 
 alert(
