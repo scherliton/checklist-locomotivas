@@ -366,10 +366,11 @@ Trocar colaborador
 id="locomotiva"
 type="text"
 inputmode="numeric"
-pattern="[0-9]*"
+pattern="[0-9]{4}"
+maxlength="4"
 autocomplete="off"
-placeholder="Digite o número da locomotiva"
-oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+placeholder="Digite os 4 números da locomotiva"
+oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4)"
 >
 
 
@@ -1448,9 +1449,11 @@ return;
 
 
 
-if(!/^[0-9]+$/.test(locomotiva)){
+if(!/^[0-9]{4}$/.test(locomotiva)){
 
-alert("A locomotiva deve conter somente números");
+alert("A locomotiva deve ter exatamente 4 números");
+
+document.getElementById("locomotiva").focus();
 
 return;
 
