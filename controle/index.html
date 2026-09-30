@@ -116,6 +116,13 @@ td.num,th.num{text-align:center}
  .topo h1{font-size:22px}.painel-grid,.cards{grid-template-columns:1fr}
  .upload{grid-column:auto}.card-valor{font-size:30px}.grafico{height:270px}
 }
+
+.nota-regra{
+  margin:0 0 14px;padding:10px 12px;border-radius:9px;
+  background:#f7f8fa;border:1px solid #e5e8ec;color:#68727d;
+  font-size:11px;line-height:1.45
+}
+
 </style>
 </head>
 <body>
@@ -164,9 +171,9 @@ td.num,th.num{text-align:center}
      <div class="card-sub">Registros do checklist</div>
    </div>
    <div class="card sem">
-     <div class="card-titulo">SEM CHECK</div>
+     <div class="card-titulo">SALDO SEMANAL SEM CHECK</div>
      <div class="card-valor" id="kpiSem">0</div>
-     <div class="card-sub">Drenadas sem registro correspondente</div>
+     <div class="card-sub">Diferença entre drenadas e checks na semana</div>
    </div>
    <div class="card cobertura">
      <div class="card-titulo">COBERTURA</div>
@@ -199,7 +206,10 @@ td.num,th.num{text-align:center}
 
  <section class="secao">
    <h2>📋 Detalhamento da semana</h2>
-   <div class="desc">Resultado consolidado por dia.</div>
+   <div class="desc">Resultado por dia. A cobertura diária é limitada a 100%; checks acima das drenagens são destacados como excedentes do dia.</div>
+   <div class="nota-regra">
+      <b>Regra V2:</b> o total semanal é o indicador principal. O detalhamento diário serve para análise operacional e não presume que um check excedente pertença a uma drenagem de outro dia.
+   </div>
    <div class="tabela-wrap">
      <table>
        <thead>
@@ -208,6 +218,7 @@ td.num,th.num{text-align:center}
          <th class="num">Drenadas</th>
          <th class="num">Checks</th>
          <th class="num">Sem check</th>
+         <th class="num">Checks excedentes</th>
          <th class="num">Cobertura</th>
          <th>Situação</th>
         </tr>
@@ -379,23 +390,45 @@ function renderizar(dias,drenadas,checks){
 
   document.getElementById("anel").style.setProperty("--p",coberturaVisual);
   document.getElementById("anelNumero").textContent=cobertura.toFixed(1)+"%";
+  const excedenteSemanal=Math.max(checks-drenadas,0);
   document.getElementById("resumoCobertura").innerHTML=
-    `<b>${checks}</b> checks para <b>${drenadas}</b> locomotivas drenadas.<br><b>${sem}</b> sem check no período.`;
+    `<b>${checks}</b> checks para <b>${drenadas}</b> locomotivas drenadas.<br>` +
+    (sem>0
+      ? `<b>${sem}</b> de saldo semanal sem check.`
+      : excedenteSemanal>0
+        ? `<b>${excedenteSemanal}</b> checks acima do total drenado na semana.`
+        : `Quantidade semanal totalmente coberta.`);
 
   const tbody=document.getElementById("tabela");
   tbody.innerHTML=dias.map(k=>{
     const d=drenagemPorDia[k]||0;
     const c=checksPorDia[k]||0;
     const s=Math.max(d-c,0);
-    const p=d>0?c/d*100:0;
+    const excedente=Math.max(c-d,0);
+    const pBruto=d>0?c/d*100:0;
+    const p=d>0?Math.min(pBruto,100):0;
+
     let classe="neutro",texto="Sem drenagem";
-    if(d>0 && c>=d){classe="ok";texto="Cobertura completa"}
-    else if(d>0){classe="alerta";texto="Check pendente"}
+    if(d>0 && c>d){
+      classe="neutro";
+      texto=`${excedente} check${excedente===1?"":"s"} excedente${excedente===1?"":"s"} no dia`;
+    }else if(d>0 && c===d){
+      classe="ok";
+      texto="Cobertura completa";
+    }else if(d>0){
+      classe="alerta";
+      texto="Check pendente";
+    }else if(d===0 && c>0){
+      classe="neutro";
+      texto=`${c} check${c===1?"":"s"} sem drenagem no dia`;
+    }
+
     return `<tr>
       <td>${formatarDataBR(k)}</td>
       <td class="num">${d}</td>
       <td class="num">${c}</td>
       <td class="num">${s}</td>
+      <td class="num">${excedente}</td>
       <td class="num">${p.toFixed(1)}%</td>
       <td><span class="badge ${classe}">${texto}</span></td>
     </tr>`;
