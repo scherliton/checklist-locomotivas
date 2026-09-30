@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle Pós-Drenagem</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+:root{
+  --rosa:#e91e63;--rosa2:#d81b60;--rosa3:#f05a91;
+  --fundo:#fff5f8;--borda:#f5c6d8;--texto:#263238;
+  --verde:#198754;--vermelho:#dc3545;--laranja:#d97706;
+}
+body{
+  margin:0;color:var(--texto);
+  background:radial-gradient(circle at top right,rgba(233,30,99,.07),transparent 28%),
+             linear-gradient(180deg,#fffafb 0%,#fff3f7 100%);
+}
+.topo{
+  color:#fff;padding:23px 18px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#ed2b72 0%,#df1e63 55%,#f05a91 100%);
+  box-shadow:0 5px 18px rgba(216,27,96,.16);
+}
+.topo:after{
+  content:"";position:absolute;width:220px;height:220px;border-radius:50%;
+  right:-55px;top:-100px;background:rgba(255,255,255,.09)
+}
+.topo-conteudo{max-width:1180px;margin:auto;position:relative;z-index:1}
+.topo h1{margin:0;font-size:27px}
+.topo p{margin:6px 0 0;opacity:.92}
+.campanha{
+  margin-top:13px;padding-top:11px;border-top:1px solid rgba(255,255,255,.3);
+  display:flex;gap:10px;align-items:center;width:max-content;max-width:100%
+}
+.campanha .laco{font-size:28px}.campanha b{font-size:12px;letter-spacing:.8px}
+.campanha small{display:block;margin-top:3px;font-style:italic;font-size:12px}
+
+.container{max-width:1180px;margin:auto;padding:22px 15px 38px}
+.painel,.card,.secao{
+  background:#fff;border:1px solid var(--borda);border-radius:15px;
+  box-shadow:0 4px 14px rgba(125,40,72,.08)
+}
+.painel{padding:18px;margin-bottom:18px}
+.painel-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:13px;align-items:end}
+label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#59636e}
+input[type=file],input[type=date]{
+  width:100%;padding:11px;border:1px solid #d8dce2;border-radius:9px;background:#fff
+}
+input:focus{outline:none;border-color:#ef7ca7;box-shadow:0 0 0 3px rgba(233,30,99,.09)}
+button{
+  border:0;border-radius:9px;padding:12px 16px;font-weight:800;cursor:pointer
+}
+.btn{background:linear-gradient(135deg,var(--rosa),var(--rosa2));color:#fff;width:100%}
+.arquivo-status{font-size:12px;margin-top:8px;color:#77818d}
+.arquivo-status.ok{color:var(--verde);font-weight:bold}
+.arquivo-status.erro{color:var(--vermelho);font-weight:bold}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:18px}
+.card{padding:20px}
+.card-titulo{font-size:12px;font-weight:800;color:#6c7480;margin-bottom:10px}
+.card-valor{font-size:34px;font-weight:900;color:var(--rosa2)}
+.card-sub{font-size:12px;color:#9299a3;margin-top:5px}
+.card.checks .card-valor{color:#0b6db7}
+.card.sem .card-valor{color:var(--vermelho)}
+.card.cobertura .card-valor{color:var(--verde)}
+
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:15px;margin-bottom:18px}
+.secao{padding:20px;min-width:0}
+.secao h2{font-size:18px;color:#9f174a;margin:0 0 5px}
+.desc{font-size:12px;color:#818996;margin-bottom:18px}
+.grafico{height:310px;position:relative}
+canvas{width:100%;height:100%;display:block}
+
+.cobertura-box{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:310px}
+.anel{
+  --p:0;
+  width:190px;height:190px;border-radius:50%;
+  display:grid;place-items:center;
+  background:conic-gradient(var(--verde) calc(var(--p)*1%),#f0e8ec 0)
+}
+.anel:before{
+  content:"";width:145px;height:145px;border-radius:50%;background:#fff;
+  position:absolute
+}
+.anel-conteudo{position:relative;text-align:center;z-index:1}
+.anel-numero{font-size:34px;font-weight:900;color:#176b45}
+.anel-texto{font-size:11px;color:#818996;font-weight:bold}
+.resumo-linha{margin-top:18px;font-size:13px;text-align:center;line-height:1.7;color:#606976}
+
+.tabela-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{background:#fff3f7;color:#6a5360;text-align:left;font-size:12px;padding:12px}
+td{padding:12px;border-bottom:1px solid #f0e5e9;font-size:13px}
+td.num,th.num{text-align:center}
+.badge{
+  display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800
+}
+.badge.ok{background:#e1f3e8;color:#12663d}
+.badge.alerta{background:#fde5e8;color:#a91d2c}
+.badge.neutro{background:#eef2f5;color:#52606d}
+
+.aviso{
+  display:none;margin-bottom:18px;padding:13px 15px;border-radius:10px;
+  background:#fff1d6;color:#805b00;border:1px solid #f3d899;font-size:13px
+}
+.rodape{text-align:center;color:#b51550;font-size:11px;padding:0 15px 25px}
+
+@media(max-width:850px){
+ .painel-grid{grid-template-columns:1fr 1fr}.upload{grid-column:1/-1}
+ .cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+ .topo h1{font-size:22px}.painel-grid,.cards{grid-template-columns:1fr}
+ .upload{grid-column:auto}.card-valor{font-size:30px}.grafico{height:270px}
+}
+</style>
+</head>
+<body>
+
+<header class="topo">
+ <div class="topo-conteudo">
+   <h1>🚂 Controle Pós-Drenagem</h1>
+   <p>Comparativo entre locomotivas drenadas e checks pós-drenagem realizados</p>
+   <div class="campanha">
+     <div class="laco">🎀</div>
+     <div><b>OUTUBRO ROSA</b><small>Cuidar é um ato de amor!</small></div>
+   </div>
+ </div>
+</header>
+
+<main class="container">
+ <div id="aviso" class="aviso"></div>
+
+ <section class="painel">
+   <div class="painel-grid">
+     <div class="upload">
+       <label>Base de drenagem (.xlsx)</label>
+       <input type="file" id="arquivo" accept=".xlsx,.xls">
+       <div id="arquivoStatus" class="arquivo-status">Selecione a planilha para iniciar a comparação.</div>
+     </div>
+     <div>
+       <label>Início da semana</label>
+       <input type="date" id="inicioSemana">
+     </div>
+     <div>
+       <label>&nbsp;</label>
+       <button class="btn" onclick="atualizar()">🔄 Atualizar comparação</button>
+     </div>
+   </div>
+ </section>
+
+ <section class="cards">
+   <div class="card">
+     <div class="card-titulo">LOCOMOTIVAS DRENADAS</div>
+     <div class="card-valor" id="kpiDrenadas">0</div>
+     <div class="card-sub">Soma de Locos na semana</div>
+   </div>
+   <div class="card checks">
+     <div class="card-titulo">CHECKS REALIZADOS</div>
+     <div class="card-valor" id="kpiChecks">0</div>
+     <div class="card-sub">Registros do checklist</div>
+   </div>
+   <div class="card sem">
+     <div class="card-titulo">SEM CHECK</div>
+     <div class="card-valor" id="kpiSem">0</div>
+     <div class="card-sub">Drenadas sem registro correspondente</div>
+   </div>
+   <div class="card cobertura">
+     <div class="card-titulo">COBERTURA</div>
+     <div class="card-valor" id="kpiCobertura">0%</div>
+     <div class="card-sub">Checks ÷ drenadas</div>
+   </div>
+ </section>
+
+ <div class="grid">
+   <section class="secao">
+     <h2>📊 Comparativo diário</h2>
+     <div class="desc">Locomotivas drenadas × checks realizados nos sete dias selecionados.</div>
+     <div class="grafico"><canvas id="grafico"></canvas></div>
+   </section>
+
+   <section class="secao">
+     <h2>🎯 Cobertura semanal</h2>
+     <div class="desc">Percentual de checks realizados em relação ao total drenado.</div>
+     <div class="cobertura-box">
+       <div class="anel" id="anel">
+         <div class="anel-conteudo">
+           <div class="anel-numero" id="anelNumero">0%</div>
+           <div class="anel-texto">COBERTURA</div>
+         </div>
+       </div>
+       <div class="resumo-linha" id="resumoCobertura">Aguardando dados.</div>
+     </div>
+   </section>
+ </div>
+
+ <section class="secao">
+   <h2>📋 Detalhamento da semana</h2>
+   <div class="desc">Resultado consolidado por dia.</div>
+   <div class="tabela-wrap">
+     <table>
+       <thead>
+        <tr>
+         <th>Data</th>
+         <th class="num">Drenadas</th>
+         <th class="num">Checks</th>
+         <th class="num">Sem check</th>
+         <th class="num">Cobertura</th>
+         <th>Situação</th>
+        </tr>
+       </thead>
+       <tbody id="tabela"></tbody>
+     </table>
+   </div>
+ </section>
+</main>
+
+<div class="rodape">🎀 Juntos nessa causa • Prevenção é o melhor caminho</div>
+
+<script>
+const URL_API="https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
+
+let drenagemPorDia={};
+let checksPorDia={};
+let apiCarregada=false;
+
+const arquivo=document.getElementById("arquivo");
+arquivo.addEventListener("change",lerArquivo);
+document.getElementById("inicioSemana").addEventListener("change",atualizar);
+
+function excelParaData(serial){
+  const utc=Math.round((Number(serial)-25569)*86400*1000);
+  const d=new Date(utc);
+  return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
+}
+function chaveData(d){
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),dia=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${dia}`;
+}
+function parseDataAPI(valor){
+  if(!valor)return null;
+  const d=new Date(valor);
+  return isNaN(d.getTime())?null:d;
+}
+function formatarDataBR(chave){
+  const [y,m,d]=chave.split("-");
+  return `${d}/${m}/${y}`;
+}
+function segundaDaSemana(d){
+  const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const dia=x.getDay();
+  x.setDate(x.getDate()-(dia===0?6:dia-1));
+  return x;
+}
+function somarSemana(obj,dias){
+  return dias.reduce((s,d)=>s+(obj[d]||0),0);
+}
+
+async function carregarAPI(){
+  try{
+    const r=await fetch(URL_API);
+    if(!r.ok)throw new Error("Falha ao acessar API");
+    const dados=await r.json();
+    const registros=Array.isArray(dados.registros)?dados.registros:[];
+    checksPorDia={};
+    registros.forEach(reg=>{
+      const d=parseDataAPI(reg.dataHora);
+      if(!d)return;
+      const k=chaveData(d);
+      checksPorDia[k]=(checksPorDia[k]||0)+1;
+    });
+    apiCarregada=true;
+  }catch(e){
+    console.error(e);
+    apiCarregada=false;
+    mostrarAviso("Não foi possível carregar os registros do checklist. Verifique a conexão e tente novamente.");
+  }
+}
+
+async function lerArquivo(event){
+  const f=event.target.files[0];
+  if(!f)return;
+  const status=document.getElementById("arquivoStatus");
+  status.className="arquivo-status";
+  status.textContent="Lendo a base de drenagem...";
+
+  try{
+    const buffer=await f.arrayBuffer();
+    const wb=XLSX.read(buffer,{type:"array"});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const matriz=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+
+    if(matriz.length<3)throw new Error("Planilha sem dados suficientes.");
+
+    const linhaTipo=matriz[1]||[];
+    const colunasLocos=[];
+    linhaTipo.forEach((v,i)=>{
+      if(String(v||"").trim().toUpperCase()==="LOCOS") colunasLocos.push(i);
+    });
+    if(colunasLocos.length===0)throw new Error('Não encontrei colunas "Locos".');
+
+    drenagemPorDia={};
+    let ultimaData=null;
+
+    for(let r=2;r<matriz.length;r++){
+      const serial=matriz[r][0];
+      if(serial===null || serial==="")continue;
+
+      let d;
+      if(typeof serial==="number") d=excelParaData(serial);
+      else{
+        d=new Date(serial);
+        if(isNaN(d.getTime()))continue;
+      }
+
+      const k=chaveData(d);
+      let total=0;
+      colunasLocos.forEach(c=>{
+        const n=Number(matriz[r][c]);
+        if(Number.isFinite(n))total+=n;
+      });
+      drenagemPorDia[k]=total;
+      if(!ultimaData || d>ultimaData)ultimaData=d;
+    }
+
+    if(Object.keys(drenagemPorDia).length===0)throw new Error("Nenhuma data válida encontrada.");
+
+    if(ultimaData){
+      document.getElementById("inicioSemana").value=chaveData(segundaDaSemana(ultimaData));
+    }
+
+    status.className="arquivo-status ok";
+    status.textContent=`✓ Base carregada: ${Object.keys(drenagemPorDia).length} dias encontrados.`;
+    esconderAviso();
+    await atualizar();
+
+  }catch(e){
+    console.error(e);
+    status.className="arquivo-status erro";
+    status.textContent="❌ Não foi possível reconhecer a estrutura da planilha.";
+    mostrarAviso("Use uma base com Data na primeira coluna e pares de colunas por hora contendo o campo Locos.");
+  }
+}
+
+async function atualizar(){
+  if(!apiCarregada)await carregarAPI();
+
+  const valor=document.getElementById("inicioSemana").value;
+  if(!valor){
+    renderizar([],0,0);
+    return;
+  }
+
+  const inicio=new Date(valor+"T00:00:00");
+  const dias=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(inicio);
+    d.setDate(inicio.getDate()+i);
+    dias.push(chaveData(d));
+  }
+
+  const drenadas=somarSemana(drenagemPorDia,dias);
+  const checks=somarSemana(checksPorDia,dias);
+  renderizar(dias,drenadas,checks);
+}
+
+function renderizar(dias,drenadas,checks){
+  const sem=Math.max(drenadas-checks,0);
+  const cobertura=drenadas>0?(checks/drenadas*100):0;
+  const coberturaVisual=Math.min(cobertura,100);
+
+  document.getElementById("kpiDrenadas").textContent=drenadas;
+  document.getElementById("kpiChecks").textContent=checks;
+  document.getElementById("kpiSem").textContent=sem;
+  document.getElementById("kpiCobertura").textContent=cobertura.toFixed(1)+"%";
+
+  document.getElementById("anel").style.setProperty("--p",coberturaVisual);
+  document.getElementById("anelNumero").textContent=cobertura.toFixed(1)+"%";
+  document.getElementById("resumoCobertura").innerHTML=
+    `<b>${checks}</b> checks para <b>${drenadas}</b> locomotivas drenadas.<br><b>${sem}</b> sem check no período.`;
+
+  const tbody=document.getElementById("tabela");
+  tbody.innerHTML=dias.map(k=>{
+    const d=drenagemPorDia[k]||0;
+    const c=checksPorDia[k]||0;
+    const s=Math.max(d-c,0);
+    const p=d>0?c/d*100:0;
+    let classe="neutro",texto="Sem drenagem";
+    if(d>0 && c>=d){classe="ok";texto="Cobertura completa"}
+    else if(d>0){classe="alerta";texto="Check pendente"}
+    return `<tr>
+      <td>${formatarDataBR(k)}</td>
+      <td class="num">${d}</td>
+      <td class="num">${c}</td>
+      <td class="num">${s}</td>
+      <td class="num">${p.toFixed(1)}%</td>
+      <td><span class="badge ${classe}">${texto}</span></td>
+    </tr>`;
+  }).join("");
+
+  desenharGrafico(dias);
+}
+
+function desenharGrafico(dias){
+  const canvas=document.getElementById("grafico");
+  const box=canvas.parentElement;
+  const w=Math.max(1,box.clientWidth),h=Math.max(1,box.clientHeight);
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+  canvas.style.width=w+"px";canvas.style.height=h+"px";
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+
+  if(!dias.length){
+    ctx.fillStyle="#8a94a3";ctx.font="14px Arial";ctx.textAlign="center";
+    ctx.fillText("Carregue a base de drenagem para iniciar.",w/2,h/2);return;
+  }
+
+  const vals=dias.flatMap(k=>[drenagemPorDia[k]||0,checksPorDia[k]||0]);
+  const max=Math.max(...vals,1);
+  const margem={l:38,r:15,t:28,b:42};
+  const gw=w-margem.l-margem.r,gh=h-margem.t-margem.b;
+
+  for(let i=0;i<=4;i++){
+    const y=margem.t+gh/4*i;
+    ctx.strokeStyle="#eee4e8";ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(margem.l,y);ctx.lineTo(w-margem.r,y);ctx.stroke();
+    ctx.fillStyle="#87909b";ctx.font="10px Arial";ctx.textAlign="right";
+    ctx.fillText(Math.round(max-(max/4*i)),margem.l-7,y+3);
+  }
+
+  const grupo=gw/7;
+  const bw=Math.min(24,grupo*.28);
+
+  dias.forEach((k,i)=>{
+    const cx=margem.l+grupo*i+grupo/2;
+    const a=drenagemPorDia[k]||0,b=checksPorDia[k]||0;
+    const ha=a/max*gh,hb=b/max*gh;
+
+    ctx.fillStyle="#e91e63";
+    ctx.fillRect(cx-bw-2,margem.t+gh-ha,bw,ha);
+    ctx.fillStyle="#0b6db7";
+    ctx.fillRect(cx+2,margem.t+gh-hb,bw,hb);
+
+    ctx.fillStyle="#68727d";ctx.font="10px Arial";ctx.textAlign="center";
+    const [y,m,d]=k.split("-");
+    ctx.fillText(`${d}/${m}`,cx,margem.t+gh+15);
+  });
+
+  ctx.font="bold 10px Arial";ctx.textAlign="left";
+  ctx.fillStyle="#e91e63";ctx.fillRect(margem.l,7,10,10);
+  ctx.fillStyle="#59636e";ctx.fillText("Drenadas",margem.l+15,16);
+  ctx.fillStyle="#0b6db7";ctx.fillRect(margem.l+82,7,10,10);
+  ctx.fillStyle="#59636e";ctx.fillText("Checks",margem.l+97,16);
+}
+
+function mostrarAviso(txt){
+  const a=document.getElementById("aviso");a.textContent=txt;a.style.display="block";
+}
+function esconderAviso(){document.getElementById("aviso").style.display="none"}
+
+window.addEventListener("resize",()=>atualizar());
+carregarAPI();
+desenharGrafico([]);
+</script>
+</body>
+</html>
