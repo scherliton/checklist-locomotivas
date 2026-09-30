@@ -1,4 +1,4 @@
-A<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -577,7 +577,151 @@ A<!DOCTYPE html>
         font-size: 21px;
       }
     }
-  </style>
+  
+/* =========================================================
+   TEMA OUTUBRO ROSA 2026 — DASHBOARD
+   Alterações exclusivamente visuais
+   ========================================================= */
+:root{
+  --rosa-principal:#e91e63;
+  --rosa-forte:#d81b60;
+  --rosa-suave:#fff2f7;
+  --rosa-borda:#f7c4d7;
+  --rosa-texto:#b51550;
+}
+
+body{
+  background:
+    radial-gradient(circle at top right, rgba(233,30,99,.07), transparent 28%),
+    linear-gradient(180deg,#fff9fb 0%,#fff3f7 100%);
+}
+
+.topo{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#ed2b72 0%,#df1e63 55%,#f05a91 100%);
+  box-shadow:0 5px 18px rgba(216,27,96,.16);
+}
+
+.topo::after{
+  content:"";
+  position:absolute;
+  right:-35px;
+  top:-75px;
+  width:210px;
+  height:210px;
+  border-radius:50%;
+  background:rgba(255,255,255,.09);
+  pointer-events:none;
+}
+
+.topo-conteudo{
+  position:relative;
+  z-index:1;
+}
+
+.outubro-dashboard{
+  margin-top:13px;
+  padding-top:11px;
+  border-top:1px solid rgba(255,255,255,.28);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:max-content;
+  max-width:100%;
+}
+
+.outubro-dashboard .laco{
+  font-size:28px;
+  line-height:1;
+}
+
+.outubro-dashboard .titulo{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+
+.outubro-dashboard .frase{
+  margin-top:2px;
+  font-size:12px;
+  font-style:italic;
+  opacity:.96;
+}
+
+.filtros,
+.card,
+.secao,
+.grafico-card{
+  border:1px solid rgba(247,196,215,.72);
+  box-shadow:0 3px 12px rgba(133,45,78,.08);
+}
+
+.btn-azul{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+}
+
+.campo input:focus,
+.campo select:focus{
+  outline:none;
+  border-color:#ee77a3;
+  box-shadow:0 0 0 3px rgba(233,30,99,.09);
+}
+
+/* Rosa apenas na identidade e navegação visual.
+   Cores semânticas de conforme/pendência permanecem intactas. */
+.card:not(.verde):not(.vermelho):not(.laranja) .card-valor{
+  color:var(--rosa-forte);
+}
+
+.titulo-bloco,
+.secao h2,
+.grafico-titulo{
+  color:#9f174a;
+}
+
+.ranking-numero{
+  color:#b51550;
+}
+
+.barra-preenchida{
+  background:linear-gradient(90deg,#e91e63,#f06292);
+}
+
+th{
+  background:#fff4f8;
+}
+
+.rodape-outubro-dashboard{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 15px 24px;
+  text-align:center;
+  color:var(--rosa-texto);
+  font-size:11px;
+}
+
+.rodape-outubro-dashboard::before{
+  content:"";
+  display:block;
+  width:260px;
+  max-width:70%;
+  height:1px;
+  margin:0 auto 10px;
+  background:linear-gradient(90deg,transparent,#f3a9c4,transparent);
+}
+
+@media(max-width:520px){
+  .outubro-dashboard{
+    width:100%;
+  }
+  .topo{
+    padding-top:20px;
+    padding-bottom:20px;
+  }
+}
+
+</style>
 
 </head>
 
@@ -591,6 +735,14 @@ A<!DOCTYPE html>
       <p>
         Acompanhamento das condições dos banheiros das locomotivas
       </p>
+
+      <div class="outubro-dashboard">
+        <div class="laco">🎀</div>
+        <div>
+          <div class="titulo">OUTUBRO ROSA</div>
+          <div class="frase">Cuidar é um ato de amor!</div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -918,6 +1070,10 @@ A<!DOCTYPE html>
 
   </div>
 
+
+  <div class="rodape-outubro-dashboard">
+    🎀 Juntos nessa causa • Prevenção é o melhor caminho
+  </div>
 
 <script>
 
