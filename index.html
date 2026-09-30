@@ -289,6 +289,166 @@ display:none;
 color:#d97706;
 }
 
+
+/* =========================================================
+   TEMA OUTUBRO ROSA 2026
+   Alterações exclusivamente visuais
+   ========================================================= */
+
+:root{
+  --rosa-principal:#e91e63;
+  --rosa-forte:#d81b60;
+  --rosa-claro:#fff0f5;
+  --rosa-suave:#fde7f0;
+  --rosa-borda:#f7bfd3;
+  --rosa-texto:#b51550;
+}
+
+body{
+  background:
+    radial-gradient(circle at top right, rgba(233,30,99,.08), transparent 30%),
+    linear-gradient(180deg,#fff9fb 0%,#fff1f6 100%);
+}
+
+.app{
+  max-width:520px;
+}
+
+.header{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#ed2b72 0%,#df1e63 55%,#f05a91 100%);
+  padding:18px 20px 16px;
+  box-shadow:0 6px 20px rgba(216,27,96,.18);
+}
+
+.header::after{
+  content:"";
+  position:absolute;
+  right:-24px;
+  top:-38px;
+  width:125px;
+  height:125px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+
+.header h1{
+  position:relative;
+  z-index:1;
+  font-size:22px;
+  letter-spacing:.1px;
+}
+
+.header .subtitulo{
+  position:relative;
+  z-index:1;
+  margin-top:4px;
+  font-size:13px;
+  opacity:.92;
+}
+
+.outubro-rosa{
+  position:relative;
+  z-index:1;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.30);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.outubro-laco{
+  font-size:27px;
+  line-height:1;
+  filter:drop-shadow(0 2px 3px rgba(120,0,45,.15));
+}
+
+.outubro-textos{
+  text-align:left;
+  line-height:1.15;
+}
+
+.outubro-titulo{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+
+.outubro-frase{
+  margin-top:3px;
+  font-size:12px;
+  font-style:italic;
+  font-weight:normal;
+  opacity:.96;
+}
+
+.card{
+  border:1px solid rgba(247,191,211,.75);
+  box-shadow:0 5px 18px rgba(143,42,79,.10);
+}
+
+.item{
+  background:linear-gradient(90deg,#fff8fb 0%,#fdf7f9 100%);
+  border-left:5px solid var(--rosa-principal);
+  border-top:1px solid #fbe3ec;
+  border-right:1px solid #fbe3ec;
+  border-bottom:1px solid #fbe3ec;
+}
+
+.selecionado{
+  outline:4px solid rgba(233,30,99,.35);
+  box-shadow:0 0 0 1px var(--rosa-principal);
+}
+
+.salvar{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+  box-shadow:0 5px 12px rgba(216,27,96,.18);
+}
+
+.salvar:active{
+  transform:translateY(1px);
+}
+
+.btn-trocar{
+  background:#6f6870;
+}
+
+.popup button{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+}
+
+input:focus,
+textarea:focus{
+  outline:none;
+  border-color:#ee77a3;
+  box-shadow:0 0 0 3px rgba(233,30,99,.10);
+}
+
+.rodape-outubro{
+  margin:18px 0 4px;
+  text-align:center;
+  color:var(--rosa-texto);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.rodape-outubro .linha{
+  height:1px;
+  margin:0 auto 10px;
+  max-width:260px;
+  background:linear-gradient(90deg,transparent,#f3a9c4,transparent);
+}
+
+@media(max-width:420px){
+  body{ padding:10px; }
+  .header{ padding:17px 14px 15px; }
+  .header h1{ font-size:20px; }
+  .outubro-frase{ font-size:11px; }
+}
+
 </style>
 
 </head>
@@ -302,7 +462,15 @@ color:#d97706;
 
 <h1>🚂 Checklist Pós-Drenagem</h1>
 
-<div>Locomotivas - V2</div>
+<div class="subtitulo">Locomotivas - V2</div>
+
+<div class="outubro-rosa">
+  <div class="outubro-laco">🎀</div>
+  <div class="outubro-textos">
+    <div class="outubro-titulo">OUTUBRO ROSA</div>
+    <div class="outubro-frase">Cuidar é um ato de amor!</div>
+  </div>
+</div>
 
 </div>
 
@@ -408,6 +576,11 @@ onclick="salvarChecklist()">
 </button>
 
 
+
+<div class="rodape-outubro">
+  <div class="linha"></div>
+  🎀 Juntos nessa causa • Prevenção é o melhor caminho
+</div>
 
 </div>
 
