@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle Pós-Drenagem • Torre A</title>
+<title>Controle Pós-Drenagem</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -129,8 +129,8 @@ td.num,th.num{text-align:center}
 
 <header class="topo">
  <div class="topo-conteudo">
-   <h1>🚂 Controle Pós-Drenagem • Torre A</h1>
-   <p>Comparativo entre locomotivas destinadas à Torre A e checks pós-drenagem realizados</p>
+   <h1>🚂 Controle Pós-Drenagem</h1>
+   <p>Comparativo entre locomotivas drenadas e checks pós-drenagem realizados</p>
    <div class="campanha">
      <div class="laco">🎀</div>
      <div><b>OUTUBRO ROSA</b><small>Cuidar é um ato de amor!</small></div>
@@ -144,9 +144,9 @@ td.num,th.num{text-align:center}
  <section class="painel">
    <div class="painel-grid">
      <div class="upload">
-       <label>Base BiAi / Torre A (.xlsx)</label>
+       <label>Base do BI (.xlsx)</label>
        <input type="file" id="arquivo" accept=".xlsx,.xls">
-       <div id="arquivoStatus" class="arquivo-status">Selecione a planilha BiAi para iniciar a comparação.</div>
+       <div id="arquivoStatus" class="arquivo-status">Selecione a planilha exportada do BI para iniciar a comparação.</div>
      </div>
      <div>
        <label>Início da semana</label>
@@ -161,9 +161,9 @@ td.num,th.num{text-align:center}
 
  <section class="cards">
    <div class="card">
-     <div class="card-titulo">DESTINADAS À TORRE A</div>
+     <div class="card-titulo">LOCOMOTIVAS DRENADAS</div>
      <div class="card-valor" id="kpiDrenadas">0</div>
-     <div class="card-sub">Checks esperados pela base BiAi</div>
+     <div class="card-sub">Soma de Locos na semana</div>
    </div>
    <div class="card checks">
      <div class="card-titulo">CHECKS REALIZADOS</div>
@@ -171,27 +171,27 @@ td.num,th.num{text-align:center}
      <div class="card-sub">Registros do checklist</div>
    </div>
    <div class="card sem">
-     <div class="card-titulo">CHECKS PENDENTES</div>
+     <div class="card-titulo">SALDO SEMANAL SEM CHECK</div>
      <div class="card-valor" id="kpiSem">0</div>
-     <div class="card-sub">Locomotivas da Torre A ainda sem check</div>
+     <div class="card-sub">Diferença entre drenadas e checks na semana</div>
    </div>
    <div class="card cobertura">
      <div class="card-titulo">COBERTURA</div>
      <div class="card-valor" id="kpiCobertura">0%</div>
-     <div class="card-sub">Checks realizados ÷ checks esperados</div>
+     <div class="card-sub">Checks ÷ drenadas</div>
    </div>
  </section>
 
  <div class="grid">
    <section class="secao">
      <h2>📊 Comparativo diário</h2>
-     <div class="desc">Checks esperados (Torre A) × checks realizados nos sete dias selecionados.</div>
+     <div class="desc">Locomotivas drenadas × checks realizados nos sete dias selecionados.</div>
      <div class="grafico"><canvas id="grafico"></canvas></div>
    </section>
 
    <section class="secao">
      <h2>🎯 Cobertura semanal</h2>
-     <div class="desc">Percentual de checks realizados em relação às locomotivas destinadas à Torre A.</div>
+     <div class="desc">Percentual de checks realizados em relação ao total drenado.</div>
      <div class="cobertura-box">
        <div class="anel" id="anel">
          <div class="anel-conteudo">
@@ -206,19 +206,19 @@ td.num,th.num{text-align:center}
 
  <section class="secao">
    <h2>📋 Detalhamento da semana</h2>
-   <div class="desc">Resultado por dia. A cobertura diária é limitada a 100%; checks acima dos esperados são destacados como excedentes do dia.</div>
+   <div class="desc">Resultado por dia. A cobertura diária é limitada a 100%; checks acima das drenagens são destacados como excedentes do dia.</div>
    <div class="nota-regra">
-      <b>Regra:</b> cada valor da coluna <b>Locos</b> da base BiAi representa locomotivas destinadas à Torre A e, portanto, checks esperados. O total semanal é o indicador principal; o detalhamento diário serve para análise operacional.
+      <b>Regra V2:</b> o total semanal é o indicador principal. O detalhamento diário serve para análise operacional e não presume que um check excedente pertença a uma drenagem de outro dia.
    </div>
    <div class="tabela-wrap">
      <table>
        <thead>
         <tr>
          <th>Data</th>
-         <th class="num">Torre A / Esperados</th>
+         <th class="num">Drenadas</th>
          <th class="num">Checks</th>
-         <th class="num">Pendentes</th>
-         <th class="num">Excedentes</th>
+         <th class="num">Sem check</th>
+         <th class="num">Checks excedentes</th>
          <th class="num">Cobertura</th>
          <th>Situação</th>
         </tr>
@@ -296,7 +296,7 @@ async function lerArquivo(event){
   if(!f)return;
   const status=document.getElementById("arquivoStatus");
   status.className="arquivo-status";
-  status.textContent="Lendo a base BiAi / Torre A...";
+  status.textContent="Lendo a base do BI...";
 
   try{
     const buffer=await f.arrayBuffer();
@@ -344,7 +344,7 @@ async function lerArquivo(event){
     }
 
     status.className="arquivo-status ok";
-    status.textContent=`✓ Base BiAi carregada: ${Object.keys(drenagemPorDia).length} dias encontrados.`;
+    status.textContent=`✓ Base do BI carregada: ${Object.keys(drenagemPorDia).length} dias encontrados.`;
     esconderAviso();
     await atualizar();
 
@@ -392,12 +392,12 @@ function renderizar(dias,drenadas,checks){
   document.getElementById("anelNumero").textContent=cobertura.toFixed(1)+"%";
   const excedenteSemanal=Math.max(checks-drenadas,0);
   document.getElementById("resumoCobertura").innerHTML=
-    `<b>${checks}</b> checks realizados para <b>${drenadas}</b> checks esperados (Torre A).<br>` +
+    `<b>${checks}</b> checks para <b>${drenadas}</b> locomotivas drenadas.<br>` +
     (sem>0
-      ? `<b>${sem}</b> check${sem===1?"":"s"} pendente${sem===1?"":"s"} na semana.`
+      ? `<b>${sem}</b> de saldo semanal sem check.`
       : excedenteSemanal>0
-        ? `<b>${excedenteSemanal}</b> check${excedenteSemanal===1?"":"s"} acima do total esperado na semana.`
-        : `Todos os checks esperados da semana foram realizados.`);
+        ? `<b>${excedenteSemanal}</b> checks acima do total drenado na semana.`
+        : `Quantidade semanal totalmente coberta.`);
 
   const tbody=document.getElementById("tabela");
   tbody.innerHTML=dias.map(k=>{
@@ -408,19 +408,19 @@ function renderizar(dias,drenadas,checks){
     const pBruto=d>0?c/d*100:0;
     const p=d>0?Math.min(pBruto,100):0;
 
-    let classe="neutro",texto="Sem envio à Torre A";
+    let classe="neutro",texto="Sem drenagem";
     if(d>0 && c>d){
       classe="neutro";
       texto=`${excedente} check${excedente===1?"":"s"} excedente${excedente===1?"":"s"} no dia`;
     }else if(d>0 && c===d){
       classe="ok";
-      texto="Todos os checks realizados";
+      texto="Cobertura completa";
     }else if(d>0){
       classe="alerta";
-      texto=s===1?"1 check pendente":`${s} checks pendentes`;
+      texto="Check pendente";
     }else if(d===0 && c>0){
       classe="neutro";
-      texto=`${c} check${c===1?"":"s"} sem envio à Torre A no dia`;
+      texto=`${c} check${c===1?"":"s"} sem drenagem no dia`;
     }
 
     return `<tr>
@@ -450,7 +450,7 @@ function desenharGrafico(dias){
 
   if(!dias.length){
     ctx.fillStyle="#8a94a3";ctx.font="14px Arial";ctx.textAlign="center";
-    ctx.fillText("Carregue a base BiAi para iniciar.",w/2,h/2);return;
+    ctx.fillText("Carregue a base do BI para iniciar.",w/2,h/2);return;
   }
 
   const vals=dias.flatMap(k=>[drenagemPorDia[k]||0,checksPorDia[k]||0]);
@@ -486,7 +486,7 @@ function desenharGrafico(dias){
 
   ctx.font="bold 10px Arial";ctx.textAlign="left";
   ctx.fillStyle="#e91e63";ctx.fillRect(margem.l,7,10,10);
-  ctx.fillStyle="#59636e";ctx.fillText("Esperados",margem.l+15,16);
+  ctx.fillStyle="#59636e";ctx.fillText("Drenadas",margem.l+15,16);
   ctx.fillStyle="#0b6db7";ctx.fillRect(margem.l+82,7,10,10);
   ctx.fillStyle="#59636e";ctx.fillText("Checks",margem.l+97,16);
 }
