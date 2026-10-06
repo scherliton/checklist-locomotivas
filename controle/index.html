@@ -122,6 +122,8 @@ td.num,th.num{text-align:center}
   background:#f7f8fa;border:1px solid #e5e8ec;color:#68727d;
   font-size:11px;line-height:1.45
 }
+.corte-d1{margin:0 0 18px;padding:12px 14px;border-radius:10px;background:#eef8f2;border:1px solid #cfe8d8;color:#176b45;font-size:12px;font-weight:700
+}
 
 </style>
 </head>
@@ -185,7 +187,7 @@ td.num,th.num{text-align:center}
  <div class="grid">
    <section class="secao">
      <h2>📊 Comparativo diário</h2>
-     <div class="desc">Locomotivas drenadas × checks realizados nos sete dias selecionados.</div>
+     <div class="desc">Locomotivas drenadas × checks realizados nos dias fechados da semana, respeitando o corte D-1.</div>
      <div class="grafico"><canvas id="grafico"></canvas></div>
    </section>
 
@@ -208,7 +210,7 @@ td.num,th.num{text-align:center}
    <h2>📋 Detalhamento da semana</h2>
    <div class="desc">Resultado por dia. A cobertura diária é limitada a 100%; checks acima das drenagens são destacados como excedentes do dia.</div>
    <div class="nota-regra">
-      <b>Regra V2:</b> o total semanal é o indicador principal. O detalhamento diário serve para análise operacional e não presume que um check excedente pertença a uma drenagem de outro dia.
+      <b>Regra V3 (D-1):</b> o sistema considera somente dias completos, de 00h00 a 23h59, até o dia anterior. O total semanal continua sendo o indicador principal; o detalhamento diário serve para análise operacional.
    </div>
    <div class="tabela-wrap">
      <table>
@@ -357,25 +359,34 @@ async function lerArquivo(event){
 }
 
 async function atualizar(){
-  if(!apiCarregada)await carregarAPI();
+   if(!apiCarregada)await carregarAPI();
 
-  const valor=document.getElementById("inicioSemana").value;
-  if(!valor){
-    renderizar([],0,0);
-    return;
-  }
+   const valor=document.getElementById("inicioSemana").value;
+   if(!valor){ renderizar([],0,0); return; }
 
-  const inicio=new Date(valor+"T00:00:00");
-  const dias=[];
-  for(let i=0;i<7;i++){
-    const d=new Date(inicio);
-    d.setDate(inicio.getDate()+i);
-    dias.push(chaveData(d));
-  }
+   const inicio=new Date(valor+"T00:00:00");
+   const limite=ontemLocal();
+   const fimSemana=new Date(inicio);
+   fimSemana.setDate(inicio.getDate()+6);
 
-  const drenadas=somarSemana(drenagemPorDia,dias);
-  const checks=somarSemana(checksPorDia,dias);
-  renderizar(dias,drenadas,checks);
+   const dias=[];
+   for(let i=0;i<7;i++){
+     const d=new Date(inicio);
+     d.setDate(inicio.getDate()+i);
+     if(d<=limite) dias.push(chaveData(d));
+   }
+
+   const corte=document.getElementById("corteD1");
+   const limiteEfetivo=fimSemana<limite?fimSemana:limite;
+   if(limiteEfetivo>=inicio){
+     corte.innerHTML=`✓ <b>Regra D-1 ativa</b> — período considerado: <b>${formatarDataBR(chaveData(inicio))}</b> até <b>${formatarDataBR(chaveData(limiteEfetivo))}</b>, sempre de 00h00 a 23h59.`;
+   }else{
+     corte.innerHTML=`⚠️ <b>Regra D-1 ativa</b> — a semana selecionada ainda não possui dia fechado disponível para comparação.`;
+   }
+
+   const drenadas=somarSemana(drenagemPorDia,dias);
+   const checks=somarSemana(checksPorDia,dias);
+   renderizar(dias,drenadas,checks);
 }
 
 function renderizar(dias,drenadas,checks){
@@ -466,7 +477,7 @@ function desenharGrafico(dias){
     ctx.fillText(Math.round(max-(max/4*i)),margem.l-7,y+3);
   }
 
-  const grupo=gw/7;
+  const grupo=gw/Math.max(dias.length,1);
   const bw=Math.min(24,grupo*.28);
 
   dias.forEach((k,i)=>{
