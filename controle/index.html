@@ -161,7 +161,9 @@ td.num,th.num{text-align:center}
    </div>
  </section>
 
- <section class="cards">
+ <div id="corteD1" style="margin:0 0 18px;padding:12px 14px;border-radius:10px;background:#eef8f2;border:1px solid #cfe8d8;color:#176b45;font-size:12px;font-weight:700">✓ Regra D-1 ativa: somente dias completos, de 00h00 a 23h59, até o dia anterior.</div>
+
+<section class="cards">
    <div class="card">
      <div class="card-titulo">LOCOMOTIVAS DRENADAS</div>
      <div class="card-valor" id="kpiDrenadas">0</div>
@@ -270,6 +272,13 @@ function segundaDaSemana(d){
 }
 function somarSemana(obj,dias){
   return dias.reduce((s,d)=>s+(obj[d]||0),0);
+}
+
+function ontemLocal(){
+  const hoje=new Date();
+  const ontem=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  ontem.setDate(ontem.getDate()-1);
+  return ontem;
 }
 
 async function carregarAPI(){
