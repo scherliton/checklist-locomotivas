@@ -834,6 +834,19 @@ th{
         <div class="secao"><h2>Participação por colaborador</h2><p class="eng-nota">Lista completa dos colaboradores com registros no período selecionado. Os indicadores de 7 e 30 dias consideram todos os registros, independentemente do filtro de datas.</p>
         <input id="buscaEng" class="eng-busca" placeholder="Buscar colaborador" oninput="atualizarEngajamento()" aria-label="Buscar colaborador">
         <div class="tabela-wrapper"><table><thead><tr><th>Colaborador</th><th>Registros</th><th>Participação</th><th>Último registro</th></tr></thead><tbody id="engTabela"></tbody></table></div></div>
+<div class="secao" style="margin-top:16px">
+<h2>Padronização de nomes</h2>
+<p class="eng-nota">O sistema sugere nomes parecidos, mas só une os registros após sua confirmação. Os dados originais não são alterados. As escolhas ficam salvas neste navegador.</p>
+<div id="engSugestoes"></div>
+<h3 style="font-size:15px;color:#003b70">Unificar manualmente</h3>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
+<select id="engOrigem" aria-label="Nome a corrigir" style="padding:10px;max-width:290px"></select>
+<span>com</span>
+<select id="engDestino" aria-label="Nome correto" style="padding:10px;max-width:290px"></select>
+<button class="btn-azul" onclick="unificarNomesManual()">Confirmar união</button>
+</div>
+<div id="engUnificacoes"></div>
+</div>
       </div>
       <div id="painelVisao">
       <!-- INDICADORES -->
@@ -3423,29 +3436,125 @@ function mudarAba(aba){
   if(aba==='visao') requestAnimationFrame(()=>atualizarGraficosPremium());
 }
 function escaparEng(texto){return String(texto).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const CHAVE_NOMES_ENG="dashboardEngNomesConfirmadosV1";
+function chaveNomeEng(nome){
+  return String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\s+/g,' ').trim();
+}
+function nomesOriginaisEng(){
+  const mapa=new Map();
+  todosRegistros.forEach(r=>{
+    const n=formatarNome(r.colaborador);
+    if(n==='-')return;
+    const k=chaveNomeEng(n);
+    if(!mapa.has(k))mapa.set(k,n);
+  });
+  return mapa;
+}
+function lerUnificacoesEng(){
+  try{
+    const v=JSON.parse(localStorage.getItem(CHAVE_NOMES_ENG)||'{}');
+    return v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+  }catch(e){return {};}
+}
+let unificacoesEng=lerUnificacoesEng();
+function nomeCanonicoEng(nome){
+  const nomes=nomesOriginaisEng();
+  let k=chaveNomeEng(nome),passos=0;
+  while(unificacoesEng[k]&&passos++<30){
+    const proximo=chaveNomeEng(unificacoesEng[k]);
+    if(proximo===k)break;
+    k=proximo;
+  }
+  return {chave:k,nome:nomes.get(k)||formatarNome(nome)};
+}
+function distanciaEng(a,b){
+  if(Math.abs(a.length-b.length)>2)return 3;
+  let anterior=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){
+    const atual=[i];
+    for(let j=1;j<=b.length;j++)atual[j]=Math.min(atual[j-1]+1,anterior[j]+1,anterior[j-1]+(a[i-1]===b[j-1]?0:1));
+    anterior=atual;
+  }
+  return anterior[b.length];
+}
+function gravarUnificacoesEng(){
+  try{localStorage.setItem(CHAVE_NOMES_ENG,JSON.stringify(unificacoesEng));return true;}
+  catch(e){alert('Não foi possível salvar as escolhas neste navegador.');return false;}
+}
+function unirNomesEng(origem,destino){
+  origem=chaveNomeEng(origem);destino=chaveNomeEng(destino);
+  if(!origem||!destino||origem===destino)return;
+  const canonico=nomeCanonicoEng(destino).chave;
+  if(origem===canonico||nomeCanonicoEng(origem).chave===canonico)return;
+  const nomes=nomesOriginaisEng();
+  if(!nomes.has(origem)||!nomes.has(destino))return;
+  if(!confirm('Unificar "'+nomes.get(origem)+'" com "'+nomes.get(canonico)+'" nos indicadores de engajamento?'))return;
+  const anterior={...unificacoesEng};
+  unificacoesEng[origem]=canonico;
+  if(!gravarUnificacoesEng()){unificacoesEng=anterior;return;}
+  atualizarEngajamento();
+}
+function unificarNomesManual(){
+  unirNomesEng(document.getElementById('engOrigem').value,document.getElementById('engDestino').value);
+}
+function desfazerUniaoEng(chave){
+  const anterior={...unificacoesEng};
+  delete unificacoesEng[chave];
+  if(!gravarUnificacoesEng()){unificacoesEng=anterior;return;}
+  atualizarEngajamento();
+}
+function renderizarNomesEng(){
+  const nomes=nomesOriginaisEng(),chaves=[...nomes.keys()].sort((a,b)=>nomes.get(a).localeCompare(nomes.get(b),'pt-BR'));
+  for(const id of ['engOrigem','engDestino']){
+    const select=document.getElementById(id),anterior=select.value;
+    select.innerHTML='<option value="">Selecione um nome</option>'+chaves.map(k=>'<option value="'+escaparEng(k)+'">'+escaparEng(nomes.get(k))+'</option>').join('');
+    if(chaves.includes(anterior))select.value=anterior;
+  }
+  const sugestoes=[];
+  for(let i=0;i<chaves.length;i++)for(let j=i+1;j<chaves.length;j++){
+    const a=chaves[i],b=chaves[j];
+    if(nomeCanonicoEng(a).chave===nomeCanonicoEng(b).chave)continue;
+    const partesA=a.split(' '),partesB=b.split(' ');
+    if(partesA.length!==partesB.length||partesA[0].length<3||partesB[0].length<3)continue;
+    if(distanciaEng(a,b)<=2)sugestoes.push([a,b]);
+  }
+  const caixa=document.getElementById('engSugestoes');
+  caixa.innerHTML='<h3 style="font-size:15px;color:#003b70">Possíveis nomes duplicados ('+sugestoes.length+')</h3>'+
+    (sugestoes.length?sugestoes.slice(0,40).map(([a,b])=>'<div style="padding:10px;border-bottom:1px solid #edf0f3;display:flex;gap:10px;align-items:center;flex-wrap:wrap">'+escaparEng(nomes.get(a))+' ↔ '+escaparEng(nomes.get(b))+
+    '<button class="btn-cinza" data-origem="'+escaparEng(a)+'" data-destino="'+escaparEng(b)+'">Unificar no primeiro nome</button>'+
+    '<button class="btn-cinza" data-origem="'+escaparEng(b)+'" data-destino="'+escaparEng(a)+'">Unificar no segundo nome</button></div>').join(''):'<p class="eng-nota">Nenhuma sugestão pendente.</p>')+
+    (sugestoes.length>40?'<p class="eng-nota">Exibindo as primeiras 40 sugestões.</p>':'');
+  caixa.querySelectorAll('button[data-origem]').forEach(btn=>btn.addEventListener('click',()=>unirNomesEng(btn.dataset.origem,btn.dataset.destino)));
+  const itens=Object.entries(unificacoesEng).filter(([a,b])=>nomes.has(a)&&nomes.has(chaveNomeEng(b)));
+  const unioes=document.getElementById('engUnificacoes');
+  unioes.innerHTML='<h3 style="font-size:15px;color:#003b70">Uniões confirmadas ('+itens.length+')</h3>'+
+    (itens.length?itens.map(([a,b],i)=>'<div style="padding:9px;border-bottom:1px solid #edf0f3">'+escaparEng(nomes.get(a))+' → '+escaparEng(nomeCanonicoEng(b).nome)+' <button class="btn-cinza" data-desfazer="'+i+'">Desfazer</button></div>').join(''):'<p class="eng-nota">Nenhuma união confirmada.</p>');
+  unioes.querySelectorAll('button[data-desfazer]').forEach(btn=>btn.addEventListener('click',()=>desfazerUniaoEng(itens[Number(btn.dataset.desfazer)][0])));
+}
 function atualizarEngajamento(){
   const mapa=new Map();
   registrosFiltrados.forEach(r=>{
     const nome=formatarNome(r.colaborador);
     if(nome==='-')return;
-    const chave=nome.toLocaleLowerCase('pt-BR');
+    const canon=nomeCanonicoEng(nome);
     const data=converterData(r.dataHora);
-    const atual=mapa.get(chave)||{nome,total:0,ultimo:null};
+    const atual=mapa.get(canon.chave)||{nome:canon.nome,total:0,ultimo:null};
     atual.total++;
     if(data&&(!atual.ultimo||data>atual.ultimo))atual.ultimo=data;
-    mapa.set(chave,atual);
+    mapa.set(canon.chave,atual);
   });
   const ativos=dias=>{
     const inicio=Date.now()-dias*86400000;
-    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador).toLocaleLowerCase('pt-BR')).filter(n=>n!=='-')).size;
+    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador)).filter(n=>n!=='-').map(n=>nomeCanonicoEng(n).chave)).size;
   };
   document.getElementById('engTotal').textContent=mapa.size;
   document.getElementById('eng7').textContent=ativos(7);
   document.getElementById('eng30').textContent=ativos(30);
-  const busca=(document.getElementById('buscaEng').value||'').trim().toLocaleLowerCase('pt-BR');
-  const lista=[...mapa.values()].filter(x=>x.nome.toLocaleLowerCase('pt-BR').includes(busca)).sort((a,b)=>b.total-a.total||a.nome.localeCompare(b.nome));
+  const busca=chaveNomeEng(document.getElementById('buscaEng').value||'');
+  const lista=[...mapa.values()].filter(x=>chaveNomeEng(x.nome).includes(busca)).sort((a,b)=>b.total-a.total||a.nome.localeCompare(b.nome));
   const max=Math.max(1,...lista.map(x=>x.total));
   document.getElementById('engTabela').innerHTML=lista.length?lista.map(x=>`<tr><td><b>${escaparEng(x.nome)}</b></td><td>${x.total}</td><td><div class="eng-barra"><div style="width:${x.total/max*100}%"></div></div></td><td>${x.ultimo?formatarData(x.ultimo):'-'}</td></tr>`).join(''):'<tr><td colspan="4">Nenhum colaborador encontrado.</td></tr>';
+  renderizarNomesEng();
 }
 
 carregarDados();
