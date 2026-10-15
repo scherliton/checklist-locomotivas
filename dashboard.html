@@ -721,6 +721,17 @@ th{
   }
 }
 
+
+/* Engajamento - painel gerencial */
+.abas-dashboard{display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap}
+.aba-dashboard{background:#fff;color:#003b70;border:1px solid #ccd4dd}
+.aba-dashboard.ativa{background:#003b70;color:#fff}
+.eng-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.eng-busca{width:100%;padding:11px;border:1px solid #ccd4dd;border-radius:8px;margin:10px 0 16px}
+.eng-barra{height:9px;background:#e7edf3;border-radius:10px;overflow:hidden;min-width:90px}
+.eng-barra>div{height:100%;background:#1479bd;border-radius:10px}
+.eng-nota{font-size:12px;color:#667085;margin:8px 0 18px}
+@media(max-width:650px){.eng-cards{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -750,6 +761,7 @@ th{
 
   <div class="container">
 
+    <div class="abas-dashboard"><button class="aba-dashboard ativa" id="abaVisao" onclick="mudarAba('visao')">Visão geral</button><button class="aba-dashboard" id="abaEng" onclick="mudarAba('eng')">Engajamento dos colaboradores</button></div>
     <div id="erro" class="erro"></div>
 
 
@@ -813,6 +825,17 @@ th{
     <div id="conteudo" style="display:none;">
 
 
+      <div id="painelEng" style="display:none">
+        <div class="eng-cards">
+          <div class="card"><div class="card-titulo">COLABORADORES NO PERÍODO</div><div class="card-valor" id="engTotal">0</div></div>
+          <div class="card"><div class="card-titulo">ATIVOS NOS ÚLTIMOS 7 DIAS</div><div class="card-valor" id="eng7">0</div></div>
+          <div class="card"><div class="card-titulo">ATIVOS NOS ÚLTIMOS 30 DIAS</div><div class="card-valor" id="eng30">0</div></div>
+        </div>
+        <div class="secao"><h2>Participação por colaborador</h2><p class="eng-nota">Lista completa dos colaboradores com registros no período selecionado. Os indicadores de 7 e 30 dias consideram todos os registros, independentemente do filtro de datas.</p>
+        <input id="buscaEng" class="eng-busca" placeholder="Buscar colaborador" oninput="atualizarEngajamento()" aria-label="Buscar colaborador">
+        <div class="tabela-wrapper"><table><thead><tr><th>Colaborador</th><th>Registros</th><th>Participação</th><th>Último registro</th></tr></thead><tbody id="engTabela"></tbody></table></div></div>
+      </div>
+      <div id="painelVisao">
       <!-- INDICADORES -->
 
       <div class="cards">
@@ -1066,6 +1089,7 @@ th{
       </div>
 
 
+    </div>
     </div>
 
   </div>
@@ -3387,6 +3411,40 @@ function atualizarTabela(){
 }
 
 
+
+
+function mudarAba(aba){
+  document.getElementById('painelEng').style.display=aba==='eng'?'block':'none';
+  document.getElementById('painelVisao').style.display=aba==='visao'?'block':'none';
+  document.getElementById('abaEng').classList.toggle('ativa',aba==='eng');
+  document.getElementById('abaVisao').classList.toggle('ativa',aba==='visao');
+  if(aba==='visao') requestAnimationFrame(()=>atualizarGraficosPremium());
+}
+function escaparEng(texto){return String(texto).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function atualizarEngajamento(){
+  const mapa=new Map();
+  registrosFiltrados.forEach(r=>{
+    const nome=formatarNome(r.colaborador);
+    if(nome==='-')return;
+    const chave=nome.toLocaleLowerCase('pt-BR');
+    const data=converterData(r.dataHora);
+    const atual=mapa.get(chave)||{nome,total:0,ultimo:null};
+    atual.total++;
+    if(data&&(!atual.ultimo||data>atual.ultimo))atual.ultimo=data;
+    mapa.set(chave,atual);
+  });
+  const ativos=dias=>{
+    const inicio=Date.now()-dias*86400000;
+    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador).toLocaleLowerCase('pt-BR')).filter(n=>n!=='-')).size;
+  };
+  document.getElementById('engTotal').textContent=mapa.size;
+  document.getElementById('eng7').textContent=ativos(7);
+  document.getElementById('eng30').textContent=ativos(30);
+  const busca=(document.getElementById('buscaEng').value||'').trim().toLocaleLowerCase('pt-BR');
+  const lista=[...mapa.values()].filter(x=>x.nome.toLocaleLowerCase('pt-BR').includes(busca)).sort((a,b)=>b.total-a.total||a.nome.localeCompare(b.nome));
+  const max=Math.max(1,...lista.map(x=>x.total));
+  document.getElementById('engTabela').innerHTML=lista.length?lista.map(x=>`<tr><td><b>${escaparEng(x.nome)}</b></td><td>${x.total}</td><td><div class="eng-barra"><div style="width:${x.total/max*100}%"></div></div></td><td>${x.ultimo?formatarData(x.ultimo):'-'}</td></tr>`).join(''):'<tr><td colspan="4">Nenhum colaborador encontrado.</td></tr>';
+}
 
 carregarDados();
 
