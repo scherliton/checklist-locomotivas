@@ -132,7 +132,7 @@ td.num,th.num{text-align:center}
 <header class="topo">
  <div class="topo-conteudo">
    <h1>🚂 Controle Pós-Drenagem</h1>
-   <p>Comparativo entre locomotivas entregues para a Torre A e checks pós-drenagem realizados</p>
+   <p>Comparativo entre locomotivas drenadas e checks pós-drenagem realizados</p>
    <div class="campanha">
      <div class="laco">🎀</div>
      <div><b>OUTUBRO ROSA</b><small>Cuidar é um ato de amor!</small></div>
@@ -165,7 +165,7 @@ td.num,th.num{text-align:center}
 
 <section class="cards">
    <div class="card">
-     <div class="card-titulo">LOCOMOTIVAS ENTREGUES À TORRE A</div>
+     <div class="card-titulo">LOCOMOTIVAS DRENADAS</div>
      <div class="card-valor" id="kpiDrenadas">0</div>
      <div class="card-sub">Soma de Locos na semana</div>
    </div>
@@ -177,25 +177,25 @@ td.num,th.num{text-align:center}
    <div class="card sem">
      <div class="card-titulo">SALDO SEMANAL SEM CHECK</div>
      <div class="card-valor" id="kpiSem">0</div>
-     <div class="card-sub">Diferença entre entregas à Torre A e checks na semana</div>
+     <div class="card-sub">Diferença entre drenadas e checks na semana</div>
    </div>
    <div class="card cobertura">
      <div class="card-titulo">COBERTURA</div>
      <div class="card-valor" id="kpiCobertura">0%</div>
-     <div class="card-sub">Checks ÷ entregas à Torre A</div>
+     <div class="card-sub">Checks ÷ drenadas</div>
    </div>
  </section>
 
  <div class="grid">
    <section class="secao">
      <h2>📊 Comparativo diário</h2>
-     <div class="desc">Locomotivas entregues para a Torre A × checks realizados nos dias fechados da semana, respeitando o corte D-1.</div>
+     <div class="desc">Locomotivas drenadas × checks realizados nos dias fechados da semana, respeitando o corte D-1.</div>
      <div class="grafico"><canvas id="grafico"></canvas></div>
    </section>
 
    <section class="secao">
      <h2>🎯 Cobertura semanal</h2>
-     <div class="desc">Percentual de checks realizados em relação ao total entregue à Torre A.</div>
+     <div class="desc">Percentual de checks realizados em relação ao total drenado.</div>
      <div class="cobertura-box">
        <div class="anel" id="anel">
          <div class="anel-conteudo">
@@ -210,7 +210,7 @@ td.num,th.num{text-align:center}
 
  <section class="secao">
    <h2>📋 Detalhamento da semana</h2>
-   <div class="desc">Resultado por dia. A cobertura diária é limitada a 100%; checks acima das entregas à Torre A são destacados como excedentes do dia.</div>
+   <div class="desc">Resultado por dia. A cobertura diária é limitada a 100%; checks acima das drenagens são destacados como excedentes do dia.</div>
    <div class="nota-regra">
       <b>Regra V3 (D-1):</b> o sistema considera somente dias completos, de 00h00 a 23h59, até o dia anterior. O total semanal continua sendo o indicador principal; o detalhamento diário serve para análise operacional.
    </div>
@@ -219,7 +219,7 @@ td.num,th.num{text-align:center}
        <thead>
         <tr>
          <th>Data</th>
-         <th class="num">Entregues à Torre A</th>
+         <th class="num">Drenadas</th>
          <th class="num">Checks</th>
          <th class="num">Sem check</th>
          <th class="num">Checks excedentes</th>
@@ -412,11 +412,11 @@ function renderizar(dias,drenadas,checks){
   document.getElementById("anelNumero").textContent=cobertura.toFixed(1)+"%";
   const excedenteSemanal=Math.max(checks-drenadas,0);
   document.getElementById("resumoCobertura").innerHTML=
-    `<b>${checks}</b> checks para <b>${drenadas}</b> locomotivas entregues à Torre A.<br>` +
+    `<b>${checks}</b> checks para <b>${drenadas}</b> locomotivas drenadas.<br>` +
     (sem>0
       ? `<b>${sem}</b> de saldo semanal sem check.`
       : excedenteSemanal>0
-        ? `<b>${excedenteSemanal}</b> checks acima do total entregue à Torre A na semana.`
+        ? `<b>${excedenteSemanal}</b> checks acima do total drenado na semana.`
         : `Quantidade semanal totalmente coberta.`);
 
   const tbody=document.getElementById("tabela");
@@ -504,11 +504,14 @@ function desenharGrafico(dias){
     ctx.fillText(`${d}/${m}`,cx,margem.t+gh+15);
   });
 
+  // Legenda responsiva: largura medida para evitar sobreposição.
   ctx.font="bold 10px Arial";ctx.textAlign="left";
-  ctx.fillStyle="#e91e63";ctx.fillRect(margem.l,7,10,10);
-  ctx.fillStyle="#59636e";ctx.fillText("Entregues à Torre A",margem.l+15,16);
-  ctx.fillStyle="#0b6db7";ctx.fillRect(margem.l+82,7,10,10);
-  ctx.fillStyle="#59636e";ctx.fillText("Checks",margem.l+97,16);
+  const legenda1="Entregues à Torre A", legenda2="Checks";
+  const x1=margem.l, x2=x1+15+ctx.measureText(legenda1).width+18;
+  ctx.fillStyle="#e91e63";ctx.fillRect(x1,7,10,10);
+  ctx.fillStyle="#59636e";ctx.fillText(legenda1,x1+15,16);
+  ctx.fillStyle="#0b6db7";ctx.fillRect(x2,7,10,10);
+  ctx.fillStyle="#59636e";ctx.fillText(legenda2,x2+15,16);
 }
 
 function mostrarAviso(txt){
