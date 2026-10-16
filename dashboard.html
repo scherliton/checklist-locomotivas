@@ -3434,13 +3434,17 @@ function mudarAba(aba){
   document.getElementById('abaEng').classList.toggle('ativa',aba==='eng');
   document.getElementById('abaVisao').classList.toggle('ativa',aba==='visao');
   if(aba==='visao') requestAnimationFrame(()=>atualizarGraficosPremium());
+  if(aba==='eng') atualizarEngajamento();
 }
 function escaparEng(texto){return String(texto).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const CHAVE_NOMES_ENG="dashboardEngNomesConfirmadosV1";
 function chaveNomeEng(nome){
   return String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\s+/g,' ').trim();
 }
+let cacheNomesEng=null;
+let cacheFonteNomesEng=null;
 function nomesOriginaisEng(){
+  if(cacheFonteNomesEng===todosRegistros && cacheNomesEng)return cacheNomesEng;
   const mapa=new Map();
   todosRegistros.forEach(r=>{
     const n=formatarNome(r.colaborador);
@@ -3448,6 +3452,8 @@ function nomesOriginaisEng(){
     const k=chaveNomeEng(n);
     if(!mapa.has(k))mapa.set(k,n);
   });
+  cacheFonteNomesEng=todosRegistros;
+  cacheNomesEng=mapa;
   return mapa;
 }
 function lerUnificacoesEng(){
@@ -3511,9 +3517,10 @@ function renderizarNomesEng(){
     if(chaves.includes(anterior))select.value=anterior;
   }
   const sugestoes=[];
+  const canonicos=new Map(chaves.map(k=>[k,nomeCanonicoEng(k).chave]));
   for(let i=0;i<chaves.length;i++)for(let j=i+1;j<chaves.length;j++){
     const a=chaves[i],b=chaves[j];
-    if(nomeCanonicoEng(a).chave===nomeCanonicoEng(b).chave)continue;
+    if(canonicos.get(a)===canonicos.get(b))continue;
     const partesA=a.split(' '),partesB=b.split(' ');
     if(partesA.length!==partesB.length||partesA[0].length<3||partesB[0].length<3)continue;
     if(distanciaEng(a,b)<=2)sugestoes.push([a,b]);
@@ -3533,10 +3540,16 @@ function renderizarNomesEng(){
 }
 function atualizarEngajamento(){
   const mapa=new Map();
+  const cacheCanonico=new Map();
+  const obterCanonico=(nome)=>{
+    const chave=chaveNomeEng(nome);
+    if(!cacheCanonico.has(chave))cacheCanonico.set(chave,nomeCanonicoEng(nome));
+    return cacheCanonico.get(chave);
+  };
   registrosFiltrados.forEach(r=>{
     const nome=formatarNome(r.colaborador);
     if(nome==='-')return;
-    const canon=nomeCanonicoEng(nome);
+    const canon=obterCanonico(nome);
     const data=converterData(r.dataHora);
     const atual=mapa.get(canon.chave)||{nome:canon.nome,total:0,ultimo:null};
     atual.total++;
@@ -3545,7 +3558,7 @@ function atualizarEngajamento(){
   });
   const ativos=dias=>{
     const inicio=Date.now()-dias*86400000;
-    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador)).filter(n=>n!=='-').map(n=>nomeCanonicoEng(n).chave)).size;
+    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador)).filter(n=>n!=='-').map(n=>obterCanonico(n).chave)).size;
   };
   document.getElementById('engTotal').textContent=mapa.size;
   document.getElementById('eng7').textContent=ativos(7);
@@ -3554,7 +3567,12 @@ function atualizarEngajamento(){
   const lista=[...mapa.values()].filter(x=>chaveNomeEng(x.nome).includes(busca)).sort((a,b)=>b.total-a.total||a.nome.localeCompare(b.nome));
   const max=Math.max(1,...lista.map(x=>x.total));
   document.getElementById('engTabela').innerHTML=lista.length?lista.map(x=>`<tr><td><b>${escaparEng(x.nome)}</b></td><td>${x.total}</td><td><div class="eng-barra"><div style="width:${x.total/max*100}%"></div></div></td><td>${x.ultimo?formatarData(x.ultimo):'-'}</td></tr>`).join(''):'<tr><td colspan="4">Nenhum colaborador encontrado.</td></tr>';
-  renderizarNomesEng();
+  if(!window.__engNomesRenderizados || window.__engUltimaVersaoUnificacoes!==JSON.stringify(unificacoesEng) || window.__engUltimaFonte!==todosRegistros){
+    renderizarNomesEng();
+    window.__engNomesRenderizados=true;
+    window.__engUltimaVersaoUnificacoes=JSON.stringify(unificacoesEng);
+    window.__engUltimaFonte=todosRegistros;
+  }
 }
 
 carregarDados();
