@@ -1070,6 +1070,16 @@ th{
         <div class="secao-descricao">
           Últimos checklists encontrados no período selecionado.
         </div>
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:14px">
+          <label for="limiteUltimosRegistros" style="font-size:13px;font-weight:bold">Exibir registros:</label>
+          <select id="limiteUltimosRegistros" onchange="atualizarTabela()" style="padding:8px 12px;border:1px solid #ccd4dd;border-radius:8px;background:#fff">
+            <option value="20">20</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+          <span id="resumoUltimosRegistros" style="font-size:12px;color:#667085"></span>
+        </div>
 
         <div class="tabela-wrapper">
 
@@ -3320,8 +3330,10 @@ function atualizarTabela(){
 
     }
   )
-  .slice(0,20);
+  .slice(0,Number(document.getElementById("limiteUltimosRegistros")?.value)||50);
 
+  document.getElementById("resumoUltimosRegistros").textContent =
+    `Mostrando ${ordenados.length} de ${registrosFiltrados.length} registros`;
 
   if(
     ordenados.length === 0
