@@ -3456,11 +3456,21 @@ function nomesOriginaisEng(){
   cacheNomesEng=mapa;
   return mapa;
 }
+// Correções confirmadas pela equipe, disponíveis em qualquer navegador.
+// Uniões manuais já salvas têm prioridade sobre essas sugestões padrão.
+const UNIFICACOES_PADRAO_ENG={
+  'deivsom':'deyvison',
+  'julio felix':'julio',
+  'maxwell':'maxwell bernardo',
+  'luciano rocha':'luciano',
+  'alan fre':'alan freitas'
+};
 function lerUnificacoesEng(){
   try{
     const v=JSON.parse(localStorage.getItem(CHAVE_NOMES_ENG)||'{}');
-    return v&&typeof v==='object'&&!Array.isArray(v)?v:{};
-  }catch(e){return {};}
+    const salvas=v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+    return {...UNIFICACOES_PADRAO_ENG,...salvas};
+  }catch(e){return {...UNIFICACOES_PADRAO_ENG};}
 }
 let unificacoesEng=lerUnificacoesEng();
 function nomeCanonicoEng(nome){
@@ -3505,7 +3515,8 @@ function unificarNomesManual(){
 }
 function desfazerUniaoEng(chave){
   const anterior={...unificacoesEng};
-  delete unificacoesEng[chave];
+  // Valor vazio registra a opção de desfazer também para uniões padrão.
+  unificacoesEng[chave]='';
   if(!gravarUnificacoesEng()){unificacoesEng=anterior;return;}
   atualizarEngajamento();
 }
@@ -3532,7 +3543,7 @@ function renderizarNomesEng(){
     '<button class="btn-cinza" data-origem="'+escaparEng(b)+'" data-destino="'+escaparEng(a)+'">Unificar no segundo nome</button></div>').join(''):'<p class="eng-nota">Nenhuma sugestão pendente.</p>')+
     (sugestoes.length>40?'<p class="eng-nota">Exibindo as primeiras 40 sugestões.</p>':'');
   caixa.querySelectorAll('button[data-origem]').forEach(btn=>btn.addEventListener('click',()=>unirNomesEng(btn.dataset.origem,btn.dataset.destino)));
-  const itens=Object.entries(unificacoesEng).filter(([a,b])=>nomes.has(a)&&nomes.has(chaveNomeEng(b)));
+  const itens=Object.entries(unificacoesEng).filter(([a,b])=>b&&nomes.has(a)&&nomes.has(chaveNomeEng(b)));
   const unioes=document.getElementById('engUnificacoes');
   unioes.innerHTML='<h3 style="font-size:15px;color:#003b70">Uniões confirmadas ('+itens.length+')</h3>'+
     (itens.length?itens.map(([a,b],i)=>'<div style="padding:9px;border-bottom:1px solid #edf0f3">'+escaparEng(nomes.get(a))+' → '+escaparEng(nomeCanonicoEng(b).nome)+' <button class="btn-cinza" data-desfazer="'+i+'">Desfazer</button></div>').join(''):'<p class="eng-nota">Nenhuma união confirmada.</p>');
