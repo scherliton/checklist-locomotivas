@@ -732,6 +732,32 @@ th{
 .eng-barra>div{height:100%;background:#1479bd;border-radius:10px}
 .eng-nota{font-size:12px;color:#667085;margin:8px 0 18px}
 @media(max-width:650px){.eng-cards{grid-template-columns:1fr}}
+/* Engajamento por equipe */
+.eq-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+/* Cards premium: apenas apresentação; indicadores permanecem inalterados */
+.eq-card{position:relative;overflow:hidden;background:linear-gradient(155deg,#fff 55%,#fff5f9);border:1px solid #f3bfd2;border-radius:17px;padding:19px;box-shadow:0 7px 22px rgba(135,42,83,.09);min-width:0;transition:transform .2s,box-shadow .2s}
+.eq-card:hover{transform:translateY(-2px);box-shadow:0 11px 25px rgba(135,42,83,.14)}
+.eq-card.lider{border-color:#e49a35;background:linear-gradient(155deg,#fff 55%,#fff9e9)}
+.eq-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.eq-card-nome{font-size:12px;letter-spacing:.08em;font-weight:800;color:#8c4263;text-transform:uppercase}
+.eq-card-icon{width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:#ffebf3;font-size:21px}
+.eq-card.noite .eq-card-icon{background:#edf0fb}
+.eq-card-valor{font-size:35px;font-weight:900;letter-spacing:-.04em;line-height:1.1;color:#b51550;margin-top:15px;font-variant-numeric:tabular-nums}
+.eq-card-label{font-size:12px;color:#7a8492;margin-top:4px}
+.eq-card-divider{height:1px;background:#f3e5eb;margin:15px 0 12px}
+.eq-card-metrica{display:flex;align-items:baseline;justify-content:space-between;gap:7px;flex-wrap:wrap}
+.eq-card-media{font-size:16px;font-weight:800;color:#394556;font-variant-numeric:tabular-nums}
+.eq-card-plant{font-size:11px;color:#7a8492}
+.eq-card-track{height:7px;background:#f2e9ed;border-radius:20px;overflow:hidden;margin-top:12px}
+.eq-card-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#d81b60,#f06292)}
+.eq-card.noite .eq-card-fill{background:linear-gradient(90deg,#64748b,#9ba9c0)}
+.eq-card.lider .eq-card-fill{background:linear-gradient(90deg,#e0a12e,#f2c566)}
+.eq-card-selo{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:#a66a14;background:#fff0c9;padding:5px 8px;border-radius:20px;margin-top:10px}
+.eq-barras{display:grid;gap:13px}
+.eq-linha{display:grid;grid-template-columns:110px 1fr 85px;align-items:center;gap:10px}
+.eq-trilho{height:13px;border-radius:10px;background:#edf0f3;overflow:hidden}
+.eq-trilho>div{height:100%;background:linear-gradient(90deg,#e91e63,#f06292)}
+@media(max-width:700px){.eq-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.eq-linha{grid-template-columns:90px 1fr 70px}}
 </style>
 
 </head>
@@ -761,7 +787,7 @@ th{
 
   <div class="container">
 
-    <div class="abas-dashboard"><button class="aba-dashboard ativa" id="abaVisao" onclick="mudarAba('visao')">Visão geral</button><button class="aba-dashboard" id="abaEng" onclick="mudarAba('eng')">Engajamento dos colaboradores</button></div>
+    <div class="abas-dashboard"><button class="aba-dashboard ativa" id="abaVisao" onclick="mudarAba('visao')">Visão geral</button><button class="aba-dashboard" id="abaEng" onclick="mudarAba('eng')">Engajamento dos colaboradores</button><button class="aba-dashboard" id="abaEquipe" onclick="mudarAba('equipe')">Engajamento por equipe</button></div>
     <div id="erro" class="erro"></div>
 
 
@@ -825,7 +851,16 @@ th{
     <div id="conteudo" style="display:none;">
 
 
-      <div id="painelEng" style="display:none">
+      <div id="painelEquipe" style="display:none">
+  <div class="secao" style="margin-bottom:16px"><h2>🚆 Engajamento por equipe</h2>
+  <p class="eng-nota">Escala 2×2: A Dia e A Noite em 24–25/10/2026; B Dia e B Noite em 26–27/10/2026. Horário de Brasília. O plantão noturno pertence à data em que começa, às 18h. Os filtros de datas e locomotiva acima também se aplicam aqui.</p>
+  <p class="eng-nota">A média considera somente plantões completos dentro do período selecionado; registros de plantões em andamento entram no total, mas não na média. Dados anteriores seguem a mesma rotação, salvo alterações reais na escala.</p>
+  <div class="eq-grid" id="eqCards"></div>
+  <h3 style="color:#9f174a">Ranking por média de checklists por plantão completo</h3><div class="eq-barras" id="eqRanking"></div>
+  </div>
+  <div class="secao"><h2>📈 Evolução mensal das equipes</h2><p class="eng-nota">Registros por mês e por equipe, com média por plantão completo para comparação.</p><div class="tabela-wrapper"><table><thead><tr><th>Mês</th><th>Equipe</th><th>Checklists</th><th>Plantões completos</th><th>Média/plantão</th></tr></thead><tbody id="eqMensal"></tbody></table></div></div>
+</div>
+<div id="painelEng" style="display:none">
         <div class="eng-cards">
           <div class="card"><div class="card-titulo">COLABORADORES NO PERÍODO</div><div class="card-valor" id="engTotal">0</div></div>
           <div class="card"><div class="card-titulo">ATIVOS NOS ÚLTIMOS 7 DIAS</div><div class="card-valor" id="eng7">0</div></div>
@@ -1069,16 +1104,6 @@ th{
 
         <div class="secao-descricao">
           Últimos checklists encontrados no período selecionado.
-        </div>
-        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:14px">
-          <label for="limiteUltimosRegistros" style="font-size:13px;font-weight:bold">Exibir registros:</label>
-          <select id="limiteUltimosRegistros" onchange="atualizarTabela()" style="padding:8px 12px;border:1px solid #ccd4dd;border-radius:8px;background:#fff">
-            <option value="20">20</option>
-            <option value="50" selected>50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-          </select>
-          <span id="resumoUltimosRegistros" style="font-size:12px;color:#667085"></span>
         </div>
 
         <div class="tabela-wrapper">
@@ -1521,6 +1546,7 @@ function atualizarDashboard(){
   atualizarTabela();
 
   atualizarEngajamento();
+  atualizarEquipes();
 
 }
 
@@ -3330,10 +3356,8 @@ function atualizarTabela(){
 
     }
   )
-  .slice(0,Number(document.getElementById("limiteUltimosRegistros")?.value)||50);
+  .slice(0,20);
 
-  document.getElementById("resumoUltimosRegistros").textContent =
-    `Mostrando ${ordenados.length} de ${registrosFiltrados.length} registros`;
 
   if(
     ordenados.length === 0
@@ -3442,21 +3466,19 @@ function atualizarTabela(){
 
 function mudarAba(aba){
   document.getElementById('painelEng').style.display=aba==='eng'?'block':'none';
+  document.getElementById('painelEquipe').style.display=aba==='equipe'?'block':'none';
+  document.getElementById('abaEquipe').classList.toggle('ativa',aba==='equipe');
   document.getElementById('painelVisao').style.display=aba==='visao'?'block':'none';
   document.getElementById('abaEng').classList.toggle('ativa',aba==='eng');
   document.getElementById('abaVisao').classList.toggle('ativa',aba==='visao');
   if(aba==='visao') requestAnimationFrame(()=>atualizarGraficosPremium());
-  if(aba==='eng') atualizarEngajamento();
 }
 function escaparEng(texto){return String(texto).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 const CHAVE_NOMES_ENG="dashboardEngNomesConfirmadosV1";
 function chaveNomeEng(nome){
   return String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/\s+/g,' ').trim();
 }
-let cacheNomesEng=null;
-let cacheFonteNomesEng=null;
 function nomesOriginaisEng(){
-  if(cacheFonteNomesEng===todosRegistros && cacheNomesEng)return cacheNomesEng;
   const mapa=new Map();
   todosRegistros.forEach(r=>{
     const n=formatarNome(r.colaborador);
@@ -3464,33 +3486,13 @@ function nomesOriginaisEng(){
     const k=chaveNomeEng(n);
     if(!mapa.has(k))mapa.set(k,n);
   });
-  cacheFonteNomesEng=todosRegistros;
-  cacheNomesEng=mapa;
   return mapa;
 }
-// Correções confirmadas pela equipe, disponíveis em qualquer navegador.
-// Uniões manuais já salvas têm prioridade sobre essas sugestões padrão.
-const UNIFICACOES_PADRAO_ENG={
-  'deivsom':'deyvison',
-  'julio felix':'julio',
-  'maxwell':'maxwell bernardo',
-  'luciano rocha':'luciano',
-  'alan fre':'alan freitas',
-  // Variantes confirmadas de Joao Batista.
-  'joao batisra':'joao batista',
-  'joao batita':'joao batista',
-  'joao batsta':'joao batista',
-  'joao btista':'joao batista',
-  'joo batista':'joao batista',
-  'joo btista':'joao batista',
-  'joo btita':'joao batista'
-};
 function lerUnificacoesEng(){
   try{
     const v=JSON.parse(localStorage.getItem(CHAVE_NOMES_ENG)||'{}');
-    const salvas=v&&typeof v==='object'&&!Array.isArray(v)?v:{};
-    return {...UNIFICACOES_PADRAO_ENG,...salvas};
-  }catch(e){return {...UNIFICACOES_PADRAO_ENG};}
+    return v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+  }catch(e){return {};}
 }
 let unificacoesEng=lerUnificacoesEng();
 function nomeCanonicoEng(nome){
@@ -3535,8 +3537,7 @@ function unificarNomesManual(){
 }
 function desfazerUniaoEng(chave){
   const anterior={...unificacoesEng};
-  // Valor vazio registra a opção de desfazer também para uniões padrão.
-  unificacoesEng[chave]='';
+  delete unificacoesEng[chave];
   if(!gravarUnificacoesEng()){unificacoesEng=anterior;return;}
   atualizarEngajamento();
 }
@@ -3548,10 +3549,9 @@ function renderizarNomesEng(){
     if(chaves.includes(anterior))select.value=anterior;
   }
   const sugestoes=[];
-  const canonicos=new Map(chaves.map(k=>[k,nomeCanonicoEng(k).chave]));
   for(let i=0;i<chaves.length;i++)for(let j=i+1;j<chaves.length;j++){
     const a=chaves[i],b=chaves[j];
-    if(canonicos.get(a)===canonicos.get(b))continue;
+    if(nomeCanonicoEng(a).chave===nomeCanonicoEng(b).chave)continue;
     const partesA=a.split(' '),partesB=b.split(' ');
     if(partesA.length!==partesB.length||partesA[0].length<3||partesB[0].length<3)continue;
     if(distanciaEng(a,b)<=2)sugestoes.push([a,b]);
@@ -3563,7 +3563,7 @@ function renderizarNomesEng(){
     '<button class="btn-cinza" data-origem="'+escaparEng(b)+'" data-destino="'+escaparEng(a)+'">Unificar no segundo nome</button></div>').join(''):'<p class="eng-nota">Nenhuma sugestão pendente.</p>')+
     (sugestoes.length>40?'<p class="eng-nota">Exibindo as primeiras 40 sugestões.</p>':'');
   caixa.querySelectorAll('button[data-origem]').forEach(btn=>btn.addEventListener('click',()=>unirNomesEng(btn.dataset.origem,btn.dataset.destino)));
-  const itens=Object.entries(unificacoesEng).filter(([a,b])=>b&&nomes.has(a)&&nomes.has(chaveNomeEng(b)));
+  const itens=Object.entries(unificacoesEng).filter(([a,b])=>nomes.has(a)&&nomes.has(chaveNomeEng(b)));
   const unioes=document.getElementById('engUnificacoes');
   unioes.innerHTML='<h3 style="font-size:15px;color:#003b70">Uniões confirmadas ('+itens.length+')</h3>'+
     (itens.length?itens.map(([a,b],i)=>'<div style="padding:9px;border-bottom:1px solid #edf0f3">'+escaparEng(nomes.get(a))+' → '+escaparEng(nomeCanonicoEng(b).nome)+' <button class="btn-cinza" data-desfazer="'+i+'">Desfazer</button></div>').join(''):'<p class="eng-nota">Nenhuma união confirmada.</p>');
@@ -3571,16 +3571,10 @@ function renderizarNomesEng(){
 }
 function atualizarEngajamento(){
   const mapa=new Map();
-  const cacheCanonico=new Map();
-  const obterCanonico=(nome)=>{
-    const chave=chaveNomeEng(nome);
-    if(!cacheCanonico.has(chave))cacheCanonico.set(chave,nomeCanonicoEng(nome));
-    return cacheCanonico.get(chave);
-  };
   registrosFiltrados.forEach(r=>{
     const nome=formatarNome(r.colaborador);
     if(nome==='-')return;
-    const canon=obterCanonico(nome);
+    const canon=nomeCanonicoEng(nome);
     const data=converterData(r.dataHora);
     const atual=mapa.get(canon.chave)||{nome:canon.nome,total:0,ultimo:null};
     atual.total++;
@@ -3589,7 +3583,7 @@ function atualizarEngajamento(){
   });
   const ativos=dias=>{
     const inicio=Date.now()-dias*86400000;
-    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador)).filter(n=>n!=='-').map(n=>obterCanonico(n).chave)).size;
+    return new Set(todosRegistros.filter(r=>{const data=converterData(r.dataHora);return data&&data.getTime()>=inicio&&data.getTime()<=Date.now();}).map(r=>formatarNome(r.colaborador)).filter(n=>n!=='-').map(n=>nomeCanonicoEng(n).chave)).size;
   };
   document.getElementById('engTotal').textContent=mapa.size;
   document.getElementById('eng7').textContent=ativos(7);
@@ -3598,12 +3592,92 @@ function atualizarEngajamento(){
   const lista=[...mapa.values()].filter(x=>chaveNomeEng(x.nome).includes(busca)).sort((a,b)=>b.total-a.total||a.nome.localeCompare(b.nome));
   const max=Math.max(1,...lista.map(x=>x.total));
   document.getElementById('engTabela').innerHTML=lista.length?lista.map(x=>`<tr><td><b>${escaparEng(x.nome)}</b></td><td>${x.total}</td><td><div class="eng-barra"><div style="width:${x.total/max*100}%"></div></div></td><td>${x.ultimo?formatarData(x.ultimo):'-'}</td></tr>`).join(''):'<tr><td colspan="4">Nenhum colaborador encontrado.</td></tr>';
-  if(!window.__engNomesRenderizados || window.__engUltimaVersaoUnificacoes!==JSON.stringify(unificacoesEng) || window.__engUltimaFonte!==todosRegistros){
-    renderizarNomesEng();
-    window.__engNomesRenderizados=true;
-    window.__engUltimaVersaoUnificacoes=JSON.stringify(unificacoesEng);
-    window.__engUltimaFonte=todosRegistros;
+  renderizarNomesEng();
+}
+
+// Escala referenciada em 24/10/2026. Datas em America/Sao_Paulo.
+const EQ_TZ='America/Sao_Paulo';
+const EQ_NOMES=['A Dia','A Noite','B Dia','B Noite'];
+const eqFmt=new Intl.DateTimeFormat('en-CA',{timeZone:EQ_TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+function eqPartes(data){
+  const o={};for(const p of eqFmt.formatToParts(data))if(p.type!=='literal')o[p.type]=p.value;
+  return {dia:`${o.year}-${o.month}-${o.day}`,hora:Number(o.hour),min:Number(o.minute)};
+}
+function eqDiaUTC(chave){const [a,m,d]=chave.split('-').map(Number);return Date.UTC(a,m-1,d)/86400000;}
+function eqDataUTC(n){return new Date(n*86400000).toISOString().slice(0,10);}
+const EQ_REF=eqDiaUTC('2026-10-24');
+function eqEquipe(data){
+  const p=eqPartes(data);
+  const diaInicio=eqDiaUTC(p.dia)-(p.hora<6?1:0);
+  const ciclo=((diaInicio-EQ_REF)%4+4)%4;
+  const letra=ciclo<2?'A':'B';
+  return {nome:letra+(p.hora>=6&&p.hora<18?' Dia':' Noite'),diaInicio};
+}
+function eqInicioFimUTC(dia,turno){
+  // Os horários de referência são 06h e 18h em UTC-03:00 (Brasil, sem horário de verão em 2026).
+  const inicio=(dia*86400000)+(turno==='Dia'?9:21)*3600000;
+  return [inicio,inicio+12*3600000];
+}
+function atualizarEquipes(){
+  const cont=Object.fromEntries(EQ_NOMES.map(n=>[n,{total:0,completos:0,plant:0,meses:{}}]));
+  const inicio=document.getElementById('dataInicial').value;
+  const fim=document.getElementById('dataFinal').value;
+  const hoje=Date.now();
+  const limiteInicio=inicio?eqDiaUTC(inicio):null;
+  const limiteFim=fim?eqDiaUTC(fim):null;
+  const loco=document.getElementById('filtroLocomotiva').value.trim();
+  // Os totais usam os mesmos registros já filtrados do dashboard.
+  const diasReg=[];
+  registrosFiltrados.forEach(r=>{
+    const d=converterData(r.dataHora);if(!d)return;
+    const eq=eqEquipe(d),mes=eqDataUTC(eq.diaInicio).slice(0,7);
+    cont[eq.nome].total++;
+    const turno=eq.nome.endsWith('Dia')?'Dia':'Noite';
+    const [inicioTurno,fimTurno]=eqInicioFimUTC(eq.diaInicio,turno);
+    const inicioFiltro=limiteInicio===null?-Infinity:limiteInicio*86400000+3*3600000;
+    const fimFiltro=limiteFim===null?Infinity:(limiteFim+1)*86400000+3*3600000;
+    if(fimTurno<=hoje&&inicioTurno>=inicioFiltro&&fimTurno<=fimFiltro)cont[eq.nome].completos++;
+    cont[eq.nome].meses[mes]??={total:0,plant:0};cont[eq.nome].meses[mes].total++;
+    diasReg.push(eq.diaInicio);
+  });
+  // Período explícito ou extensão dos registros disponíveis; só conta plantões inteiros.
+  const todosDias=todosRegistros.map(r=>converterData(r.dataHora)).filter(Boolean).map(d=>eqEquipe(d).diaInicio);
+  const minDia=limiteInicio??(todosDias.length?Math.min(...todosDias):eqDiaUTC('2026-10-24'));
+  const maxDia=limiteFim??eqDiaUTC(eqPartes(new Date()).dia);
+  for(let dia=minDia;dia<=maxDia;dia++){
+    const ciclo=((dia-EQ_REF)%4+4)%4,letra=ciclo<2?'A':'B';
+    for(const turno of ['Dia','Noite']){
+      const [ini,end]=eqInicioFimUTC(dia,turno);
+      if(end>hoje)continue;
+      // Se o filtro começa ou termina no meio do plantão, não contar como plantão completo.
+      const filtroIni=limiteInicio===null?-Infinity:(limiteInicio*86400000+3*3600000);
+      const filtroFim=limiteFim===null?Infinity:((limiteFim+1)*86400000+3*3600000);
+      if(ini<filtroIni||end>filtroFim)continue;
+      const nome=letra+' '+turno,mes=eqDataUTC(dia).slice(0,7);
+      cont[nome].plant++;
+      cont[nome].meses[mes]??={total:0,plant:0};cont[nome].meses[mes].plant++;
+    }
   }
+  const media=n=>cont[n].plant?cont[n].completos/cont[n].plant:0;
+  const liderEquipe=[...EQ_NOMES].sort((a,b)=>media(b)-media(a))[0];
+  const maiorMedia=Math.max(1,...EQ_NOMES.map(media));
+  document.getElementById('eqCards').innerHTML=EQ_NOMES.map(n=>{
+    const noite=n.includes('Noite'),lider=n===liderEquipe&&media(n)>0;
+    const valorMedia=media(n).toFixed(1).replace('.',',');
+    const percentual=Math.max(0,Math.min(100,media(n)/maiorMedia*100));
+    return `<div class="eq-card ${noite?'noite':'dia'} ${lider?'lider':''}">
+      <div class="eq-card-top"><span class="eq-card-nome">${n}</span><span class="eq-card-icon" aria-hidden="true">${noite?'🌙':'☀️'}</span></div>
+      <div class="eq-card-valor">${cont[n].total}</div><div class="eq-card-label">Checks realizados</div>
+      <div class="eq-card-divider"></div>
+      <div class="eq-card-metrica"><span class="eq-card-media">${valorMedia} / plantão</span><span class="eq-card-plant">${cont[n].plant} completos</span></div>
+      <div class="eq-card-track" role="img" aria-label="Desempenho relativo: ${percentual.toFixed(0)}% do maior valor"><div class="eq-card-fill" style="width:${percentual.toFixed(1)}%"></div></div>
+      ${lider?'<div class="eq-card-selo">🏆 Maior média</div>':''}
+    </div>`;
+  }).join('');
+  const ordenado=[...EQ_NOMES].sort((a,b)=>media(b)-media(a));const maior=Math.max(1,...ordenado.map(media));
+  document.getElementById('eqRanking').innerHTML=ordenado.map(n=>`<div class="eq-linha"><b>${n}</b><div class="eq-trilho"><div style="width:${media(n)/maior*100}%"></div></div><b>${media(n).toFixed(1).replace('.',',')}</b></div>`).join('');
+  const meses=[...new Set(EQ_NOMES.flatMap(n=>Object.keys(cont[n].meses)))].sort().reverse();
+  document.getElementById('eqMensal').innerHTML=meses.length?meses.flatMap(m=>EQ_NOMES.map(n=>{const x=cont[n].meses[m]||{total:0,plant:0};return `<tr><td>${m.slice(5)}/${m.slice(0,4)}</td><td>${n}</td><td>${x.total}</td><td>${x.plant}</td><td>${x.plant?(x.total/x.plant).toFixed(1).replace('.',','):'—'}</td></tr>`;})).join(''):'<tr><td colspan="5">Nenhum registro no período.</td></tr>';
 }
 
 carregarDados();
