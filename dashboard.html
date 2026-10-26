@@ -853,12 +853,12 @@ th{
 
       <div id="painelEquipe" style="display:none">
   <div class="secao" style="margin-bottom:16px"><h2>🚆 Engajamento por equipe</h2>
-  <p class="eng-nota">Escala 2×2: A Dia e A Noite em 24–25/10/2026; B Dia e B Noite em 26–27/10/2026. Horário de Brasília. O plantão noturno pertence à data em que começa, às 18h. Os filtros de datas e locomotiva acima também se aplicam aqui.</p>
-  <p class="eng-nota">A média considera somente plantões completos dentro do período selecionado; registros de plantões em andamento entram no total, mas não na média. Dados anteriores seguem a mesma rotação, salvo alterações reais na escala.</p>
+  <p class="eng-nota">Escala 2×2: A Dia e A Noite em 24–25/10/2026; B Dia e B Noite em 26–27/10/2026. Horário de Brasília. O escala noturno pertence à data em que começa, às 18h. Os filtros de datas e locomotiva acima também se aplicam aqui.</p>
+  <p class="eng-nota">A média considera somente escalas completas dentro do período selecionado; registros de escalas em andamento entram no total, mas não na média. Dados anteriores seguem a mesma rotação, salvo alterações reais na escala.</p>
   <div class="eq-grid" id="eqCards"></div>
-  <h3 style="color:#9f174a">Ranking por média de checklists por plantão completo</h3><div class="eq-barras" id="eqRanking"></div>
+  <h3 style="color:#9f174a">Ranking por média de checklists por escala completa</h3><div class="eq-barras" id="eqRanking"></div>
   </div>
-  <div class="secao"><h2>📈 Evolução mensal das equipes</h2><p class="eng-nota">Total de registros por mês e equipe; a média utiliza apenas registros de plantões completos.</p><div class="tabela-wrapper"><table><thead><tr><th>Mês</th><th>Equipe</th><th>Checklists</th><th>Plantões completos</th><th>Média/plantão</th></tr></thead><tbody id="eqMensal"></tbody></table></div></div>
+  <div class="secao"><h2>📈 Evolução mensal das equipes</h2><p class="eng-nota">Total de registros por mês e equipe; a média utiliza apenas registros de escalas completas.</p><div class="tabela-wrapper"><table><thead><tr><th>Mês</th><th>Equipe</th><th>Checklists</th><th>escalas completas</th><th>Média/escala</th></tr></thead><tbody id="eqMensal"></tbody></table></div></div>
 </div>
 <div id="painelEng" style="display:none">
         <div class="eng-cards">
@@ -3674,7 +3674,7 @@ function atualizarEquipes(){
       <div class="eq-card-top"><span class="eq-card-nome">${n}</span><span class="eq-card-icon" aria-hidden="true">${noite?'🌙':'☀️'}</span></div>
       <div class="eq-card-valor">${cont[n].total}</div><div class="eq-card-label">Checks realizados</div>
       <div class="eq-card-divider"></div>
-      <div class="eq-card-metrica"><span class="eq-card-media">${valorMedia} / plantão</span><span class="eq-card-plant">${cont[n].plant} completos</span></div>
+      <div class="eq-card-metrica"><span class="eq-card-media">${valorMedia} / escala</span><span class="eq-card-plant">${cont[n].plant} completos</span></div>
       <div class="eq-card-track" role="img" aria-label="Desempenho relativo: ${percentual.toFixed(0)}% do maior valor"><div class="eq-card-fill" style="width:${percentual.toFixed(1)}%"></div></div>
       ${lider?'<div class="eq-card-selo">🏆 Maior média</div>':''}
     </div>`;
