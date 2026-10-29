@@ -125,6 +125,12 @@ td.num,th.num{text-align:center}
 .corte-d1{margin:0 0 18px;padding:12px 14px;border-radius:10px;background:#eef8f2;border:1px solid #cfe8d8;color:#176b45;font-size:12px;font-weight:700
 }
 
+
+/* Navegação entre os dois painéis */
+.navegacao{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+.navegacao a{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 17px;border-radius:10px;text-decoration:none;font-weight:800;font-size:13px;border:1px solid rgba(255,255,255,.65);color:white;background:rgba(255,255,255,.13)}
+.navegacao a.ativo{background:#fff;color:#b51550}
+.navegacao a:hover{filter:brightness(.96)}
 </style>
 </head>
 <body>
@@ -137,6 +143,10 @@ td.num,th.num{text-align:center}
      <div class="laco">🎀</div>
      <div><b>OUTUBRO ROSA</b><small>Cuidar é um ato de amor!</small></div>
    </div>
+   <nav class="navegacao" aria-label="Navegação do Controle Pós-Drenagem">
+     <a class="ativo" href="./index.html" aria-current="page">📊 Comparativo Semanal</a>
+     <a href="https://script.google.com/macros/s/AKfycby3vfDFpeH9j9h6CYXsHACE5i1e8IGrMNYbot3h0Xiq2hvdoVF5zunXknRpzyy0L8I0/exec" target="_blank" rel="noopener noreferrer">📚 Histórico Geral ↗</a>
+   </nav>
  </div>
 </header>
 
