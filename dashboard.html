@@ -579,7 +579,7 @@
     }
   
 /* =========================================================
-   TEMA OUTUBRO ROSA 2026 — DASHBOARD
+   TEMA NOVEMBRO AZUL 2026 — DASHBOARD
    Alterações exclusivamente visuais
    ========================================================= */
 :root{
@@ -620,7 +620,7 @@ body{
   z-index:1;
 }
 
-.outubro-dashboard{
+.novembro-dashboard{
   margin-top:13px;
   padding-top:11px;
   border-top:1px solid rgba(255,255,255,.28);
@@ -631,18 +631,18 @@ body{
   max-width:100%;
 }
 
-.outubro-dashboard .laco{
+.novembro-dashboard .laco{
   font-size:28px;
   line-height:1;
 }
 
-.outubro-dashboard .titulo{
+.novembro-dashboard .titulo{
   font-size:12px;
   font-weight:800;
   letter-spacing:.8px;
 }
 
-.outubro-dashboard .frase{
+.novembro-dashboard .frase{
   margin-top:2px;
   font-size:12px;
   font-style:italic;
@@ -692,7 +692,7 @@ th{
   background:#fff4f8;
 }
 
-.rodape-outubro-dashboard{
+.rodape-novembro-dashboard{
   max-width:1180px;
   margin:0 auto;
   padding:0 15px 24px;
@@ -701,7 +701,7 @@ th{
   font-size:11px;
 }
 
-.rodape-outubro-dashboard::before{
+.rodape-novembro-dashboard::before{
   content:"";
   display:block;
   width:260px;
@@ -712,7 +712,7 @@ th{
 }
 
 @media(max-width:520px){
-  .outubro-dashboard{
+  .novembro-dashboard{
     width:100%;
   }
   .topo{
@@ -758,6 +758,23 @@ th{
 .eq-trilho{height:13px;border-radius:10px;background:#edf0f3;overflow:hidden}
 .eq-trilho>div{height:100%;background:linear-gradient(90deg,#e91e63,#f06292)}
 @media(max-width:700px){.eq-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.eq-linha{grid-template-columns:90px 1fr 70px}}
+
+/* Novembro Azul: identidade visual; sem alterar cores de status. */
+:root{--rosa-principal:#1265ba;--rosa-forte:#064b91;--rosa-suave:#eef6ff;--rosa-borda:#bed9f3;--rosa-texto:#175a99}
+body{background:radial-gradient(circle at top right,rgba(28,114,201,.09),transparent 30%),linear-gradient(180deg,#f7fbff,#eaf3fd)}
+.topo{background:linear-gradient(120deg,#062f63,#0759a8 62%,#2789d6);box-shadow:0 5px 18px rgba(4,65,126,.17)}
+.filtros,.card,.secao,.grafico-card{border-color:#c8dff3;box-shadow:0 3px 12px rgba(18,74,135,.08)}
+.btn-azul{background:linear-gradient(135deg,#1474c8,#064b91)}
+.campo input:focus,.campo select:focus{border-color:#5ba7e8;box-shadow:0 0 0 3px rgba(26,113,196,.12)}
+.card:not(.verde):not(.vermelho):not(.laranja) .card-valor,.titulo-bloco,.secao h2,.grafico-titulo,.ranking-numero{color:#064b91}
+.barra-preenchida,.eq-trilho>div{background:linear-gradient(90deg,#1265ba,#58a8eb)}
+th{background:#f0f7ff}
+.aba-dashboard{color:#064b91;border-color:#c8dff3}.aba-dashboard.ativa{background:#064b91;color:white}
+.eq-card{background:linear-gradient(155deg,#fff 55%,#f0f7ff);border-color:#c4dcf4;box-shadow:0 7px 22px rgba(28,75,135,.08)}
+.eq-card-nome,.eq-card-valor{color:#064b91}.eq-card-icon{background:#e7f3ff}.eq-card-divider{background:#dceaf8}
+.eq-card-track{background:#e6f0fb}.eq-card-fill{background:linear-gradient(90deg,#0759a8,#55a7e8)}
+.novembro-dashboard{border-color:rgba(255,255,255,.3)}
+.rodape-novembro-dashboard::before{background:linear-gradient(90deg,transparent,#89bdea,transparent)}
 </style>
 
 </head>
@@ -773,11 +790,11 @@ th{
         Acompanhamento das condições dos banheiros das locomotivas
       </p>
 
-      <div class="outubro-dashboard">
-        <div class="laco">🎀</div>
+      <div class="novembro-dashboard">
+        <div class="laco">💙</div>
         <div>
-          <div class="titulo">OUTUBRO ROSA</div>
-          <div class="frase">Cuidar é um ato de amor!</div>
+          <div class="titulo">NOVEMBRO AZUL</div>
+          <div class="frase">Prevenção é um ato de coragem!</div>
         </div>
       </div>
 
@@ -1143,8 +1160,8 @@ th{
   </div>
 
 
-  <div class="rodape-outubro-dashboard">
-    🎀 Juntos nessa causa • Prevenção é o melhor caminho
+  <div class="rodape-novembro-dashboard">
+    💙 Saúde do homem • Cuidar de si também é prioridade
   </div>
 
 <script>
@@ -1228,7 +1245,7 @@ async function carregarDados(){
   try{
 
     const resposta =
-    await fetch(URL_API);
+    await fetch(URL_API + "?_=" + Date.now(), {cache:"no-store", redirect:"follow"});
 
 
     if(!resposta.ok){
@@ -1242,6 +1259,10 @@ async function carregarDados(){
 
     const dados =
     await resposta.json();
+
+    if(!dados || dados.sucesso === false || !Array.isArray(dados.registros)){
+      throw new Error(dados?.erro || dados?.mensagem || "A API não retornou registros no formato esperado");
+    }
 
 
     todosRegistros =
@@ -1274,7 +1295,7 @@ async function carregarDados(){
 
 
     caixaErro.innerHTML =
-    "❌ Erro ao carregar os dados do Dashboard.";
+    "❌ Erro ao carregar os dados do Dashboard: " + String(erro && erro.message || erro) + ". Verifique a conexão e a publicação do Apps Script.";
 
 
     caixaErro.style.display="block";
