@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checklist Locomotivas V3</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+margin:0;
+padding:15px;
+background:#eef3f8;
+}
+
+.app{
+max-width:520px;
+margin:auto;
+}
+
+.header{
+background:#003b70;
+color:white;
+padding:20px;
+border-radius:15px 15px 0 0;
+text-align:center;
+}
+
+.header h1{
+margin:0;
+font-size:22px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:0 0 15px 15px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-top:15px;
+margin-bottom:6px;
+}
+
+input,textarea{
+
+width:100%;
+padding:13px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
+
+}
+
+textarea{
+
+height:90px;
+resize:none;
+
+}
+
+.btn{
+
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+
+}
+
+.btn:disabled{
+
+opacity:.6;
+cursor:not-allowed;
+
+}
+
+.btn-trocar{
+
+background:#777;
+color:white;
+margin-top:10px;
+
+}
+
+.item{
+
+margin-top:15px;
+padding:15px;
+background:#f4f7fa;
+border-radius:12px;
+border-left:5px solid #003b70;
+
+}
+
+.item-title{
+
+font-weight:bold;
+margin-bottom:10px;
+
+}
+
+.botoes{
+
+display:flex;
+gap:10px;
+
+}
+
+.botoes button{
+
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+
+}
+
+.conforme{
+
+background:#198754;
+color:white;
+
+}
+
+.nao{
+
+background:#dc3545;
+color:white;
+
+}
+
+.selecionado{
+
+outline:4px solid #003b70;
+
+}
+
+.status{
+
+margin-top:20px;
+padding:15px;
+border-radius:10px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+background:#d1e7dd;
+color:#0f5132;
+
+}
+
+.salvar{
+
+margin-top:20px;
+background:#003b70;
+color:white;
+
+}
+
+
+/* popup */
+
+.popup{
+
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 5px 25px rgba(0,0,0,.3);
+text-align:center;
+width:300px;
+z-index:999;
+
+}
+
+
+.popup h2{
+
+color:#198754;
+
+}
+
+
+.popup button{
+
+padding:12px 25px;
+border:none;
+border-radius:10px;
+background:#003b70;
+color:white;
+font-weight:bold;
+
+}
+
+
+.fundo-popup{
+
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.4);
+z-index:998;
+
+}
+
+
+/* OFFLINE / SINCRONIZAÇÃO */
+
+.conexao-box{
+margin-top:14px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding:10px 12px;
+border-radius:10px;
+background:#f4f7fa;
+font-size:13px;
+font-weight:bold;
+color:#52606d;
+}
+
+.conexao-status{
+display:inline-flex;
+align-items:center;
+gap:7px;
+}
+
+.conexao-bolinha{
+display:inline-block;
+width:10px;
+height:10px;
+min-width:10px;
+min-height:10px;
+flex:0 0 10px;
+border-radius:50%;
+background:#198754;
+box-shadow:0 0 0 2px rgba(25,135,84,.12);
+}
+
+.conexao-offline .conexao-bolinha{
+background:#d97706;
+box-shadow:0 0 0 2px rgba(217,119,6,.16);
+}
+
+.conexao-sync .conexao-bolinha{
+background:#0d6efd;
+box-shadow:0 0 0 2px rgba(13,110,253,.14);
+}
+
+.pendentes-badge{
+font-weight:normal;
+color:#6b7280;
+font-size:12px;
+}
+
+.btn-sync{
+margin-top:10px;
+background:#0d6efd;
+color:white;
+display:none;
+}
+
+.popup.offline h2{
+color:#d97706;
+}
+
+
+/* =========================================================
+   TEMA NOVEMBRO AZUL 2026
+   Alterações exclusivamente visuais
+   ========================================================= */
+
+:root{
+  --rosa-principal:#e91e63;
+  --rosa-forte:#d81b60;
+  --rosa-claro:#fff0f5;
+  --rosa-suave:#fde7f0;
+  --rosa-borda:#f7bfd3;
+  --rosa-texto:#b51550;
+}
+
+body{
+  background:
+    radial-gradient(circle at top right, rgba(233,30,99,.08), transparent 30%),
+    linear-gradient(180deg,#fff9fb 0%,#fff1f6 100%);
+}
+
+.app{
+  max-width:520px;
+}
+
+.header{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#ed2b72 0%,#df1e63 55%,#f05a91 100%);
+  padding:18px 20px 16px;
+  box-shadow:0 6px 20px rgba(216,27,96,.18);
+}
+
+.header::after{
+  content:"";
+  position:absolute;
+  right:-24px;
+  top:-38px;
+  width:125px;
+  height:125px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+
+.header h1{
+  position:relative;
+  z-index:1;
+  font-size:22px;
+  letter-spacing:.1px;
+}
+
+.header .subtitulo{
+  position:relative;
+  z-index:1;
+  margin-top:4px;
+  font-size:13px;
+  opacity:.92;
+}
+
+.outubro-rosa{
+  position:relative;
+  z-index:1;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.30);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.outubro-laco{
+  font-size:27px;
+  line-height:1;
+  filter:drop-shadow(0 2px 3px rgba(120,0,45,.15));
+}
+
+.outubro-textos{
+  text-align:left;
+  line-height:1.15;
+}
+
+.outubro-titulo{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+
+.outubro-frase{
+  margin-top:3px;
+  font-size:12px;
+  font-style:italic;
+  font-weight:normal;
+  opacity:.96;
+}
+
+.card{
+  border:1px solid rgba(247,191,211,.75);
+  box-shadow:0 5px 18px rgba(143,42,79,.10);
+}
+
+.item{
+  background:linear-gradient(90deg,#fff8fb 0%,#fdf7f9 100%);
+  border-left:5px solid var(--rosa-principal);
+  border-top:1px solid #fbe3ec;
+  border-right:1px solid #fbe3ec;
+  border-bottom:1px solid #fbe3ec;
+}
+
+.selecionado{
+  outline:4px solid rgba(233,30,99,.35);
+  box-shadow:0 0 0 1px var(--rosa-principal);
+}
+
+.salvar{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+  box-shadow:0 5px 12px rgba(216,27,96,.18);
+}
+
+.salvar:active{
+  transform:translateY(1px);
+}
+
+.btn-trocar{
+  background:#6f6870;
+}
+
+.popup button{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+}
+
+input:focus,
+textarea:focus{
+  outline:none;
+  border-color:#ee77a3;
+  box-shadow:0 0 0 3px rgba(233,30,99,.10);
+}
+
+.rodape-outubro{
+  margin:18px 0 4px;
+  text-align:center;
+  color:var(--rosa-texto);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.rodape-outubro .linha{
+  height:1px;
+  margin:0 auto 10px;
+  max-width:260px;
+  background:linear-gradient(90deg,transparent,#f3a9c4,transparent);
+}
+
+@media(max-width:420px){
+  body{ padding:10px; }
+  .header{ padding:17px 14px 15px; }
+  .header h1{ font-size:20px; }
+  .outubro-frase{ font-size:11px; }
+}
+
+/* Tema visual V3 */
+body{background:linear-gradient(180deg,#f4f9ff,#e6f1fc)}
+.header{background:linear-gradient(135deg,#064b8c,#0877c7)}
+.item{background:#f3f9ff;border-left-color:#0877c7;border-color:#dceaf9}
+.selecionado{outline-color:#0877c7}
+.salvar,.popup button{background:linear-gradient(135deg,#0769b0,#064b8c)}
+.card{border-color:#dceaf9}
+.rodape-outubro{color:#07568e}
+.tipo-box{margin:14px 0;padding:13px;border:1px solid #bfd8ee;border-radius:12px;background:#f4f9ff}
+.tipo-box label{margin:8px 0;font-weight:normal}
+.tipo-box input{width:auto;margin-right:7px}
+#historicoV3{white-space:pre-line;line-height:1.5;font-size:13px;padding:12px;border-radius:10px;background:#edf5fd;margin-top:10px}
+#historicoV3.alerta{background:#fff3d8;border:1px solid #e9b64f}
+#perfilLocoV3{display:none;margin-top:10px;padding:12px;border-radius:10px;background:#eaf7f0;border:1px solid #aadbc1;font-size:13px;line-height:1.5}
+.item.nao-aplica{background:#f2f4f7;border-left-color:#9ca3af;color:#59616b}
+.item.nao-aplica .botoes{display:none}
+.item .etiqueta-na{display:none;font-size:12px;font-weight:bold;color:#59616b}
+.item.nao-aplica .etiqueta-na{display:block}
+#avisoTesteV3{background:#fff3cd;border:1px solid #e9c46a;padding:12px;border-radius:10px;font-size:13px;margin:12px 0}
+</style>
+
+</head>
+<body>
+
+
+<div class="app">
+
+
+<div class="header">
+
+<h1>🚂 Checklist Pós-Drenagem</h1>
+
+<div class="subtitulo">Locomotivas - V3 TESTE — HISTÓRICO AJUSTADO</div>
+
+<div class="outubro-rosa">
+  <div class="outubro-laco">💙</div>
+  <div class="outubro-textos">
+    <div class="outubro-titulo">NOVEMBRO AZUL</div>
+    <div class="outubro-frase">Prevenir também é cuidar de você!</div>
+  </div>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div id="conexaoBox" class="conexao-box">
+
+<div class="conexao-status">
+
+<span class="conexao-bolinha"></span>
+
+<span id="textoConexao">🟢 Online</span>
+
+</div>
+
+<div id="pendentesBadge" class="pendentes-badge">
+
+0 pendentes
+
+</div>
+
+</div>
+
+
+<button
+id="btnSincronizar"
+class="btn btn-sync"
+disabled title="Sincronização desativada no teste">
+
+🔄 SINCRONIZAR PENDENTES
+
+</button>
+
+
+
+
+<label>Colaborador</label>
+
+<input 
+id="colaborador" 
+placeholder="Digite o nome do colaborador"
+autocomplete="name"
+oninput="validarColaborador(this)"
+>
+
+
+<button 
+class="btn btn-trocar" 
+onclick="trocarColaborador()">
+
+Trocar colaborador
+
+</button>
+
+
+
+<label>Locomotiva</label>
+
+<input 
+id="locomotiva"
+type="text"
+inputmode="numeric"
+pattern="[0-9]{4}"
+maxlength="4"
+autocomplete="off"
+placeholder="Digite os 4 números da locomotiva"
+oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); verificarDuplicidadeDigitacao(); aplicarPerfilV3(); consultarV3()"
+>
+
+<div id="alertaDuplicidade" role="status" style="display:none;margin-top:10px;padding:12px;border:1px solid #f0c36d;background:#fff8e7;color:#805400;border-radius:10px;font-size:14px"></div>
+
+<div id="perfilLocoV3" role="status" aria-live="polite"></div>
+ <div id="historicoV3" role="status" aria-live="polite" style="display:none"></div>
+<div class="tipo-box">
+<strong>Tipo de vistoria</strong>
+<label><input type="radio" name="tipoV3" value="NOVA" checked onchange="alterarTipoV3()"> Nova inspeção</label>
+<label><input type="radio" name="tipoV3" value="REINSPECAO" onchange="alterarTipoV3()"> Reinspeção</label>
+<div id="motivoV3" style="display:none">
+<label for="motivoSelectV3">Motivo</label>
+<select id="motivoSelectV3" style="width:100%;padding:12px;border-radius:9px">
+<option value="REGULARIZACAO">Regularização de pendência</option>
+<option value="PERMANENCIA">Permanência na oficina</option>
+</select>
+<p id="referenciaV3" style="font-size:12px"></p>
+</div>
+</div>
+<h2>Checklist</h2>
+
+
+<div id="lista"></div>
+
+
+
+<div id="status" class="status">
+
+🟢 CONFORME
+
+</div>
+
+
+
+<label>Observação</label>
+
+<textarea 
+id="observacao"
+placeholder="Digite observações se necessário">
+</textarea>
+
+
+
+<button 
+id="btnSalvar"
+class="btn salvar"
+onclick="alert('Esta V3 é somente para testes. Nenhum checklist será enviado.')" disabled>
+
+🔒 SALVAMENTO DESATIVADO — TESTE
+
+</button>
+
+
+
+<div class="rodape-outubro">
+  <div class="linha"></div>
+  💙 Juntos nessa causa • Prevenção é o melhor caminho
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="fundo-popup" id="fundoPopup"></div>
+
+
+<div class="popup" id="popup">
+
+<h2 id="tituloPopup">✅ Enviado!</h2>
+
+<p id="textoPopup"></p>
+
+<button onclick="fecharPopup()">
+
+OK
+
+</button>
+
+</div>
+<script>
+
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
+
+
+let registrosV3 = [];
+let referenciaV3 = null;
+let consultaTokenV3 = 0;
+function tipoAtualV3(){return document.querySelector('input[name="tipoV3"]:checked').value}
+function alterarTipoV3(){
+ const re = tipoAtualV3()==="REINSPECAO";
+ document.getElementById("motivoV3").style.display=re?"block":"none";
+ document.getElementById("referenciaV3").textContent=referenciaV3
+  ?"Vinculada ao registro "+referenciaV3.id
+  :"Sem registro anterior confirmado para vincular.";
+}
+function dataV3(x){let d=new Date(x);return isNaN(d)?0:d.getTime()}
+function pendenciaV3(x){return String(x.status||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase()==="PENDENCIA"}
+// Acompanhamento conservador: somente uma vistoria posterior com itens
+// efetivamente CONFORMES pode encerrar as respectivas nao conformidades.
+// Registros sem dados suficientes permanecem sinalizados para conferencia.
+function normalizarV3(v){return String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toUpperCase()}
+function ehConformeV3(v){return normalizarV3(v)==="CONFORME"}
+function ehNaoConformeV3(v){return normalizarV3(v)==="NAO CONFORME"}
+function diagnosticoHistoricoV3(lista,loco){
+ const perfil=perfilLocomotivaV3(loco);
+ const chaves=itens.map(([chave])=>chave).filter(chave=>perfil!=="SEM_BANHEIRO"||chave==="CabineLimpa");
+ const cronologico=[...lista].sort((a,b)=>dataV3(a.dataHora)-dataV3(b.dataHora));
+ const abertas=new Map();
+ const indefinidas=[];
+ for(const registro of cronologico){
+   for(const chave of chaves){
+     if(ehNaoConformeV3(registro[chave])) abertas.set(chave,registro);
+     else if(ehConformeV3(registro[chave])) abertas.delete(chave);
+   }
+   // Se a origem possui somente status geral, nao supor quais itens foram resolvidos.
+   if(pendenciaV3(registro) && !chaves.some(chave=>ehNaoConformeV3(registro[chave]))){
+     indefinidas.push(registro);
+   }
+ }
+ const itensAbertos=[...abertas.keys()];
+ const referencia=itensAbertos.length ? [...abertas.values()].sort((a,b)=>dataV3(b.dataHora)-dataV3(a.dataHora))[0] : null;
+ return {itensAbertos,referencia,indefinidas};
+}
+async function consultarV3(){
+ const loco=document.getElementById("locomotiva").value;
+ const box=document.getElementById("historicoV3");
+ const token=++consultaTokenV3;
+ referenciaV3=null;registrosV3=[];
+ if(loco.length!==4){box.style.display="none";alterarTipoV3();return}
+ box.style.display="block";box.className="";box.textContent="Consultando histórico...";
+ try{
+  const resposta=await fetch(URL_SCRIPT+"?acao=historicoBI&_="+Date.now(),{cache:"no-store"});
+  const json=await resposta.json();
+  if(token!==consultaTokenV3)return;
+  if(!json.sucesso||!Array.isArray(json.registros))throw Error("Resposta inválida");
+  registrosV3=json.registros.filter(x=>String(x.locomotiva).padStart(4,"0")===loco).sort((a,b)=>dataV3(b.dataHora)-dataV3(a.dataHora));
+  const diagnostico=diagnosticoHistoricoV3(registrosV3,loco);
+  referenciaV3=diagnostico.referencia;
+  const ultima=registrosV3[0];
+  if(!ultima){box.textContent="Sem vistoria anterior registrada.";alterarTipoV3();return}
+  const problemas=itens.filter(([chave])=>ultima[chave]==="NÃO CONFORME").map(x=>x[1]).join(", ");
+  box.textContent="Última vistoria: "+new Date(ultima.dataHora).toLocaleString("pt-BR")+
+   "\nColaborador: "+(ultima.colaborador||"Não informado")+"\nSituação: "+(ultima.status||"")+
+   (problemas?"\nItens: "+problemas:"")+
+   (referenciaV3?"\n⚠️ POSSÍVEL PENDÊNCIA EM ABERTO — confirme se é reinspeção.":"");
+  if(referenciaV3)box.className="alerta";
+  alterarTipoV3();
+ }catch(err){
+  if(token!==consultaTokenV3)return;
+  box.textContent="Histórico indisponível. Verifique a conexão antes de classificar uma reinspeção.";
+  alterarTipoV3();
+ }
+}
+const SEM_BANHEIRO_V3 = new Set(["1001","1003","1004","1005","1006","1008","1101","1102","1104","1107","1108","1109","1112"]);
+const ADAPTADO_V3 = new Set(["1002","1105","1106","1111"]);
+function perfilLocomotivaV3(loco){
+ if(SEM_BANHEIRO_V3.has(loco)) return "SEM_BANHEIRO";
+ if(ADAPTADO_V3.has(loco)) return "ADAPTADO";
+ return "CONVENCIONAL";
+}
+function aplicarPerfilV3(){
+ const loco=document.getElementById("locomotiva").value;
+ const perfil=loco.length===4?perfilLocomotivaV3(loco):null;
+ const aviso=document.getElementById("perfilLocoV3");
+ aviso.style.display=perfil?"block":"none";
+ if(perfil==="SEM_BANHEIRO") aviso.textContent="🚂 Locomotiva "+loco+" — SEM BANHEIRO. Os 9 itens de banheiro são NÃO SE APLICA. Avalie apenas a limpeza da cabine.";
+ else if(perfil==="ADAPTADO") aviso.textContent="🚂 Locomotiva "+loco+" — BANHEIRO ADAPTADO. Avalie os itens existentes normalmente; defeitos reais geram pendência.";
+ else if(perfil) aviso.textContent="🚂 Locomotiva "+loco+" — checklist convencional (perfil não especial cadastrado).";
+ itens.forEach(([chave])=>{
+   const el=document.querySelector('[data-item-v3="'+chave+'"]');
+   if(!el)return;
+   const naoAplica=perfil==="SEM_BANHEIRO" && chave!=="CabineLimpa";
+   el.classList.toggle("nao-aplica",naoAplica);
+   if(naoAplica){respostas[chave]="NÃO SE APLICA";el.querySelectorAll("button").forEach(b=>b.classList.remove("selecionado"));}
+   else if(respostas[chave]==="NÃO SE APLICA")delete respostas[chave];
+ });
+ atualizarStatus();
+}
+const itens = [
+
+["BanheiroLimpo","🚿 Banheiro limpo"],
+
+["BanheiroDrenado","🚽 Banheiro drenado"],
+
+["DescargaFuncionando","🚽 Descarga funcionando"],
+
+["AguaDisponivel","💧 Água disponível"],
+
+["SaboneteLiquido","🧴 Sabonete líquido"],
+
+["PapelHigienico","🧻 Papel higiênico"],
+
+["PapelToalha","🧻 Papel toalha"],
+
+["Iluminacao","💡 Iluminação"],
+
+["PortaFuncionando","🚪 Porta funcionando"],
+
+["CabineLimpa","🧹 Cabine limpa e organizada"]
+
+];
+
+
+let respostas = {};
+
+let enviando = false;
+
+const CHAVE_PENDENTES = "checklistPendentesV3_TESTE_ISOLADO";
+
+let sincronizando = false;
+
+let conexaoDisponivel = navigator.onLine;
+
+let timerConexao = null;
+
+
+
+
+function obterPendentes(){
+
+try{
+
+const lista =
+JSON.parse(
+localStorage.getItem(CHAVE_PENDENTES)
+||
+"[]"
+);
+
+if(!Array.isArray(lista)){
+
+return [];
+
+}
+
+
+/*
+Remove possíveis duplicidades antigas
+da fila offline usando o ID do registro.
+*/
+const ids = new Set();
+
+const unicos =
+lista.filter(item=>{
+
+if(
+!item
+||
+!item.id
+||
+ids.has(item.id)
+){
+
+return false;
+
+}
+
+ids.add(item.id);
+
+return true;
+
+});
+
+
+if(unicos.length !== lista.length){
+
+localStorage.setItem(
+CHAVE_PENDENTES,
+JSON.stringify(unicos)
+);
+
+}
+
+
+return unicos;
+
+}
+catch(e){
+
+return [];
+
+}
+
+}
+
+
+
+
+function salvarPendentes(lista){
+
+localStorage.setItem(
+CHAVE_PENDENTES,
+JSON.stringify(lista)
+);
+
+atualizarStatusConexao();
+
+}
+
+
+
+
+function removerPendentePorId(id){
+
+const lista =
+obterPendentes()
+.filter(
+item => item.id !== id
+);
+
+salvarPendentes(
+lista
+);
+
+}
+
+
+
+
+function adicionarPendente(dados){
+
+const lista =
+obterPendentes();
+
+
+if(
+!lista.some(
+item => item.id === dados.id
+)
+){
+
+lista.push({
+...dados,
+_salvoEm:new Date().toISOString()
+});
+
+salvarPendentes(lista);
+
+}
+
+}
+
+
+
+
+
+async function verificarConexaoReal(atualizarTela=true){
+
+const controller =
+new AbortController();
+
+const timeout =
+setTimeout(
+()=> controller.abort(),
+3500
+);
+
+try{
+
+await fetch(
+"../service-worker.js?ping="
++
+Date.now(),
+{
+method:"GET",
+cache:"no-store",
+signal:controller.signal
+}
+);
+
+conexaoDisponivel=true;
+
+}
+catch(e){
+
+conexaoDisponivel=false;
+
+}
+finally{
+
+clearTimeout(timeout);
+
+}
+
+
+if(atualizarTela){
+
+atualizarStatusConexao();
+
+}
+
+
+return conexaoDisponivel;
+
+}
+
+
+
+
+function iniciarMonitorConexao(){
+
+if(timerConexao){
+
+clearInterval(timerConexao);
+
+}
+
+
+verificarConexaoReal();
+
+
+timerConexao =
+setInterval(
+()=>{
+
+verificarConexaoReal();
+
+},
+4000
+);
+
+}
+
+
+
+function atualizarStatusConexao(){
+
+const box =
+document.getElementById("conexaoBox");
+
+const texto =
+document.getElementById("textoConexao");
+
+const badge =
+document.getElementById("pendentesBadge");
+
+const btn =
+document.getElementById("btnSincronizar");
+
+
+if(
+!box
+||
+!texto
+||
+!badge
+||
+!btn
+){
+
+return;
+
+}
+
+
+const pendentes =
+obterPendentes();
+
+
+badge.innerText =
+
+pendentes.length === 1
+
+?
+
+"1 pendente"
+
+:
+
+`${pendentes.length} pendentes`;
+
+
+box.classList.remove(
+"conexao-offline",
+"conexao-sync"
+);
+
+
+/*
+MODO CLEAN:
+- Online + 0 pendentes = bloco oculto.
+- Offline = bloco visível.
+- Sincronizando = bloco visível.
+- Online com pendentes = bloco visível até concluir a sincronização.
+*/
+
+if(sincronizando){
+
+box.style.display="flex";
+
+box.classList.add(
+"conexao-sync"
+);
+
+texto.innerText =
+"🔄 Sincronizando...";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+if(!conexaoDisponivel){
+
+box.style.display="flex";
+
+box.classList.add(
+"conexao-offline"
+);
+
+texto.innerText =
+"🟠 Offline";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+if(pendentes.length > 0){
+
+box.style.display="flex";
+
+texto.innerText =
+"🟢 Online";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+/* Online, sincronizado e sem pendências: volta ao visual original */
+
+box.style.display="none";
+
+btn.style.display="none";
+
+}
+
+
+
+function limparFormularioDepoisDeSalvar(){
+
+document.getElementById(
+"locomotiva"
+).value="";
+const avisoDuplicidade = document.getElementById("alertaDuplicidade");
+if(avisoDuplicidade) avisoDuplicidade.style.display="none";
+
+
+document.getElementById(
+"observacao"
+).value="";
+
+
+respostas={};
+ document.querySelector('input[name="tipoV3"][value="NOVA"]').checked=true;
+ referenciaV3=null;registrosV3=[];consultaTokenV3++;
+ document.getElementById("historicoV3").style.display="none";
+ alterarTipoV3();
+ carregarChecklist();
+
+
+atualizarStatus();
+
+}
+
+
+
+
+function mostrarPopupOffline(status,id){
+
+const popup =
+document.getElementById("popup");
+
+const titulo =
+document.getElementById("tituloPopup");
+
+
+popup.classList.add(
+"offline"
+);
+
+
+titulo.innerHTML =
+"📱 Salvo no aparelho";
+
+
+document.getElementById(
+"textoPopup"
+).innerHTML =
+
+"Sem conexão no momento.<br><br>"
+
++
+
+"O checklist foi salvo neste aparelho e será sincronizado quando a internet voltar.<br><br>ID:<br><b>"
+
++
+
+id
+
++
+
+"</b><br><br>Status:<br><b>"
+
++
+
+status
+
++
+
+"</b>";
+
+
+document.getElementById(
+"popup"
+).style.display="block";
+
+
+document.getElementById(
+"fundoPopup"
+).style.display="block";
+
+}
+
+
+
+
+function mostrarPopupOnline(status,id){
+
+const popup =
+document.getElementById("popup");
+
+const titulo =
+document.getElementById("tituloPopup");
+
+
+popup.classList.remove(
+"offline"
+);
+
+
+titulo.innerHTML =
+"✅ Enviado!";
+
+
+mostrarPopup(
+status,
+id
+);
+
+}
+
+
+
+
+async function enviarRegistro(dados){
+ throw Error("ENVIO BLOQUEADO: versão de testes sem gravação");
+
+await fetch(
+URL_SCRIPT,
+{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify(dados)
+}
+);
+
+}
+
+
+
+
+async function sincronizarPendentes(){
+ return; // Sincronização desativada na V3 de testes
+
+if(
+sincronizando
+||
+!navigator.onLine
+){
+
+return;
+
+}
+
+
+const lista =
+obterPendentes();
+
+
+if(
+lista.length === 0
+){
+
+atualizarStatusConexao();
+
+return;
+
+}
+
+
+sincronizando=true;
+
+atualizarStatusConexao();
+
+
+let houveFalha = false;
+
+
+for(
+const item
+of lista
+){
+
+try{
+
+const dadosEnvio={
+...item
+};
+
+
+delete dadosEnvio._salvoEm;
+
+
+await enviarRegistro(
+dadosEnvio
+);
+
+
+/*
+Retira o registro da fila logo depois
+do envio. Assim, se a página for fechada
+durante a sincronização, os registros já
+enviados não permanecem na fila.
+*/
+removerPendentePorId(
+item.id
+);
+
+}
+catch(e){
+
+houveFalha = true;
+
+}
+
+}
+
+
+sincronizando=false;
+
+
+atualizarStatusConexao();
+
+
+if(
+!houveFalha
+&&
+obterPendentes().length === 0
+){
+
+alert(
+"✅ Registros pendentes sincronizados com sucesso!"
+);
+
+}
+
+}
+
+
+
+
+window.addEventListener(
+"online",
+()=>{
+
+conexaoDisponivel=true;
+
+atualizarStatusConexao();
+
+setTimeout(
+()=>{
+
+verificarConexaoReal()
+.then(
+online => {
+
+if(online){
+
+sincronizarPendentes();
+
+}
+
+}
+);
+
+},
+500
+);
+
+}
+);
+
+
+
+
+window.addEventListener(
+"offline",
+()=>{
+
+conexaoDisponivel=false;
+
+atualizarStatusConexao();
+
+}
+);
+
+
+
+function validarColaborador(campo){
+
+campo.value = campo.value.replace(/[^a-zA-ZÀ-ÿ\s]/g,"");
+
+salvarMemoriaColaborador();
+
+}
+
+
+
+
+
+function formatarNome(nome){
+
+let texto =
+String(nome || "")
+.trim()
+.toLocaleLowerCase("pt-BR");
+
+if(!texto){
+return "";
+}
+
+return texto
+.split(/\s+/)
+.map(
+palavra =>
+palavra.charAt(0).toLocaleUpperCase("pt-BR")
++
+palavra.slice(1)
+)
+.join(" ");
+
+}
+
+
+
+function salvarMemoriaColaborador(){
+
+let nome =
+formatarNome(
+document.getElementById("colaborador").value
+);
+
+if(nome){
+
+localStorage.setItem(
+"colaborador",
+nome
+);
+
+}
+
+}
+
+
+
+
+function carregarColaborador(){
+
+let nome = localStorage.getItem("colaborador");
+
+if(nome){
+
+document.getElementById("colaborador").value = nome;
+
+}
+
+}
+
+
+
+
+function trocarColaborador(){
+
+let nome = prompt("Digite o novo colaborador");
+
+
+if(nome){
+
+nome =
+formatarNome(
+nome.replace(/[^a-zA-ZÀ-ÿ\s]/g,"")
+);
+
+
+if(nome){
+
+document.getElementById("colaborador").value = nome;
+
+localStorage.setItem("colaborador",nome);
+
+}
+
+}
+
+
+}
+
+
+
+
+function carregarChecklist(){
+
+let html="";
+
+
+itens.forEach(item=>{
+
+
+html += `
+
+<div class="item" data-item-v3="${item[0]}">
+
+<div class="item-title">
+
+${item[1]}
+
+</div>
+
+
+<div class="etiqueta-na">⚪ NÃO SE APLICA — locomotiva sem banheiro</div>
+<div class="botoes">
+
+
+<button class="conforme"
+
+onclick="marcar('${item[0]}','CONFORME',this)">
+
+✅ CONFORME
+
+</button>
+
+
+<button class="nao"
+
+onclick="marcar('${item[0]}','NÃO CONFORME',this)">
+
+❌ NÃO CONFORME
+
+</button>
+
+
+</div>
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById("lista").innerHTML = html;
+ aplicarPerfilV3();
+
+
+}
+
+
+
+function marcar(campo,valor,botao){
+ if(respostas[campo]==="NÃO SE APLICA")return;
+
+
+respostas[campo]=valor;
+
+
+let botoes=botao.parentElement.children;
+
+
+for(let b of botoes){
+
+b.classList.remove("selecionado");
+
+}
+
+
+botao.classList.add("selecionado");
+
+
+atualizarStatus();
+
+
+}
+
+
+
+
+function atualizarStatus(){
+
+
+let pendencia = Object.values(respostas)
+.includes("NÃO CONFORME");
+
+
+let status=document.getElementById("status");
+
+
+
+if(pendencia){
+
+status.innerHTML="🔴 PENDÊNCIA";
+
+status.style.background="#f8d7da";
+
+status.style.color="#842029";
+
+
+}else{
+
+
+status.innerHTML="🟢 CONFORME";
+
+status.style.background="#d1e7dd";
+
+status.style.color="#0f5132";
+
+
+}
+
+
+}
+function gerarID(){
+
+let loco = document
+.getElementById("locomotiva")
+.value
+.trim();
+
+
+let agora = new Date();
+
+
+let data =
+
+agora.getFullYear()
+
++
+
+String(agora.getMonth()+1)
+.padStart(2,"0")
+
++
+
+String(agora.getDate())
+.padStart(2,"0");
+
+
+
+let chave = "ID_"+loco+"_"+data;
+
+
+let numero = Number(localStorage.getItem(chave) || 0) + 1;
+
+
+localStorage.setItem(chave,numero);
+
+
+
+return "LOCO"
++
+loco
++
+"-"
++
+data
++
+"-"
++
+String(numero).padStart(3,"0");
+
+
+}
+
+
+
+
+function mostrarPopup(status,id){
+
+
+document.getElementById("textoPopup").innerHTML =
+
+"Checklist salvo com sucesso!<br><br>ID:<br><b>"
+
++
+
+id
+
++
+
+"</b><br><br>Status:<br><b>"
+
++
+
+status
+
++
+
+"</b>";
+
+
+
+document.getElementById("popup").style.display="block";
+
+document.getElementById("fundoPopup").style.display="block";
+
+
+}
+
+
+
+
+
+function fecharPopup(){
+
+
+document.getElementById("popup").style.display="none";
+
+
+document.getElementById("fundoPopup").style.display="none";
+
+
+document.getElementById("locomotiva").focus();
+
+
+}
+
+
+
+
+
+/* Aviso de repetição recente no mesmo navegador/dispositivo.
+   Não bloqueia um novo checklist e não modifica registros já enviados. */
+const CHAVE_RECENTES = "checklistLocomotivasRecentesV1";
+const JANELA_DUPLICIDADE_MS = 5 * 60 * 1000;
+function obterRegistrosRecentes(){
+  try {
+    const lista = JSON.parse(localStorage.getItem(CHAVE_RECENTES) || "[]");
+    return Array.isArray(lista) ? lista.filter(x => x && x.locomotiva && Number.isFinite(x.hora) && Date.now()-x.hora < 24*60*60*1000) : [];
+  } catch(e){ return []; }
+}
+function registrarLocomotivaRecente(locomotiva){
+  try {
+    const lista = obterRegistrosRecentes();
+    lista.push({locomotiva, hora:Date.now()});
+    localStorage.setItem(CHAVE_RECENTES, JSON.stringify(lista.slice(-150)));
+  } catch(e){ console.warn("Histórico local indisponível",e); }
+}
+function registroDuplicadoRecente(locomotiva){
+  return obterRegistrosRecentes().filter(x => x.locomotiva === locomotiva && Date.now()-x.hora <= JANELA_DUPLICIDADE_MS).sort((a,b)=>b.hora-a.hora)[0];
+}
+function verificarDuplicidadeDigitacao(){
+  const campo = document.getElementById("locomotiva");
+  const aviso = document.getElementById("alertaDuplicidade");
+  if(!campo || !aviso) return;
+  const repetido = campo.value.length === 4 && registroDuplicadoRecente(campo.value);
+  aviso.style.display = repetido ? "block" : "none";
+  if(repetido) aviso.textContent = "⚠️ Atenção: a locomotiva " + campo.value + " já teve um checklist registrado neste aparelho há menos de 5 minutos. Confira antes de salvar novamente.";
+}
+
+
+async function salvarChecklist(){
+ alert("V3 de testes: salvamento desativado para proteger a planilha oficial.");
+ return;
+
+
+if(enviando){
+
+return;
+
+}
+
+
+
+let botao =
+document.getElementById("btnSalvar");
+
+
+
+let locomotiva =
+document.getElementById("locomotiva").value.trim();
+
+
+
+let colaborador =
+formatarNome(
+document.getElementById("colaborador").value
+);
+
+
+
+
+
+if(!locomotiva){
+
+alert("Informe a locomotiva");
+
+return;
+
+}
+
+
+
+if(!/^[0-9]{4}$/.test(locomotiva)){
+
+alert("A locomotiva deve ter exatamente 4 números");
+
+document.getElementById("locomotiva").focus();
+
+return;
+
+}
+
+if(registroDuplicadoRecente(locomotiva)){
+  const continuar = confirm("⚠️ POSSÍVEL DUPLICIDADE\n\nA locomotiva " + locomotiva + " já foi registrada neste aparelho há menos de 5 minutos.\n\nDeseja continuar e salvar outro checklist?");
+  if(!continuar){ document.getElementById("locomotiva").focus(); return; }
+}
+
+
+
+
+
+if(!colaborador){
+
+alert("Informe o colaborador");
+
+return;
+
+}
+
+
+
+if(!/^[A-Za-zÀ-ÿ\s]+$/.test(colaborador)){
+
+alert("O colaborador deve conter somente texto");
+
+return;
+
+}
+
+document.getElementById(
+"colaborador"
+).value =
+colaborador;
+
+localStorage.setItem(
+"colaborador",
+colaborador
+);
+
+
+
+
+
+if(itens.some(item=>!respostas[item[0]])){
+ alert("Responda os dez itens antes de salvar.");
+ return;
+}
+if(tipoAtualV3()==="REINSPECAO" && !referenciaV3){
+ alert("Para vincular a reinspeção, é necessário consultar uma pendência aberta. Se for uma nova passagem, escolha Nova inspeção.");
+ return;
+}
+enviando=true;
+botao.disabled=true;
+
+
+botao.innerHTML =
+
+conexaoDisponivel
+
+?
+
+"⏳ ENVIANDO..."
+
+:
+
+"💾 SALVANDO NO APARELHO...";
+
+
+
+itens.forEach(item=>{
+
+
+if(!respostas[item[0]]){
+
+
+respostas[item[0]]="CONFORME";
+
+
+}
+
+
+});
+
+
+
+
+
+
+let status =
+
+Object.values(respostas)
+.includes("NÃO CONFORME")
+
+?
+
+"PENDÊNCIA"
+
+:
+
+"CONFORME";
+
+
+
+
+
+
+let idRegistro =
+gerarID();
+
+
+
+
+
+
+let dados={
+
+
+id:idRegistro,
+
+
+locomotiva:locomotiva,
+
+
+colaborador:colaborador,
+
+
+...respostas,
+
+
+status:status,
+
+
+observacao:
+document.getElementById("observacao").value
+
+
+};
+
+
+
+
+
+try{
+
+
+if(!conexaoDisponivel){
+
+
+adicionarPendente(
+dados
+);
+
+registrarLocomotivaRecente(locomotiva);
+
+mostrarPopupOffline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+return;
+
+
+}
+
+
+
+
+try{
+
+
+await enviarRegistro(
+dados
+);
+
+registrarLocomotivaRecente(locomotiva);
+
+mostrarPopupOnline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+}
+catch(e){
+
+
+adicionarPendente(
+dados
+);
+
+registrarLocomotivaRecente(locomotiva);
+
+mostrarPopupOffline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+}
+
+
+}
+finally{
+
+
+enviando=false;
+
+
+botao.disabled=false;
+
+
+botao.innerHTML =
+"💾 SALVAR CHECKLIST";
+
+
+atualizarStatusConexao();
+
+
+}
+
+
+
+}
+
+
+
+carregarChecklist();
+
+carregarColaborador();
+
+
+atualizarStatusConexao();
+
+iniciarMonitorConexao();
+
+
+setTimeout(
+()=>{
+
+verificarConexaoReal()
+.then(
+online => {
+
+if(online){
+
+sincronizarPendentes();
+
+}
+
+}
+);
+
+},
+1000
+);
+
+
+</script>
+
+
+
+<!-- V3 TESTE: sem registro ou atualizacao de service worker compartilhado. -->
+
+</body>
+
+</html>
+
