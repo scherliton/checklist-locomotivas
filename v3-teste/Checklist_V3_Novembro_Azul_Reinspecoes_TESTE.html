@@ -449,7 +449,7 @@ textarea:focus{
   .outubro-frase{ font-size:11px; }
 }
 
-<style id="temaV3">
+/* Tema visual V3 */
 body{background:linear-gradient(180deg,#f4f9ff,#e6f1fc)}
 .header{background:linear-gradient(135deg,#064b8c,#0877c7)}
 .item{background:#f3f9ff;border-left-color:#0877c7;border-color:#dceaf9}
@@ -462,7 +462,12 @@ body{background:linear-gradient(180deg,#f4f9ff,#e6f1fc)}
 .tipo-box input{width:auto;margin-right:7px}
 #historicoV3{white-space:pre-line;line-height:1.5;font-size:13px;padding:12px;border-radius:10px;background:#edf5fd;margin-top:10px}
 #historicoV3.alerta{background:#fff3d8;border:1px solid #e9b64f}
-</style>
+#perfilLocoV3{display:none;margin-top:10px;padding:12px;border-radius:10px;background:#eaf7f0;border:1px solid #aadbc1;font-size:13px;line-height:1.5}
+.item.nao-aplica{background:#f2f4f7;border-left-color:#9ca3af;color:#59616b}
+.item.nao-aplica .botoes{display:none}
+.item .etiqueta-na{display:none;font-size:12px;font-weight:bold;color:#59616b}
+.item.nao-aplica .etiqueta-na{display:block}
+#avisoTesteV3{background:#fff3cd;border:1px solid #e9c46a;padding:12px;border-radius:10px;font-size:13px;margin:12px 0}
 </style>
 
 </head>
@@ -552,12 +557,13 @@ pattern="[0-9]{4}"
 maxlength="4"
 autocomplete="off"
 placeholder="Digite os 4 números da locomotiva"
-oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); verificarDuplicidadeDigitacao(); consultarV3()"
+oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); verificarDuplicidadeDigitacao(); aplicarPerfilV3(); consultarV3()"
 >
 
 <div id="alertaDuplicidade" role="status" style="display:none;margin-top:10px;padding:12px;border:1px solid #f0c36d;background:#fff8e7;color:#805400;border-radius:10px;font-size:14px"></div>
 
-<div id="historicoV3" role="status" aria-live="polite" style="display:none"></div>
+<div id="perfilLocoV3" role="status" aria-live="polite"></div>
+ <div id="historicoV3" role="status" aria-live="polite" style="display:none"></div>
 <div class="tipo-box">
 <strong>Tipo de vistoria</strong>
 <label><input type="radio" name="tipoV3" value="NOVA" checked onchange="alterarTipoV3()"> Nova inspeção</label>
@@ -598,9 +604,9 @@ placeholder="Digite observações se necessário">
 <button 
 id="btnSalvar"
 class="btn salvar"
-onclick="salvarChecklist()">
+onclick="alert('Esta V3 é somente para testes. Nenhum checklist será enviado.')" disabled>
 
-💾 SALVAR CHECKLIST
+🔒 SALVAMENTO DESATIVADO — TESTE
 
 </button>
 
@@ -684,6 +690,31 @@ async function consultarV3(){
   alterarTipoV3();
  }
 }
+const SEM_BANHEIRO_V3 = new Set(["1001","1003","1004","1005","1006","1008","1101","1102","1104","1107","1108","1109","1112"]);
+const ADAPTADO_V3 = new Set(["1002","1105","1106","1111"]);
+function perfilLocomotivaV3(loco){
+ if(SEM_BANHEIRO_V3.has(loco)) return "SEM_BANHEIRO";
+ if(ADAPTADO_V3.has(loco)) return "ADAPTADO";
+ return "CONVENCIONAL";
+}
+function aplicarPerfilV3(){
+ const loco=document.getElementById("locomotiva").value;
+ const perfil=loco.length===4?perfilLocomotivaV3(loco):null;
+ const aviso=document.getElementById("perfilLocoV3");
+ aviso.style.display=perfil?"block":"none";
+ if(perfil==="SEM_BANHEIRO") aviso.textContent="🚂 Locomotiva "+loco+" — SEM BANHEIRO. Os 9 itens de banheiro são NÃO SE APLICA. Avalie apenas a limpeza da cabine.";
+ else if(perfil==="ADAPTADO") aviso.textContent="🚂 Locomotiva "+loco+" — BANHEIRO ADAPTADO. Avalie os itens existentes normalmente; defeitos reais geram pendência.";
+ else if(perfil) aviso.textContent="🚂 Locomotiva "+loco+" — checklist convencional (perfil não especial cadastrado).";
+ itens.forEach(([chave])=>{
+   const el=document.querySelector('[data-item-v3="'+chave+'"]');
+   if(!el)return;
+   const naoAplica=perfil==="SEM_BANHEIRO" && chave!=="CabineLimpa";
+   el.classList.toggle("nao-aplica",naoAplica);
+   if(naoAplica){respostas[chave]="NÃO SE APLICA";el.querySelectorAll("button").forEach(b=>b.classList.remove("selecionado"));}
+   else if(respostas[chave]==="NÃO SE APLICA")delete respostas[chave];
+ });
+ atualizarStatus();
+}
 const itens = [
 
 ["BanheiroLimpo","🚿 Banheiro limpo"],
@@ -713,7 +744,7 @@ let respostas = {};
 
 let enviando = false;
 
-const CHAVE_PENDENTES = "checklistPendentesV2";
+const CHAVE_PENDENTES = "checklistPendentesV3_TESTE_ISOLADO";
 
 let sincronizando = false;
 
@@ -866,7 +897,7 @@ setTimeout(
 try{
 
 await fetch(
-"./service-worker.js?ping="
+"../service-worker.js?ping="
 +
 Date.now(),
 {
@@ -1172,6 +1203,7 @@ id
 
 
 async function enviarRegistro(dados){
+ throw Error("ENVIO BLOQUEADO: versão de testes sem gravação");
 
 await fetch(
 URL_SCRIPT,
@@ -1188,6 +1220,7 @@ body:JSON.stringify(dados)
 
 
 async function sincronizarPendentes(){
+ return; // Sincronização desativada na V3 de testes
 
 if(
 sincronizando
@@ -1445,7 +1478,7 @@ itens.forEach(item=>{
 
 html += `
 
-<div class="item">
+<div class="item" data-item-v3="${item[0]}">
 
 <div class="item-title">
 
@@ -1454,6 +1487,7 @@ ${item[1]}
 </div>
 
 
+<div class="etiqueta-na">⚪ NÃO SE APLICA — locomotiva sem banheiro</div>
 <div class="botoes">
 
 
@@ -1485,6 +1519,7 @@ onclick="marcar('${item[0]}','NÃO CONFORME',this)">
 
 
 document.getElementById("lista").innerHTML = html;
+ aplicarPerfilV3();
 
 
 }
@@ -1492,6 +1527,7 @@ document.getElementById("lista").innerHTML = html;
 
 
 function marcar(campo,valor,botao){
+ if(respostas[campo]==="NÃO SE APLICA")return;
 
 
 respostas[campo]=valor;
@@ -1692,6 +1728,8 @@ function verificarDuplicidadeDigitacao(){
 
 
 async function salvarChecklist(){
+ alert("V3 de testes: salvamento desativado para proteger a planilha oficial.");
+ return;
 
 
 if(enviando){
@@ -2022,7 +2060,7 @@ window.addEventListener(
 ()=>{
 
 navigator.serviceWorker
-.register("./service-worker.js")
+.register("../service-worker.js")
 .then(
 registro => {
 
