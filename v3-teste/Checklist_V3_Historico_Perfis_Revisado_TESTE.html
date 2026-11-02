@@ -570,8 +570,9 @@ oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); verificarDuplic
 <label><input type="radio" name="tipoV3" value="NOVA" checked onchange="alterarTipoV3()"> Nova inspeção</label>
 <label><input type="radio" name="tipoV3" value="REINSPECAO" onchange="alterarTipoV3()"> Reinspeção</label>
 <div id="motivoV3" style="display:none">
+<div id="orientacaoReinspecaoV3" role="status" style="padding:10px;margin:10px 0;border-radius:8px;background:#fff8e7;color:#805400"></div>
 <label for="motivoSelectV3">Motivo</label>
-<select id="motivoSelectV3" style="width:100%;padding:12px;border-radius:9px">
+<select id="motivoSelectV3" onchange="alterarTipoV3()" style="width:100%;padding:12px;border-radius:9px">
 <option value="REGULARIZACAO">Regularização de pendência</option>
 <option value="PERMANENCIA">Permanência na oficina</option>
 </select>
@@ -579,6 +580,7 @@ oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); verificarDuplic
 </div>
 </div>
 <h2>Checklist</h2>
+<p style="font-size:12px;color:#475569">🧪 V3 somente consulta: a reinspeção focada é uma simulação visual e não encerra pendências nem grava dados.</p>
 
 
 <div id="lista"></div>
@@ -649,13 +651,36 @@ const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzKYKOL5yt1mXTJprIRk
 let registrosV3 = [];
 let referenciaV3 = null;
 let consultaTokenV3 = 0;
+let diagnosticoV3 = null;
+let historicoCarregadoV3 = false;
 function tipoAtualV3(){return document.querySelector('input[name="tipoV3"]:checked').value}
 function alterarTipoV3(){
- const re = tipoAtualV3()==="REINSPECAO";
+ const re=tipoAtualV3()==="REINSPECAO";
  document.getElementById("motivoV3").style.display=re?"block":"none";
- document.getElementById("referenciaV3").textContent=referenciaV3
-  ?"Referência sugerida para conferência: "+referenciaV3.id+" (vínculo ainda não gravado)"
-  :"Sem pendência identificada para vincular automaticamente; confira o histórico.";
+ const motivo=document.getElementById("motivoSelectV3");
+ const regularizacao=re && motivo.value==="REGULARIZACAO";
+ const chaves=diagnosticoV3?.itensAbertos||[];
+ const loco=document.getElementById("locomotiva").value;
+ const orientacao=document.getElementById("orientacaoReinspecaoV3");
+ const ref=document.getElementById("referenciaV3");
+ if(re){
+   if(loco.length!==4) orientacao.textContent="Informe uma locomotiva de 4 dígitos para consultar as pendências.";
+   else if(!historicoCarregadoV3) orientacao.textContent="Aguardando consulta do histórico. Não é seguro classificar reinspeção sem os dados.";
+   else if(regularizacao && chaves.length) orientacao.textContent="🔎 Reinspeção focada: avalie somente "+chaves.length+" item(ns) pendente(s) exibido(s) abaixo. Nenhum resultado será salvo.";
+   else if(regularizacao && diagnosticoV3.indefinidas.length) orientacao.textContent="⚠️ Existem pendências antigas sem item identificado. Não é possível regularizá-las automaticamente. Faça conferência manual e registre uma nova inspeção quando necessário.";
+   else if(regularizacao) orientacao.textContent="✅ Não há pendência identificável em aberto. Para uma nova passagem, selecione Nova inspeção.";
+   else orientacao.textContent="Permanência na oficina: avaliação completa dos itens aplicáveis, sem encerramento automático de pendências.";
+ }
+ ref.textContent=referenciaV3 && regularizacao && chaves.length
+   ?"Referência histórica sugerida (vínculo não gravado): "+(referenciaV3.id||"registro sem ID")
+   :"Nenhum vínculo será gravado neste ambiente de testes.";
+ document.querySelectorAll("#lista [data-item-v3]").forEach(el=>{
+   const chave=el.getAttribute("data-item-v3");
+   const somentePendentes=regularizacao && historicoCarregadoV3 && chaves.length>0;
+   el.style.display=somentePendentes && !chaves.includes(chave)?"none":"";
+   el.classList.toggle("item-pendente-reinspecao",somentePendentes && chaves.includes(chave));
+ });
+ atualizarStatus();
 }
 function dataV3(x){
  if(x instanceof Date)return x.getTime();
@@ -698,7 +723,7 @@ async function consultarV3(){
  const loco=document.getElementById("locomotiva").value;
  const box=document.getElementById("historicoV3");
  const token=++consultaTokenV3;
- referenciaV3=null;registrosV3=[];
+ referenciaV3=null;registrosV3=[];diagnosticoV3=null;historicoCarregadoV3=false;
  if(loco.length!==4){box.style.display="none";alterarTipoV3();return}
  box.style.display="block";box.className="";box.textContent="Consultando histórico...";
  try{
@@ -710,6 +735,7 @@ async function consultarV3(){
   registrosV3=json.registros.filter(x=>String(x.locomotiva).padStart(4,"0")===loco).sort((a,b)=>dataV3(b.dataHora)-dataV3(a.dataHora));
   const diagnostico=diagnosticoHistoricoV3(registrosV3,loco);
   referenciaV3=diagnostico.referencia;
+  diagnosticoV3=diagnostico;historicoCarregadoV3=true;
   const ultima=registrosV3[0];
   if(!ultima){box.textContent="Sem vistoria anterior registrada.";alterarTipoV3();return}
   const chavesAplicaveis=itens.filter(([chave])=>perfilLocomotivaV3(loco)!=="SEM_BANHEIRO"||chave==="CabineLimpa");
@@ -725,6 +751,7 @@ async function consultarV3(){
   alterarTipoV3();
  }catch(err){
   if(token!==consultaTokenV3)return;
+  historicoCarregadoV3=false;diagnosticoV3=null;
   box.textContent="Histórico indisponível. Verifique a conexão antes de classificar uma reinspeção.";
   alterarTipoV3();
  }
@@ -1141,7 +1168,7 @@ document.getElementById(
 
 respostas={};
  document.querySelector('input[name="tipoV3"][value="NOVA"]').checked=true;
- referenciaV3=null;registrosV3=[];consultaTokenV3++;
+ referenciaV3=null;registrosV3=[];diagnosticoV3=null;historicoCarregadoV3=false;consultaTokenV3++;
  document.getElementById("historicoV3").style.display="none";
  alterarTipoV3();
  carregarChecklist();
@@ -1559,7 +1586,7 @@ onclick="marcar('${item[0]}','NÃO CONFORME',this)">
 
 document.getElementById("lista").innerHTML = html;
  aplicarPerfilV3();
-
+ alterarTipoV3();
 
 }
 
@@ -1594,43 +1621,28 @@ atualizarStatus();
 
 
 function atualizarStatus(){
-
-
-let pendencia = Object.values(respostas)
-.includes("NÃO CONFORME");
-
-
-let status=document.getElementById("status");
- const preenchidos=itens.filter(([chave])=>Boolean(respostas[chave])).length;
- if(preenchidos<itens.length && !pendencia){
-  status.textContent="⚪ EM PREENCHIMENTO ("+preenchidos+"/"+itens.length+")";
+ const re=tipoAtualV3()==="REINSPECAO" && document.getElementById("motivoSelectV3").value==="REGULARIZACAO";
+ const chaves=re && historicoCarregadoV3 && diagnosticoV3?.itensAbertos?.length
+   ?diagnosticoV3.itensAbertos
+   :itens.map(([chave])=>chave);
+ const pendencia=chaves.some(chave=>respostas[chave]==="NÃO CONFORME");
+ const preenchidos=chaves.filter(chave=>Boolean(respostas[chave])).length;
+ const status=document.getElementById("status");
+ if(re && (!historicoCarregadoV3 || !diagnosticoV3?.itensAbertos?.length)){
+  status.textContent="⚠️ REINSPEÇÃO SEM PENDÊNCIA IDENTIFICADA — selecione Nova inspeção";
+  status.style.background="#fff8e7";status.style.color="#805400";return;
+ }
+ if(preenchidos<chaves.length && !pendencia){
+  status.textContent="⚪ EM PREENCHIMENTO ("+preenchidos+"/"+chaves.length+")";
   status.style.background="#e8edf3";status.style.color="#475569";return;
  }
-
-
-
-if(pendencia){
-
-status.innerHTML="🔴 PENDÊNCIA";
-
-status.style.background="#f8d7da";
-
-status.style.color="#842029";
-
-
-}else{
-
-
-status.innerHTML="🟢 CONFORME";
-
-status.style.background="#d1e7dd";
-
-status.style.color="#0f5132";
-
-
-}
-
-
+ if(pendencia){
+  status.textContent="🔴 "+(re?"PENDÊNCIA CONTINUA — prévia, não gravada":"PENDÊNCIA");
+  status.style.background="#f8d7da";status.style.color="#842029";
+ }else{
+  status.textContent=re?"🟢 REGULARIZAÇÃO INFORMADA — prévia, não gravada":"🟢 CONFORME";
+  status.style.background="#d1e7dd";status.style.color="#0f5132";
+ }
 }
 function gerarID(){
 
@@ -2075,7 +2087,7 @@ verificarConexaoReal()
 online => {
 
 if(online){
-
+AAA
 sincronizarPendentes();
 
 }
