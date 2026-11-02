@@ -702,7 +702,8 @@ async function consultarV3(){
  if(loco.length!==4){box.style.display="none";alterarTipoV3();return}
  box.style.display="block";box.className="";box.textContent="Consultando histórico...";
  try{
-  const resposta=await fetch(URL_SCRIPT+"?acao=historicoBI&_="+Date.now(),{cache:"no-store"});
+  const resposta=await fetch(URL_SCRIPT+"?_="+Date.now(),{cache:"no-store"});
+  if(!resposta.ok)throw Error("HTTP "+resposta.status);
   const json=await resposta.json();
   if(token!==consultaTokenV3)return;
   if(!json.sucesso||!Array.isArray(json.registros))throw Error("Resposta inválida");
