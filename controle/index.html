@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle Pós-Drenagem</title>
+<title>Controle Pós-Drenagem | Novembro Azul</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 *{box-sizing:border-box;font-family:Arial,sans-serif}
 :root{
-  --rosa:#e91e63;--rosa2:#d81b60;--rosa3:#f05a91;
-  --fundo:#fff5f8;--borda:#f5c6d8;--texto:#263238;
+  --rosa:#1474c8;--rosa2:#064b91;--rosa3:#58a8eb;
+  --fundo:#f2f8ff;--borda:#c7ddf3;--texto:#263238;
   --verde:#198754;--vermelho:#dc3545;--laranja:#d97706;
 }
 body{
   margin:0;color:var(--texto);
-  background:radial-gradient(circle at top right,rgba(233,30,99,.07),transparent 28%),
-             linear-gradient(180deg,#fffafb 0%,#fff3f7 100%);
+  background:radial-gradient(circle at top right,rgba(20,116,200,.08),transparent 28%),
+             linear-gradient(180deg,#f8fbff 0%,#eaf3fd 100%);
 }
 .topo{
   color:#fff;padding:23px 18px;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#ed2b72 0%,#df1e63 55%,#f05a91 100%);
-  box-shadow:0 5px 18px rgba(216,27,96,.16);
+  background:linear-gradient(135deg,#062f63 0%,#0759a8 55%,#2789d6 100%);
+  box-shadow:0 5px 18px rgba(4,65,126,.17);
 }
 .topo:after{
   content:"";position:absolute;width:220px;height:220px;border-radius:50%;
@@ -41,15 +41,15 @@ body{
 .container{max-width:1180px;margin:auto;padding:22px 15px 38px}
 .painel,.card,.secao{
   background:#fff;border:1px solid var(--borda);border-radius:15px;
-  box-shadow:0 4px 14px rgba(125,40,72,.08)
+  box-shadow:0 4px 14px rgba(18,74,135,.08)
 }
 .painel{padding:18px;margin-bottom:18px}
-.painel-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:13px;align-items:end}
+.painel-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:13px;align-items:start}
 label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#59636e}
 input[type=file],input[type=date]{
   width:100%;padding:11px;border:1px solid #d8dce2;border-radius:9px;background:#fff
 }
-input:focus{outline:none;border-color:#ef7ca7;box-shadow:0 0 0 3px rgba(233,30,99,.09)}
+input:focus{outline:none;border-color:#5ba7e8;box-shadow:0 0 0 3px rgba(26,113,196,.12)}
 button{
   border:0;border-radius:9px;padding:12px 16px;font-weight:800;cursor:pointer
 }
@@ -69,7 +69,7 @@ button{
 
 .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:15px;margin-bottom:18px}
 .secao{padding:20px;min-width:0}
-.secao h2{font-size:18px;color:#9f174a;margin:0 0 5px}
+.secao h2{font-size:18px;color:#064b91;margin:0 0 5px}
 .desc{font-size:12px;color:#818996;margin-bottom:18px}
 .grafico{height:310px;position:relative}
 canvas{width:100%;height:100%;display:block}
@@ -79,7 +79,7 @@ canvas{width:100%;height:100%;display:block}
   --p:0;
   width:190px;height:190px;border-radius:50%;
   display:grid;place-items:center;
-  background:conic-gradient(var(--verde) calc(var(--p)*1%),#f0e8ec 0)
+  background:conic-gradient(var(--verde) calc(var(--p)*1%),#e6f0fa 0)
 }
 .anel:before{
   content:"";width:145px;height:145px;border-radius:50%;background:#fff;
@@ -92,8 +92,8 @@ canvas{width:100%;height:100%;display:block}
 
 .tabela-wrap{overflow:auto}
 table{width:100%;border-collapse:collapse;min-width:760px}
-th{background:#fff3f7;color:#6a5360;text-align:left;font-size:12px;padding:12px}
-td{padding:12px;border-bottom:1px solid #f0e5e9;font-size:13px}
+th{background:#f0f7ff;color:#506a84;text-align:left;font-size:12px;padding:12px}
+td{padding:12px;border-bottom:1px solid #e2edf8;font-size:13px}
 td.num,th.num{text-align:center}
 .badge{
   display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800
@@ -106,7 +106,7 @@ td.num,th.num{text-align:center}
   display:none;margin-bottom:18px;padding:13px 15px;border-radius:10px;
   background:#fff1d6;color:#805b00;border:1px solid #f3d899;font-size:13px
 }
-.rodape{text-align:center;color:#b51550;font-size:11px;padding:0 15px 25px}
+.rodape{text-align:center;color:#175a99;font-size:11px;padding:0 15px 25px}
 
 @media(max-width:850px){
  .painel-grid{grid-template-columns:1fr 1fr}.upload{grid-column:1/-1}
@@ -129,8 +129,16 @@ td.num,th.num{text-align:center}
 /* Navegação entre os dois painéis */
 .navegacao{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
 .navegacao a{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 17px;border-radius:10px;text-decoration:none;font-weight:800;font-size:13px;border:1px solid rgba(255,255,255,.65);color:white;background:rgba(255,255,255,.13)}
-.navegacao a.ativo{background:#fff;color:#b51550}
+.navegacao a.ativo{background:#fff;color:#175a99}
 .navegacao a:hover{filter:brightness(.96)}
+/* Alinhamento dos três controles independentemente da mensagem sob o arquivo */
+.painel-grid > div{min-width:0}
+.painel-grid input[type="file"],
+.painel-grid input[type="date"],
+.painel-grid .btn{height:44px;min-height:44px;margin:0}
+.painel-grid input[type="file"]{padding:9px 10px}
+.painel-grid .btn{display:flex;align-items:center;justify-content:center}
+@media(max-width:850px){.painel-grid{align-items:start}}
 </style>
 </head>
 <body>
@@ -140,8 +148,8 @@ td.num,th.num{text-align:center}
    <h1>🚂 Controle Pós-Drenagem</h1>
    <p>Comparativo entre locomotivas entregues à Torre A e checks pós-drenagem realizados</p>
    <div class="campanha">
-     <div class="laco">🎀</div>
-     <div><b>OUTUBRO ROSA</b><small>Cuidar é um ato de amor!</small></div>
+     <div class="laco">💙</div>
+     <div><b>NOVEMBRO AZUL</b><small>Prevenção é um ato de coragem!</small></div>
    </div>
    <nav class="navegacao" aria-label="Navegação do Controle Pós-Drenagem">
      <a class="ativo" href="./index.html" aria-current="page">📊 Comparativo Semanal</a>
@@ -243,7 +251,7 @@ td.num,th.num{text-align:center}
  </section>
 </main>
 
-<div class="rodape">🎀 Juntos nessa causa • Prevenção é o melhor caminho</div>
+<div class="rodape">💙 Saúde do homem • Cuidar de si também é prioridade</div>
 
 <script>
 const URL_API="https://script.google.com/macros/s/AKfycbxxtkYeiuCrzTwasMxoyyAa6dlIPGLiPXhu6nLvMtFaf1GmhGgzSNiHHWnaOfGJVaMzWA/exec";
@@ -490,7 +498,7 @@ function desenharGrafico(dias){
 
   for(let i=0;i<=4;i++){
     const y=margem.t+gh/4*i;
-    ctx.strokeStyle="#eee4e8";ctx.lineWidth=1;ctx.beginPath();
+    ctx.strokeStyle="#e2edf8";ctx.lineWidth=1;ctx.beginPath();
     ctx.moveTo(margem.l,y);ctx.lineTo(w-margem.r,y);ctx.stroke();
     ctx.fillStyle="#87909b";ctx.font="10px Arial";ctx.textAlign="right";
     ctx.fillText(Math.round(max-(max/4*i)),margem.l-7,y+3);
@@ -504,9 +512,9 @@ function desenharGrafico(dias){
     const a=drenagemPorDia[k]||0,b=checksPorDia[k]||0;
     const ha=a/max*gh,hb=b/max*gh;
 
-    ctx.fillStyle="#e91e63";
+    ctx.fillStyle="#0759a8";
     ctx.fillRect(cx-bw-2,margem.t+gh-ha,bw,ha);
-    ctx.fillStyle="#0b6db7";
+    ctx.fillStyle="#55a7e8";
     ctx.fillRect(cx+2,margem.t+gh-hb,bw,hb);
 
     ctx.fillStyle="#68727d";ctx.font="10px Arial";ctx.textAlign="center";
@@ -515,11 +523,11 @@ function desenharGrafico(dias){
   });
 
   ctx.font="bold 10px Arial";ctx.textAlign="left";
-  ctx.fillStyle="#e91e63";ctx.fillRect(margem.l,7,10,10);
+  ctx.fillStyle="#0759a8";ctx.fillRect(margem.l,7,10,10);
   ctx.fillStyle="#59636e";ctx.fillText("Entregues à Torre A",margem.l+15,16);
   const larguraLegenda=ctx.measureText("Entregues à Torre A").width;
   const segundaLegendaX=margem.l+15+larguraLegenda+18;
-  ctx.fillStyle="#0b6db7";ctx.fillRect(segundaLegendaX,7,10,10);
+  ctx.fillStyle="#55a7e8";ctx.fillRect(segundaLegendaX,7,10,10);
   ctx.fillStyle="#59636e";ctx.fillText("Checks",segundaLegendaX+15,16);
 }
 
