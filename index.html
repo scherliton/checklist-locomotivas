@@ -918,18 +918,18 @@ popup.classList.add(
 
 
 titulo.innerHTML =
-"📱 Salvo no aparelho";
+"📱 Aguardando confirmação";
 
 
 document.getElementById(
 "textoPopup"
 ).innerHTML =
 
-"Sem conexão no momento.<br><br>"
+"Sem conexão ou sem confirmação de gravação.<br><br>"
 
 +
 
-"O checklist foi salvo neste aparelho e será sincronizado quando a internet voltar.<br><br>ID:<br><b>"
+"O checklist foi preservado neste aparelho. A gravação na planilha ainda não foi confirmada. Use SINCRONIZAR PENDENTES quando houver conexão.<br><br>ID:<br><b>"
 
 +
 
@@ -990,21 +990,31 @@ id
 
 
 
+/* A resposta POST no-cors é opaca: só considerar gravado após localizar o ID via GET. */
+async function verificarRegistroNaPlanilha(id){
+  const url = URL_SCRIPT + "?verificacao=" + encodeURIComponent(id) + "&t=" + Date.now();
+  const controle = new AbortController();
+  const tempo = setTimeout(() => controle.abort(), 20000);
+  try {
+    const resposta = await fetch(url, {method:"GET", cache:"no-store", signal:controle.signal});
+    if (!resposta.ok) throw new Error("Consulta indisponível");
+    const json = await resposta.json();
+    if (json.sucesso !== true || !Array.isArray(json.registros)) throw new Error("Resposta de consulta inválida");
+    return json.registros.some(r => String(r.id).trim() === String(id).trim());
+  } finally { clearTimeout(tempo); }
+}
+
 async function enviarRegistro(dados){
-
-await fetch(
-URL_SCRIPT,
-{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify(dados)
+  // Em caso de falha da consulta, manter registro pendente em vez de anunciar sucesso.
+  try { if (await verificarRegistroNaPlanilha(dados.id)) return; } catch(e) { /* tentar envio */ }
+  await fetch(URL_SCRIPT, {method:"POST", mode:"no-cors", body:JSON.stringify(dados)});
+  for (let tentativa=0; tentativa<3; tentativa++) {
+    await new Promise(resolve => setTimeout(resolve, 1200 + tentativa*1600));
+    try { if (await verificarRegistroNaPlanilha(dados.id)) return; }
+    catch(e) { console.warn("Não foi possível confirmar gravação",e); }
+  }
+  throw new Error("Gravação não confirmada na planilha. Registro preservado neste aparelho.");
 }
-);
-
-}
-
-
-
 
 async function sincronizarPendentes(){
 
@@ -1062,12 +1072,7 @@ dadosEnvio
 );
 
 
-/*
-Retira o registro da fila logo depois
-do envio. Assim, se a página for fechada
-durante a sincronização, os registros já
-enviados não permanecem na fila.
-*/
+/* Retirar da fila SOMENTE após confirmação de que o ID consta na planilha. */
 removerPendentePorId(
 item.id
 );
@@ -1095,7 +1100,7 @@ obterPendentes().length === 0
 ){
 
 alert(
-"✅ Registros pendentes sincronizados com sucesso!"
+"✅ Registros confirmados na planilha e sincronizados!"
 );
 
 }
@@ -1659,7 +1664,7 @@ Object.values(respostas)
 
 
 let idRegistro =
-gerarID();
+gerarID() + "-" + Math.random().toString(36).slice(2,8).toUpperCase();
 
 
 
@@ -1696,6 +1701,8 @@ document.getElementById("observacao").value
 
 try{
 
+// Preserva o registro antes de qualquer tentativa de rede.
+adicionarPendente(dados);
 
 if(!conexaoDisponivel){
 
@@ -1730,6 +1737,7 @@ await enviarRegistro(
 dados
 );
 
+removerPendentePorId(idRegistro);
 registrarLocomotivaRecente(locomotiva);
 
 mostrarPopupOnline(
