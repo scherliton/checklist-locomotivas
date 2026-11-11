@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checklist Locomotivas V3</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+margin:0;
+padding:15px;
+background:#eef3f8;
+}
+
+.app{
+max-width:520px;
+margin:auto;
+}
+
+.header{
+background:#003b70;
+color:white;
+padding:20px;
+border-radius:15px 15px 0 0;
+text-align:center;
+}
+
+.header h1{
+margin:0;
+font-size:22px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:0 0 15px 15px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-top:15px;
+margin-bottom:6px;
+}
+
+input,textarea{
+
+width:100%;
+padding:13px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
+
+}
+
+textarea{
+
+height:90px;
+resize:none;
+
+}
+
+.btn{
+
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+
+}
+
+.btn:disabled{
+
+opacity:.6;
+cursor:not-allowed;
+
+}
+
+.btn-trocar{
+
+background:#777;
+color:white;
+margin-top:10px;
+
+}
+
+.item{
+
+margin-top:15px;
+padding:15px;
+background:#f4f7fa;
+border-radius:12px;
+border-left:5px solid #003b70;
+
+}
+
+.item-title{
+
+font-weight:bold;
+margin-bottom:10px;
+
+}
+
+.botoes{
+
+display:flex;
+gap:10px;
+
+}
+
+.botoes button{
+
+flex:1;
+padding:12px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+
+}
+
+.conforme{
+
+background:#198754;
+color:white;
+
+}
+
+.nao{
+
+background:#dc3545;
+color:white;
+
+}
+
+.selecionado{
+
+outline:4px solid #003b70;
+
+}
+
+.status{
+
+margin-top:20px;
+padding:15px;
+border-radius:10px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+background:#d1e7dd;
+color:#0f5132;
+
+}
+
+.salvar{
+
+margin-top:20px;
+background:#003b70;
+color:white;
+
+}
+
+
+/* popup */
+
+.popup{
+
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 5px 25px rgba(0,0,0,.3);
+text-align:center;
+width:300px;
+z-index:999;
+
+}
+
+
+.popup h2{
+
+color:#198754;
+
+}
+
+
+.popup button{
+
+padding:12px 25px;
+border:none;
+border-radius:10px;
+background:#003b70;
+color:white;
+font-weight:bold;
+
+}
+
+
+.fundo-popup{
+
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.4);
+z-index:998;
+
+}
+
+
+/* OFFLINE / SINCRONIZAÇÃO */
+
+.conexao-box{
+margin-top:14px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding:10px 12px;
+border-radius:10px;
+background:#f4f7fa;
+font-size:13px;
+font-weight:bold;
+color:#52606d;
+}
+
+.conexao-status{
+display:inline-flex;
+align-items:center;
+gap:7px;
+}
+
+.conexao-bolinha{
+display:inline-block;
+width:10px;
+height:10px;
+min-width:10px;
+min-height:10px;
+flex:0 0 10px;
+border-radius:50%;
+background:#198754;
+box-shadow:0 0 0 2px rgba(25,135,84,.12);
+}
+
+.conexao-offline .conexao-bolinha{
+background:#d97706;
+box-shadow:0 0 0 2px rgba(217,119,6,.16);
+}
+
+.conexao-sync .conexao-bolinha{
+background:#0d6efd;
+box-shadow:0 0 0 2px rgba(13,110,253,.14);
+}
+
+.pendentes-badge{
+font-weight:normal;
+color:#6b7280;
+font-size:12px;
+}
+
+.btn-sync{
+margin-top:10px;
+background:#0d6efd;
+color:white;
+display:none;
+}
+
+.popup.offline h2{
+color:#d97706;
+}
+
+
+/* =========================================================
+   TEMA NOVEMBRO AZUL 2026
+   Alterações exclusivamente visuais
+   ========================================================= */
+
+:root{
+  --rosa-principal:#e91e63;
+  --rosa-forte:#d81b60;
+  --rosa-claro:#fff0f5;
+  --rosa-suave:#fde7f0;
+  --rosa-borda:#f7bfd3;
+  --rosa-texto:#b51550;
+}
+
+body{
+  background:
+    radial-gradient(circle at top right, rgba(233,30,99,.08), transparent 30%),
+    linear-gradient(180deg,#fff9fb 0%,#fff1f6 100%);
+}
+
+.app{
+  max-width:520px;
+}
+
+.header{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#ed2b72 0%,#df1e63 55%,#f05a91 100%);
+  padding:18px 20px 16px;
+  box-shadow:0 6px 20px rgba(216,27,96,.18);
+}
+
+.header::after{
+  content:"";
+  position:absolute;
+  right:-24px;
+  top:-38px;
+  width:125px;
+  height:125px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+
+.header h1{
+  position:relative;
+  z-index:1;
+  font-size:22px;
+  letter-spacing:.1px;
+}
+
+.header .subtitulo{
+  position:relative;
+  z-index:1;
+  margin-top:4px;
+  font-size:13px;
+  opacity:.92;
+}
+
+.outubro-rosa{
+  position:relative;
+  z-index:1;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.30);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.outubro-laco{
+  font-size:27px;
+  line-height:1;
+  filter:drop-shadow(0 2px 3px rgba(120,0,45,.15));
+}
+
+.outubro-textos{
+  text-align:left;
+  line-height:1.15;
+}
+
+.outubro-titulo{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+
+.outubro-frase{
+  margin-top:3px;
+  font-size:12px;
+  font-style:italic;
+  font-weight:normal;
+  opacity:.96;
+}
+
+.card{
+  border:1px solid rgba(247,191,211,.75);
+  box-shadow:0 5px 18px rgba(143,42,79,.10);
+}
+
+.item{
+  background:linear-gradient(90deg,#fff8fb 0%,#fdf7f9 100%);
+  border-left:5px solid var(--rosa-principal);
+  border-top:1px solid #fbe3ec;
+  border-right:1px solid #fbe3ec;
+  border-bottom:1px solid #fbe3ec;
+}
+
+.selecionado{
+  outline:4px solid rgba(233,30,99,.35);
+  box-shadow:0 0 0 1px var(--rosa-principal);
+}
+
+.salvar{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+  box-shadow:0 5px 12px rgba(216,27,96,.18);
+}
+
+.salvar:active{
+  transform:translateY(1px);
+}
+
+.btn-trocar{
+  background:#6f6870;
+}
+
+.popup button{
+  background:linear-gradient(135deg,var(--rosa-principal),var(--rosa-forte));
+}
+
+input:focus,
+textarea:focus{
+  outline:none;
+  border-color:#ee77a3;
+  box-shadow:0 0 0 3px rgba(233,30,99,.10);
+}
+
+.rodape-outubro{
+  margin:18px 0 4px;
+  text-align:center;
+  color:var(--rosa-texto);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.rodape-outubro .linha{
+  height:1px;
+  margin:0 auto 10px;
+  max-width:260px;
+  background:linear-gradient(90deg,transparent,#f3a9c4,transparent);
+}
+
+@media(max-width:420px){
+  body{ padding:10px; }
+  .header{ padding:17px 14px 15px; }
+  .header h1{ font-size:20px; }
+  .outubro-frase{ font-size:11px; }
+}
+
+/* Tema visual V3 */
+body{background:linear-gradient(180deg,#f4f9ff,#e6f1fc)}
+.header{background:linear-gradient(135deg,#064b8c,#0877c7)}
+.item{background:#f3f9ff;border-left-color:#0877c7;border-color:#dceaf9}
+.selecionado{outline-color:#0877c7}
+.salvar,.popup button{background:linear-gradient(135deg,#0769b0,#064b8c)}
+.card{border-color:#dceaf9}
+.rodape-outubro{color:#07568e}
+.tipo-box{margin:14px 0;padding:13px;border:1px solid #bfd8ee;border-radius:12px;background:#f4f9ff}
+.tipo-box label{margin:8px 0;font-weight:normal}
+.tipo-box input{width:auto;margin-right:7px}
+#historicoV3{white-space:pre-line;line-height:1.5;font-size:13px;padding:12px;border-radius:10px;background:#edf5fd;margin-top:10px}
+#historicoV3.alerta{background:#fff3d8;border:1px solid #e9b64f}
+#perfilLocoV3{display:none;margin-top:10px;padding:12px;border-radius:10px;background:#eaf7f0;border:1px solid #aadbc1;font-size:13px;line-height:1.5}
+.item.nao-aplica{background:#f2f4f7;border-left-color:#9ca3af;color:#59616b}
+.item.nao-aplica .botoes{display:none}
+.item .etiqueta-na{display:none;font-size:12px;font-weight:bold;color:#59616b}
+.item.nao-aplica .etiqueta-na{display:block}
+#avisoTesteV3{background:#fff3cd;border:1px solid #e9c46a;padding:12px;border-radius:10px;font-size:13px;margin:12px 0}
+/* Etapa 19: simulacao isolada, sem gravacao */
+.demo-v3{margin:14px 0;padding:14px;background:#f0f6ff;border:1px solid #9bc5ed;border-radius:12px}
+.demo-v3 p{font-size:13px;line-height:1.5}
+.demo-v3 button{margin-top:8px}
+.demo-v3 .acao{background:#075b9c;color:white}
+.demo-v3 .secundario{background:#e7edf5;color:#17456d}
+.demo-v3 .estado{margin-top:10px;font-size:13px;white-space:pre-line;line-height:1.5}
+.item-pendente-reinspecao{border-left-color:#e3a008!important}
+
+</style>
+
+</head>
+<body>
+
+
+<div class="app">
+
+
+<div class="header">
+
+<h1>🚂 Checklist Pós-Drenagem</h1>
+
+<div class="subtitulo">Locomotivas - V3 TESTE — PENDÊNCIAS OPERACIONAIS</div>
+
+<div class="outubro-rosa">
+  <div class="outubro-laco">💙</div>
+  <div class="outubro-textos">
+    <div class="outubro-titulo">NOVEMBRO AZUL</div>
+    <div class="outubro-frase">Prevenir também é cuidar de você!</div>
+  </div>
+</div>
+
+</div>
+
+
+<div class="card">
+<div style="text-align:right;margin-bottom:12px"><a href="Dashboard_V3.html" style="color:#064b8c;font-weight:bold;font-size:13px">📊 Consultar Dashboard V3 (teste)</a></div>
+<div id="avisoTesteV3" role="status"><strong>🧪 AMBIENTE DE TESTES — SOMENTE CONSULTA.</strong> Nenhum checklist é salvo ou sincronizado por esta página. O histórico é consultado no endereço configurado no código.</div>
+
+<div id="conexaoBox" class="conexao-box">
+
+<div class="conexao-status">
+
+<span class="conexao-bolinha"></span>
+
+<span id="textoConexao">🟢 Online</span>
+
+</div>
+
+<div id="pendentesBadge" class="pendentes-badge">
+
+0 pendentes
+
+</div>
+
+</div>
+
+
+<button
+id="btnSincronizar"
+class="btn btn-sync"
+disabled title="Sincronização desativada no teste">
+
+🔄 SINCRONIZAR PENDENTES
+
+</button>
+
+
+
+
+<label>Colaborador</label>
+
+<input 
+id="colaborador" 
+placeholder="Digite o nome do colaborador"
+autocomplete="name"
+oninput="validarColaborador(this)"
+>
+
+
+<button 
+class="btn btn-trocar" 
+onclick="trocarColaborador()">
+
+Trocar colaborador
+
+</button>
+
+
+
+<label>Locomotiva</label>
+
+<input 
+id="locomotiva"
+type="text"
+inputmode="numeric"
+pattern="[0-9]{4}"
+maxlength="4"
+autocomplete="off"
+placeholder="Digite os 4 números da locomotiva"
+oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); reiniciarRespostasAoTrocarLocomotiva(); verificarDuplicidadeDigitacao(); aplicarPerfilV3(); agendarConsultaV3()"
+>
+
+<div id="alertaDuplicidade" role="status" style="display:none;margin-top:10px;padding:12px;border:1px solid #f0c36d;background:#fff8e7;color:#805400;border-radius:10px;font-size:14px"></div>
+
+<div id="perfilLocoV3" role="status" aria-live="polite"></div>
+ <div id="historicoV3" role="status" aria-live="polite" style="display:none"></div>
+<div id="atalhoPendenciasV3" style="display:none;margin:12px 0;padding:13px;border:1px solid #e5ad3d;background:#fff8e7;border-radius:11px">
+  <strong id="tituloAtalhoV3">Pendências operacionais encontradas</strong>
+  <p id="descricaoAtalhoV3" style="font-size:13px;margin:8px 0">Consulte somente os itens em aberto.</p>
+  <button type="button" class="btn acao" id="botaoReinspecionarV3" onclick="abrirReinspecaoOperacionalV3()">🔎 REINSPECIONAR PENDÊNCIAS (SOMENTE LEITURA)</button>
+</div>
+<div class="tipo-box">
+<strong>Tipo de vistoria</strong>
+<label><input type="radio" name="tipoV3" value="NOVA" checked onchange="alterarTipoV3()"> Nova inspeção</label>
+<label><input type="radio" name="tipoV3" value="REINSPECAO" onchange="alterarTipoV3()"> Reinspeção</label>
+<div id="motivoV3" style="display:none">
+<div id="orientacaoReinspecaoV3" role="status" style="padding:10px;margin:10px 0;border-radius:8px;background:#fff8e7;color:#805400"></div>
+<label for="motivoSelectV3">Motivo</label>
+<select id="motivoSelectV3" onchange="alterarTipoV3()" style="width:100%;padding:12px;border-radius:9px">
+<option value="REGULARIZACAO">Regularização de pendência</option>
+<option value="PERMANENCIA">Permanência na oficina</option>
+</select>
+<p id="referenciaV3" style="font-size:12px"></p>
+</div>
+</div>
+<section class="demo-v3" aria-label="Diagnóstico V3 em tempo real">
+<strong>🧪 Etapa 27 — Diagnóstico V3 preservado (somente leitura)</strong>
+<p>Digite a locomotiva <strong>1250</strong> para consultar o diagnóstico fictício da planilha V3. A pendência de papel-toalha foi encerrada no teste anterior e agora deve retornar zero. Para outras locomotivas, a consulta operacional continua inalterada. Nada será gravado ou encerrado.</p>
+<div class="estado" id="estadoDemoV3" role="status" aria-live="polite">Aguardando locomotiva 1250.</div>
+</section>
+<h2>Checklist</h2>
+<p style="font-size:12px;color:#475569">🧪 V3 somente consulta: para 1250, pendências fictícias vêm da rota de diagnóstico; demais locomotivas usam a consulta operacional da aba Anomalias. A reinspeção é uma prévia visual e não encerra pendências nem grava dados.</p>
+
+
+
+<div id="lista"></div>
+<div id="rapidoV3" style="margin-top:18px;padding:14px;border:1px solid #b6d7ed;border-radius:12px;background:#eff8ff">
+  <strong>⚡ Inspeção rápida</strong>
+  <p style="font-size:13px;line-height:1.5">Depois de verificar fisicamente todos os itens aplicáveis, confirme os conformes de uma vez. Se houver problemas, marque somente os itens NÃO CONFORMES.</p>
+  <button type="button" class="btn" style="background:#198754;color:#fff" onclick="confirmarConformesRapidoV3()">✅ CONFIRMAR ITENS CONFORMES</button>
+  <p id="avisoRapidoV3" role="status" style="font-size:12px;margin-bottom:0"></p>
+</div>
+
+
+
+<div id="status" class="status">
+
+🟢 CONFORME
+
+</div>
+
+
+
+<label>Observação</label>
+
+<textarea 
+id="observacao"
+placeholder="Digite observações se necessário">
+</textarea>
+
+
+
+<!-- ETAPA 27: TESTE HTTP INDEPENDENTE; NUNCA SALVA CHECKLIST -->
+<section id="testePost27V3" aria-label="Teste de comunicacao POST V3" style="margin:18px 0;padding:15px;border:2px solid #8ab8e5;border-radius:12px;background:#f0f7ff">
+  <strong>🧪 Etapa 27 — Teste de comunicação POST</strong>
+  <p style="font-size:13px;line-height:1.5">Envia exclusivamente dados fictícios fixos para a API V3 em modo <strong>SOMENTE_VALIDAÇÃO</strong>. Não utiliza as respostas, o nome nem a locomotiva preenchidos neste checklist. Não salva inspeções ou reinspeções.</p>
+  <button type="button" id="btnTestePost27V3" class="btn" style="background:#075b9c;color:white" onclick="testarComunicacaoPost27V3()">📡 TESTAR COMUNICAÇÃO POST (SEM GRAVAR)</button>
+  <p id="resultadoPost27V3" role="status" aria-live="polite" style="font-size:13px;line-height:1.5;white-space:pre-line;margin-bottom:0">Aguardando teste. A resposta não pode ser lida diretamente pelo navegador em modo no-cors.</p>
+</section>
+
+<button 
+id="btnSalvar"
+class="btn salvar"
+onclick="alert('Esta V3 é somente para testes. Nenhum checklist será enviado.')" disabled>
+
+🔒 SALVAMENTO DESATIVADO — TESTE
+
+</button>
+
+
+
+<div class="rodape-outubro">
+  <div class="linha"></div>
+  💙 Juntos nessa causa • Prevenção é o melhor caminho
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="fundo-popup" id="fundoPopup"></div>
+
+
+<div class="popup" id="popup">
+
+<h2 id="tituloPopup">✅ Enviado!</h2>
+
+<p id="textoPopup"></p>
+
+<button onclick="fecharPopup()">
+
+OK
+
+</button>
+
+</div>
+<script>
+
+// Endpoint V3 para leitura de pendencias operacionais e historico. Gravações bloqueadas.
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzKYKOL5yt1mXTJprIRkaVNxcGBqhG1Ty2dp2kldJR8cQBCxedyfeEMvFQtoy-x6ZLt5A/exec";
+
+
+// Etapa 24: dados fictícios REAIS da planilha V3, lidos por rota separada.
+// Não existe simulação local nem gravação. Apenas a locomotiva 1250 usa diagnóstico.
+let demoReinspecaoV3 = null; // Mantido para compatibilidade com rotinas legadas, sempre nulo.
+function renderizarDemoV3(){
+  const estado=document.getElementById("estadoDemoV3");
+  if(!estado)return;
+  const loco=document.getElementById("locomotiva").value;
+  estado.textContent=loco==="1250"
+    ?"🔎 Locomotiva 1250: consultando dados fictícios diretamente na planilha V3."
+    :"Informe 1250 para testar o diagnóstico fictício da planilha V3.";
+}
+let registrosV3 = [];
+let referenciaV3 = null;
+let consultaTokenV3 = 0;
+let diagnosticoV3 = null;
+let historicoCarregadoV3 = false;
+function tipoAtualV3(){return document.querySelector('input[name="tipoV3"]:checked').value}
+let locomotivaRespostasV3="";
+let confirmacoesAutomaticasV3=new Set();
+function reiniciarRespostasAoTrocarLocomotiva(){
+ const loco=document.getElementById("locomotiva").value;
+ if(demoReinspecaoV3 && loco!=="1250"){
+   demoReinspecaoV3=null;
+   renderizarDemoV3();
+ }
+ if(loco===locomotivaRespostasV3)return;
+ locomotivaRespostasV3=loco;
+ respostas={};
+ confirmacoesAutomaticasV3.clear();
+ document.querySelectorAll("#lista .selecionado").forEach(b=>b.classList.remove("selecionado"));
+ const aviso=document.getElementById("avisoRapidoV3");
+ if(aviso)aviso.textContent="";
+}
+// Mantem o resumo da inspecao rapida sincronizado com as respostas atuais.
+function atualizarResumoRapidoV3(){
+  const aviso=document.getElementById("avisoRapidoV3");
+  if(!aviso)return;
+  if(tipoAtualV3()!=="NOVA"){
+    aviso.textContent="";
+    return;
+  }
+  const loco=document.getElementById("locomotiva").value;
+  if(!/^\d{4}$/.test(loco)){
+    aviso.textContent="";
+    return;
+  }
+  const perfil=perfilLocomotivaV3(loco);
+  const aplicaveis=itens.map(([chave])=>chave)
+    .filter(chave=>perfil!=="SEM_BANHEIRO"||chave==="CabineLimpa");
+  const conformes=aplicaveis.filter(chave=>respostas[chave]==="CONFORME").length;
+  const naoConformes=aplicaveis.filter(chave=>respostas[chave]==="NÃO CONFORME").length;
+  const restantes=aplicaveis.length-conformes-naoConformes;
+  if(!conformes && !naoConformes){
+    aviso.textContent="";
+    return;
+  }
+  aviso.textContent="📋 Resumo atual: "+conformes+" conforme(s), "+
+    naoConformes+" não conforme(s)"+
+    (restantes?", "+restantes+" ainda não avaliado(s)":"")+
+    ". Nenhum dado foi enviado.";
+}
+
+function confirmarConformesRapidoV3(){
+ if(tipoAtualV3()!=="NOVA")return alert("A confirmação rápida é exclusiva da Nova inspeção. Na reinspeção, avalie cada pendência individualmente.");
+ const loco=document.getElementById("locomotiva").value;
+ if(!/^\d{4}$/.test(loco))return alert("Informe primeiro os quatro números da locomotiva.");
+ const perfil=perfilLocomotivaV3(loco);
+ const aplicaveis=itens.map(([chave])=>chave).filter(chave=>perfil!=="SEM_BANHEIRO"||chave==="CabineLimpa");
+ const naoConformes=aplicaveis.filter(chave=>respostas[chave]==="NÃO CONFORME");
+ const conformes=aplicaveis.filter(chave=>respostas[chave]!=="NÃO CONFORME");
+ const texto="Confirma que VERIFICOU os "+aplicaveis.length+" itens aplicáveis da locomotiva "+loco+"?\n\n"+
+   (naoConformes.length?naoConformes.length+" item(ns) marcado(s) NÃO CONFORME serão preservados.\n":"")+
+   conformes.length+" item(ns) serão considerados CONFORMES.\n\nEste teste NÃO envia dados.";
+ if(!confirm(texto))return;
+ for(const chave of conformes){
+   if(respostas[chave]!=="CONFORME")confirmacoesAutomaticasV3.add(chave);
+   respostas[chave]="CONFORME";
+   const el=document.querySelector('[data-item-v3="'+chave+'"]');
+   if(el){el.querySelectorAll("button").forEach(b=>b.classList.remove("selecionado"));el.querySelector("button.conforme")?.classList.add("selecionado");}
+ }
+ atualizarStatus();
+}
+// Etapa 21: atalho operacional exibido somente após consulta V3 válida.
+// Nenhuma gravação ou encerramento é permitido nesta versão.
+function validarRespostaPendenciasV3(json,loco){
+  if(json.sucesso!==true || !Array.isArray(json.pendencias) ||
+    !Number.isInteger(Number(json.total)) || Number(json.total)!==json.pendencias.length ||
+    String(json.locomotiva)!==loco) throw Error(json.mensagem||"Resposta operacional inválida");
+  const conhecidas=new Set(itens.map(([chave])=>chave));
+  if(json.pendencias.some(p=>!p || !conhecidas.has(p.item) ||
+    !["ABERTA","EM ANALISE"].includes(normalizarV3(p.status)) ||
+    String(p.locomotiva)!==loco)) throw Error("Pendência com dados inesperados");
+  const resultado={
+    itensAbertos:[...new Set(json.pendencias.map(p=>p.item))],
+    pendencias:json.pendencias,
+    total:json.pendencias.length
+  };
+  return resultado;
+}
+function atualizarAtalhoPendenciasV3(){
+  const painel=document.getElementById("atalhoPendenciasV3");
+  const simulado=document.getElementById("locomotiva").value==="1250";
+  const consultaValida=pendenciasCarregadasV3 && !erroPendenciasV3;
+  const total=consultaValida ? Number(diagnosticoV3?.total||0) : 0;
+  painel.style.display=total>0?"block":"none";
+  if(total>0){
+    const qtd=diagnosticoV3.itensAbertos.length;
+    document.getElementById("tituloAtalhoV3").textContent=
+      (simulado?"🧪 DIAGNÓSTICO DA PLANILHA V3 — ":"⚠️ ")+total+" anomalia(s) aberta(s) em "+qtd+" item(ns)";
+    document.getElementById("descricaoAtalhoV3").textContent=simulado
+      ?"Pendências fictícias lidas diretamente da planilha V3. Esta página não grava nem encerra anomalias."
+      :"Selecione REINSPECIONAR PENDÊNCIAS para visualizar somente os itens abertos. Nenhuma alteração será gravada.";
+    document.getElementById("botaoReinspecionarV3").textContent=simulado
+      ?"🔎 REINSPECIONAR PENDÊNCIA FICTÍCIA (SOMENTE LEITURA)"
+      :"🔎 REINSPECIONAR PENDÊNCIAS (SOMENTE LEITURA)";
+  }
+}
+function abrirReinspecaoOperacionalV3(){
+  if(!pendenciasCarregadasV3 || erroPendenciasV3 ||
+     !diagnosticoV3 || diagnosticoV3.total<1){
+    alert("A consulta não identificou pendências abertas. Aguarde uma consulta válida.");
+    return;
+  }
+  respostas={};confirmacoesAutomaticasV3.clear();
+  document.querySelector('input[name="tipoV3"][value="REINSPECAO"]').checked=true;
+  document.getElementById("motivoSelectV3").value="REGULARIZACAO";
+  carregarChecklist();
+  alterarTipoV3();
+  document.getElementById("lista").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function alterarTipoV3(){
+  if(demoReinspecaoV3){
+    document.querySelector('input[name="tipoV3"][value="REINSPECAO"]').checked=true;
+    document.getElementById("motivoSelectV3").value="REGULARIZACAO";
+  }
+  const re=tipoAtualV3()==="REINSPECAO";
+ document.getElementById("rapidoV3").style.display=re?"none":"block";
+ if(re && confirmacoesAutomaticasV3.size){
+   for(const chave of confirmacoesAutomaticasV3){
+     if(respostas[chave]==="CONFORME"){
+       delete respostas[chave];
+       document.querySelector('[data-item-v3="'+chave+'"] button.conforme')?.classList.remove("selecionado");
+     }
+   }
+   confirmacoesAutomaticasV3.clear();
+ }
+ const regularizacao=re && document.getElementById("motivoSelectV3").value==="REGULARIZACAO";
+ const loco=document.getElementById("locomotiva").value;
+ const orientacao=document.getElementById("orientacaoReinspecaoV3");
+ const ref=document.getElementById("referenciaV3");
+ const chaves=diagnosticoV3?.itensAbertos||[];
+ document.getElementById("motivoV3").style.display=re?"block":"none";
+ if(re){
+   if(loco.length!==4) orientacao.textContent="Informe uma locomotiva de 4 dígitos para consultar as pendências.";
+   else if(!pendenciasCarregadasV3) orientacao.textContent=erroPendenciasV3
+      ?"⚠️ Não foi possível consultar as pendências operacionais. Reinspeção indisponível até a consulta funcionar."
+      :"Consultando pendências operacionais na aba Anomalias...";
+   else if(regularizacao && chaves.length) orientacao.textContent="🔎 "+diagnosticoV3.total+" anomalia(s) aberta(s) em "+chaves.length+" item(ns). Avalie somente os itens exibidos. Prévia sem gravação.";
+   else if(regularizacao) orientacao.textContent="✅ A consulta operacional não encontrou pendências abertas para esta locomotiva. Se necessário, selecione Nova inspeção.";
+   else orientacao.textContent="Permanência na oficina: avaliação completa dos itens aplicáveis. Esta prévia não encerra pendências.";
+ }
+ ref.textContent=regularizacao && pendenciasCarregadasV3 && diagnosticoV3?.pendencias?.length
+   ?"IDs das anomalias em aberto: "+diagnosticoV3.pendencias.map(p=>p.idAnomalia).join(", ")+". Nenhum vínculo será gravado."
+   :"Nenhum vínculo será gravado neste ambiente de testes.";
+ document.querySelectorAll("#lista [data-item-v3]").forEach(el=>{
+   const chave=el.getAttribute("data-item-v3");
+   const somentePendentes=regularizacao;
+   el.style.display=somentePendentes && (!pendenciasCarregadasV3 || !chaves.includes(chave))?"none":"";
+   el.classList.toggle("item-pendente-reinspecao",somentePendentes && chaves.includes(chave));
+ });
+ atualizarStatus();
+}
+function dataV3(x){
+ if(x instanceof Date)return x.getTime();
+ if(typeof x==="number")return x;
+ const texto=String(x??"").trim();
+ const br=texto.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+ if(br){const d=new Date(+br[3],+br[2]-1,+br[1],+(br[4]||0),+(br[5]||0),+(br[6]||0));return isNaN(d)?0:d.getTime()}
+ const d=new Date(texto);return isNaN(d)?0:d.getTime();
+}
+function formatarDataV3(x){const ms=dataV3(x);return ms?new Date(ms).toLocaleString("pt-BR"):String(x||"Data não informada")}
+
+function pendenciaV3(x){return String(x.status||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase()==="PENDENCIA"}
+// Acompanhamento conservador: somente uma vistoria posterior com itens
+// efetivamente CONFORMES pode encerrar as respectivas nao conformidades.
+// Registros sem dados suficientes permanecem sinalizados para conferencia.
+function normalizarV3(v){return String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toUpperCase()}
+function ehConformeV3(v){return normalizarV3(v)==="CONFORME"}
+function ehNaoConformeV3(v){return normalizarV3(v)==="NAO CONFORME"}
+function diagnosticoHistoricoV3(lista,loco){
+ const perfil=perfilLocomotivaV3(loco);
+ const chaves=itens.map(([chave])=>chave).filter(chave=>perfil!=="SEM_BANHEIRO"||chave==="CabineLimpa");
+ const cronologico=[...lista].sort((a,b)=>dataV3(a.dataHora)-dataV3(b.dataHora));
+ const abertas=new Map();
+ const indefinidas=[];
+ for(const registro of cronologico){
+   for(const chave of chaves){
+     if(ehNaoConformeV3(registro[chave])) abertas.set(chave,registro);
+     else if(ehConformeV3(registro[chave])) abertas.delete(chave);
+   }
+   // Se a origem possui somente status geral, nao supor quais itens foram resolvidos.
+   if(pendenciaV3(registro) && !chaves.some(chave=>ehNaoConformeV3(registro[chave]))){
+     indefinidas.push(registro);
+   }
+ }
+ const itensAbertos=[...abertas.keys()];
+ const referencia=itensAbertos.length ? [...abertas.values()].sort((a,b)=>dataV3(b.dataHora)-dataV3(a.dataHora))[0] : null;
+ return {itensAbertos,referencia,indefinidas};
+}
+// A aba Anomalias e a unica fonte para pendencias operacionais.
+// O historico da aba Checklist e exibido apenas como informacao.
+let pendenciasCarregadasV3=false;
+let erroPendenciasV3=false;
+let timerConsultaV3=null;
+function agendarConsultaV3(){
+  if(demoReinspecaoV3){aplicarPendenciasDemoV3();return;}
+  clearTimeout(timerConsultaV3);
+ const loco=document.getElementById("locomotiva").value;
+ ++consultaTokenV3;
+ pendenciasCarregadasV3=false;
+ erroPendenciasV3=false;
+ diagnosticoV3=null;
+ historicoCarregadoV3=false;
+ referenciaV3=null;
+ atualizarAtalhoPendenciasV3();
+ if(loco.length!==4){
+   document.getElementById("historicoV3").style.display="none";
+   alterarTipoV3();
+   return;
+ }
+ alterarTipoV3();
+ timerConsultaV3=setTimeout(()=>consultarV3(),350);
+}
+async function consultarV3(){
+  if(demoReinspecaoV3)return;
+  const loco=document.getElementById("locomotiva").value;
+ const box=document.getElementById("historicoV3");
+ const token=++consultaTokenV3;
+ pendenciasCarregadasV3=false;
+ erroPendenciasV3=false;
+ diagnosticoV3=null;
+ historicoCarregadoV3=false;
+ referenciaV3=null;
+ registrosV3=[];
+ atualizarAtalhoPendenciasV3();
+ if(!/^[0-9]{4}$/.test(loco)){
+   box.style.display="none";
+   alterarTipoV3();
+   return;
+ }
+ box.style.display="block";
+ box.className="";
+ box.textContent="Consultando pendências operacionais e histórico...";
+ alterarTipoV3();
+ // A consulta operacional e independente do historico.
+ try{
+   const acao=loco==="1250"?"consultarDiagnosticoV3":"consultarPendenciasV3";
+    const url=URL_SCRIPT+"?acao="+acao+"&locomotiva="+encodeURIComponent(loco)+"&_="+Date.now();
+   const resposta=await fetch(url,{cache:"no-store"});
+   if(!resposta.ok)throw Error("HTTP "+resposta.status);
+   const json=await resposta.json();
+   if(token!==consultaTokenV3)return;
+   diagnosticoV3=validarRespostaPendenciasV3(json,loco);
+   pendenciasCarregadasV3=true;
+   atualizarAtalhoPendenciasV3();
+ }catch(err){
+   if(token!==consultaTokenV3)return;
+   erroPendenciasV3=true;
+   pendenciasCarregadasV3=false;
+   diagnosticoV3=null;
+   atualizarAtalhoPendenciasV3();
+   box.className="alerta";
+   box.textContent="⚠️ Consulta operacional indisponível: "+err.message+". Não é possível determinar as pendências abertas.";
+   alterarTipoV3();
+   return;
+ }
+ const chaves=diagnosticoV3.itensAbertos;
+ const nomes=chaves.map(chave=>itens.find(x=>x[0]===chave)?.[1]||chave);
+ box.textContent=diagnosticoV3.total
+   ?"⚠️ PENDÊNCIAS OPERACIONAIS ABERTAS (aba Anomalias): "+diagnosticoV3.total+" registro(s) em "+chaves.length+" item(ns): "+nomes.join(", ")
+   :"✅ Nenhuma pendência operacional aberta na aba Anomalias.";
+ box.className=diagnosticoV3.total?"alerta":"";
+ alterarTipoV3();
+ // Falha no historico nao altera o resultado operacional.
+ try{
+   const resposta=await fetch(URL_SCRIPT+"?_="+Date.now(),{cache:"no-store"});
+   if(!resposta.ok)throw Error("HTTP "+resposta.status);
+   const json=await resposta.json();
+   if(token!==consultaTokenV3)return;
+   if(json.sucesso!==true || !Array.isArray(json.registros))throw Error("Resposta histórica inválida");
+   registrosV3=json.registros.filter(x=>String(x.locomotiva).padStart(4,"0")===loco)
+     .sort((a,b)=>dataV3(b.dataHora)-dataV3(a.dataHora));
+   historicoCarregadoV3=true;
+   const ultima=registrosV3[0];
+   box.textContent += ultima
+     ?"\n\nHistórico informativo — última vistoria: "+formatarDataV3(ultima.dataHora)+
+       "\nColaborador: "+(ultima.colaborador||"Não informado")+
+       "\nSituação registrada: "+(ultima.status||"Não informada")+
+       "\nO histórico não determina pendências abertas."
+     :"\n\nHistórico: sem vistoria anterior registrada.";
+ }catch(err){
+   if(token!==consultaTokenV3)return;
+   box.textContent+="\n\nHistórico informativo indisponível. A consulta operacional acima permanece válida.";
+ }
+ alterarTipoV3();
+}
+const SEM_BANHEIRO_V3 = new Set(["1001","1003","1004","1005","1006","1008","1101","1102","1104","1107","1108","1109","1112"]);
+const ADAPTADO_V3 = new Set(["1002","1105","1106","1111"]);
+function perfilLocomotivaV3(loco){
+ if(SEM_BANHEIRO_V3.has(loco)) return "SEM_BANHEIRO";
+ if(ADAPTADO_V3.has(loco)) return "ADAPTADO";
+ return "CONVENCIONAL";
+}
+function aplicarPerfilV3(){
+ const loco=document.getElementById("locomotiva").value;
+ const perfil=loco.length===4?perfilLocomotivaV3(loco):null;
+ const aviso=document.getElementById("perfilLocoV3");
+ aviso.style.display=perfil?"block":"none";
+ if(perfil==="SEM_BANHEIRO") aviso.textContent="🚂 Locomotiva "+loco+" — SEM BANHEIRO. Os 9 itens de banheiro são NÃO SE APLICA. Avalie apenas a limpeza da cabine.";
+ else if(perfil==="ADAPTADO") aviso.textContent="🚂 Locomotiva "+loco+" — BANHEIRO ADAPTADO. Avalie os itens existentes normalmente; defeitos reais geram pendência.";
+ else if(perfil) aviso.textContent="🚂 Locomotiva "+loco+" — checklist convencional (perfil não especial cadastrado).";
+ itens.forEach(([chave])=>{
+   const el=document.querySelector('[data-item-v3="'+chave+'"]');
+   if(!el)return;
+   const naoAplica=perfil==="SEM_BANHEIRO" && chave!=="CabineLimpa";
+   el.classList.toggle("nao-aplica",naoAplica);
+   if(naoAplica){respostas[chave]="NÃO SE APLICA";el.querySelectorAll("button").forEach(b=>b.classList.remove("selecionado"));}
+   else if(respostas[chave]==="NÃO SE APLICA")delete respostas[chave];
+ });
+ atualizarStatus();
+}
+const itens = [
+
+["BanheiroLimpo","🚿 Banheiro limpo"],
+
+["BanheiroDrenado","🚽 Banheiro drenado"],
+
+["DescargaFuncionando","🚽 Descarga funcionando"],
+
+["AguaDisponivel","💧 Água disponível"],
+
+["SaboneteLiquido","🧴 Sabonete líquido"],
+
+["PapelHigienico","🧻 Papel higiênico"],
+
+["PapelToalha","🧻 Papel toalha"],
+
+["Iluminacao","💡 Iluminação"],
+
+["PortaFuncionando","🚪 Porta funcionando"],
+
+["CabineLimpa","🧹 Cabine limpa e organizada"]
+
+];
+
+
+let respostas = {};
+
+let enviando = false;
+
+const CHAVE_PENDENTES = "checklistPendentesV3_TESTE_ISOLADO";
+
+let sincronizando = false;
+
+let conexaoDisponivel = navigator.onLine;
+
+let timerConexao = null;
+
+
+
+
+function obterPendentes(){
+
+try{
+
+const lista =
+JSON.parse(
+localStorage.getItem(CHAVE_PENDENTES)
+||
+"[]"
+);
+
+if(!Array.isArray(lista)){
+
+return [];
+
+}
+
+
+/*
+Remove possíveis duplicidades antigas
+da fila offline usando o ID do registro.
+*/
+const ids = new Set();
+
+const unicos =
+lista.filter(item=>{
+
+if(
+!item
+||
+!item.id
+||
+ids.has(item.id)
+){
+
+return false;
+
+}
+
+ids.add(item.id);
+
+return true;
+
+});
+
+
+if(unicos.length !== lista.length){
+
+localStorage.setItem(
+CHAVE_PENDENTES,
+JSON.stringify(unicos)
+);
+
+}
+
+
+return unicos;
+
+}
+catch(e){
+
+return [];
+
+}
+
+}
+
+
+
+
+function salvarPendentes(lista){
+
+localStorage.setItem(
+CHAVE_PENDENTES,
+JSON.stringify(lista)
+);
+
+atualizarStatusConexao();
+
+}
+
+
+
+
+function removerPendentePorId(id){
+
+const lista =
+obterPendentes()
+.filter(
+item => item.id !== id
+);
+
+salvarPendentes(
+lista
+);
+
+}
+
+
+
+
+function adicionarPendente(dados){
+
+const lista =
+obterPendentes();
+
+
+if(
+!lista.some(
+item => item.id === dados.id
+)
+){
+
+lista.push({
+...dados,
+_salvoEm:new Date().toISOString()
+});
+
+salvarPendentes(lista);
+
+}
+
+}
+
+
+
+
+
+async function verificarConexaoReal(atualizarTela=true){
+
+const controller =
+new AbortController();
+
+const timeout =
+setTimeout(
+()=> controller.abort(),
+3500
+);
+
+try{
+
+await fetch(
+"../service-worker.js?ping="
++
+Date.now(),
+{
+method:"GET",
+cache:"no-store",
+signal:controller.signal
+}
+);
+
+conexaoDisponivel=true;
+
+}
+catch(e){
+
+conexaoDisponivel=false;
+
+}
+finally{
+
+clearTimeout(timeout);
+
+}
+
+
+if(atualizarTela){
+
+atualizarStatusConexao();
+
+}
+
+
+return conexaoDisponivel;
+
+}
+
+
+
+
+function iniciarMonitorConexao(){
+
+if(timerConexao){
+
+clearInterval(timerConexao);
+
+}
+
+
+verificarConexaoReal();
+
+
+timerConexao =
+setInterval(
+()=>{
+
+verificarConexaoReal();
+
+},
+4000
+);
+
+}
+
+
+
+function atualizarStatusConexao(){
+
+const box =
+document.getElementById("conexaoBox");
+
+const texto =
+document.getElementById("textoConexao");
+
+const badge =
+document.getElementById("pendentesBadge");
+
+const btn =
+document.getElementById("btnSincronizar");
+
+
+if(
+!box
+||
+!texto
+||
+!badge
+||
+!btn
+){
+
+return;
+
+}
+
+
+const pendentes =
+obterPendentes();
+
+
+badge.innerText =
+
+pendentes.length === 1
+
+?
+
+"1 pendente"
+
+:
+
+`${pendentes.length} pendentes`;
+
+
+box.classList.remove(
+"conexao-offline",
+"conexao-sync"
+);
+
+
+/*
+MODO CLEAN:
+- Online + 0 pendentes = bloco oculto.
+- Offline = bloco visível.
+- Sincronizando = bloco visível.
+- Online com pendentes = bloco visível até concluir a sincronização.
+*/
+
+if(sincronizando){
+
+box.style.display="flex";
+
+box.classList.add(
+"conexao-sync"
+);
+
+texto.innerText =
+"🔄 Sincronizando...";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+if(!conexaoDisponivel){
+
+box.style.display="flex";
+
+box.classList.add(
+"conexao-offline"
+);
+
+texto.innerText =
+"🟠 Offline";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+if(pendentes.length > 0){
+
+box.style.display="flex";
+
+texto.innerText =
+"🟢 Online";
+
+btn.style.display =
+"none";
+
+return;
+
+}
+
+
+/* Online, sincronizado e sem pendências: volta ao visual original */
+
+box.style.display="none";
+
+btn.style.display="none";
+
+}
+
+
+
+function limparFormularioDepoisDeSalvar(){
+
+document.getElementById(
+"locomotiva"
+).value="";
+const avisoDuplicidade = document.getElementById("alertaDuplicidade");
+if(avisoDuplicidade) avisoDuplicidade.style.display="none";
+
+
+document.getElementById(
+"observacao"
+).value="";
+
+
+respostas={};
+ document.querySelector('input[name="tipoV3"][value="NOVA"]').checked=true;
+ referenciaV3=null;registrosV3=[];diagnosticoV3=null;historicoCarregadoV3=false;pendenciasCarregadasV3=false;erroPendenciasV3=false;consultaTokenV3++;clearTimeout(timerConsultaV3);
+ document.getElementById("historicoV3").style.display="none";
+ alterarTipoV3();
+ carregarChecklist();
+
+
+atualizarStatus();
+
+}
+
+
+
+
+function mostrarPopupOffline(status,id){
+
+const popup =
+document.getElementById("popup");
+
+const titulo =
+document.getElementById("tituloPopup");
+
+
+popup.classList.add(
+"offline"
+);
+
+
+titulo.innerHTML =
+"📱 Salvo no aparelho";
+
+
+document.getElementById(
+"textoPopup"
+).innerHTML =
+
+"Sem conexão no momento.<br><br>"
+
++
+
+"O checklist foi salvo neste aparelho e será sincronizado quando a internet voltar.<br><br>ID:<br><b>"
+
++
+
+id
+
++
+
+"</b><br><br>Status:<br><b>"
+
++
+
+status
+
++
+
+"</b>";
+
+
+document.getElementById(
+"popup"
+).style.display="block";
+
+
+document.getElementById(
+"fundoPopup"
+).style.display="block";
+
+}
+
+
+
+
+function mostrarPopupOnline(status,id){
+
+const popup =
+document.getElementById("popup");
+
+const titulo =
+document.getElementById("tituloPopup");
+
+
+popup.classList.remove(
+"offline"
+);
+
+
+titulo.innerHTML =
+"✅ Enviado!";
+
+
+mostrarPopup(
+status,
+id
+);
+
+}
+
+
+
+
+async function enviarRegistro(dados){
+ throw Error("ENVIO BLOQUEADO: versão de testes sem gravação");
+
+await fetch(
+URL_SCRIPT,
+{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify(dados)
+}
+);
+
+}
+
+
+
+
+async function sincronizarPendentes(){
+ return; // Sincronização desativada na V3 de testes
+
+if(
+sincronizando
+||
+!navigator.onLine
+){
+
+return;
+
+}
+
+
+const lista =
+obterPendentes();
+
+
+if(
+lista.length === 0
+){
+
+atualizarStatusConexao();
+
+return;
+
+}
+
+
+sincronizando=true;
+
+atualizarStatusConexao();
+
+
+let houveFalha = false;
+
+
+for(
+const item
+of lista
+){
+
+try{
+
+const dadosEnvio={
+...item
+};
+
+
+delete dadosEnvio._salvoEm;
+
+
+await enviarRegistro(
+dadosEnvio
+);
+
+
+/*
+Retira o registro da fila logo depois
+do envio. Assim, se a página for fechada
+durante a sincronização, os registros já
+enviados não permanecem na fila.
+*/
+removerPendentePorId(
+item.id
+);
+
+}
+catch(e){
+
+houveFalha = true;
+
+}
+
+}
+
+
+sincronizando=false;
+
+
+atualizarStatusConexao();
+
+
+if(
+!houveFalha
+&&
+obterPendentes().length === 0
+){
+
+alert(
+"✅ Registros pendentes sincronizados com sucesso!"
+);
+
+}
+
+}
+
+
+
+
+window.addEventListener(
+"online",
+()=>{
+
+conexaoDisponivel=true;
+
+atualizarStatusConexao();
+
+setTimeout(
+()=>{
+
+verificarConexaoReal()
+.then(
+online => {
+
+if(online){
+
+sincronizarPendentes();
+
+}
+
+}
+);
+
+},
+500
+);
+
+}
+);
+
+
+
+
+window.addEventListener(
+"offline",
+()=>{
+
+conexaoDisponivel=false;
+
+atualizarStatusConexao();
+
+}
+);
+
+
+
+function validarColaborador(campo){
+
+campo.value = campo.value.replace(/[^a-zA-ZÀ-ÿ\s]/g,"");
+
+salvarMemoriaColaborador();
+
+}
+
+
+
+
+
+function formatarNome(nome){
+
+let texto =
+String(nome || "")
+.trim()
+.toLocaleLowerCase("pt-BR");
+
+if(!texto){
+return "";
+}
+
+return texto
+.split(/\s+/)
+.map(
+palavra =>
+palavra.charAt(0).toLocaleUpperCase("pt-BR")
++
+palavra.slice(1)
+)
+.join(" ");
+
+}
+
+
+
+function salvarMemoriaColaborador(){
+
+let nome =
+formatarNome(
+document.getElementById("colaborador").value
+);
+
+if(nome){
+
+localStorage.setItem(
+"colaborador",
+nome
+);
+
+}
+
+}
+
+
+
+
+function carregarColaborador(){
+
+let nome = localStorage.getItem("colaborador");
+
+if(nome){
+
+document.getElementById("colaborador").value = nome;
+
+}
+
+}
+
+
+
+
+function trocarColaborador(){
+
+let nome = prompt("Digite o novo colaborador");
+
+
+if(nome){
+
+nome =
+formatarNome(
+nome.replace(/[^a-zA-ZÀ-ÿ\s]/g,"")
+);
+
+
+if(nome){
+
+document.getElementById("colaborador").value = nome;
+
+localStorage.setItem("colaborador",nome);
+
+}
+
+}
+
+
+}
+
+
+
+
+function carregarChecklist(){
+
+let html="";
+
+
+itens.forEach(item=>{
+
+
+html += `
+
+<div class="item" data-item-v3="${item[0]}">
+
+<div class="item-title">
+
+${item[1]}
+
+</div>
+
+
+<div class="etiqueta-na">⚪ NÃO SE APLICA — locomotiva sem banheiro</div>
+<div class="botoes">
+
+
+<button class="conforme"
+
+onclick="marcar('${item[0]}','CONFORME',this)">
+
+✅ CONFORME
+
+</button>
+
+
+<button class="nao"
+
+onclick="marcar('${item[0]}','NÃO CONFORME',this)">
+
+❌ NÃO CONFORME
+
+</button>
+
+
+</div>
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById("lista").innerHTML = html;
+ aplicarPerfilV3();
+ alterarTipoV3();
+
+}
+
+
+
+function marcar(campo,valor,botao){
+ if(respostas[campo]==="NÃO SE APLICA")return;
+
+
+respostas[campo]=valor;
+confirmacoesAutomaticasV3.delete(campo);
+
+
+let botoes=botao.parentElement.children;
+
+
+for(let b of botoes){
+
+b.classList.remove("selecionado");
+
+}
+
+
+botao.classList.add("selecionado");
+
+
+atualizarStatus();
+
+
+}
+
+
+
+
+function atualizarStatus(){
+  atualizarResumoRapidoV3();
+ const re=tipoAtualV3()==="REINSPECAO" && document.getElementById("motivoSelectV3").value==="REGULARIZACAO";
+ const chaves=re ? (diagnosticoV3?.itensAbertos||[]) : itens.map(([chave])=>chave);
+ const status=document.getElementById("status");
+ if(re && (!pendenciasCarregadasV3 || !chaves.length)){
+   status.textContent=!pendenciasCarregadasV3
+     ?"⚠️ AGUARDANDO CONSULTA OPERACIONAL — não é possível reinspecionar"
+     :"⚪ SEM PENDÊNCIAS OPERACIONAIS ABERTAS — selecione Nova inspeção";
+   status.style.background="#fff8e7";status.style.color="#805400";return;
+ }
+ const pendencia=chaves.some(chave=>respostas[chave]==="NÃO CONFORME");
+ const preenchidos=chaves.filter(chave=>Boolean(respostas[chave])).length;
+ if(preenchidos<chaves.length && !pendencia){
+   status.textContent="⚪ EM PREENCHIMENTO ("+preenchidos+"/"+chaves.length+")";
+   status.style.background="#e8edf3";status.style.color="#475569";return;
+ }
+ if(pendencia){
+   status.textContent="🔴 "+(re?"PENDÊNCIA CONTINUA — prévia, não gravada":"PENDÊNCIA");
+   status.style.background="#f8d7da";status.style.color="#842029";
+ }else{
+   status.textContent=re?"🟢 REGULARIZAÇÃO INFORMADA — prévia, não gravada":"🟢 CONFORME";
+   status.style.background="#d1e7dd";status.style.color="#0f5132";
+ }
+}
+function gerarID(){
+
+let loco = document
+.getElementById("locomotiva")
+.value
+.trim();
+
+
+let agora = new Date();
+
+
+let data =
+
+agora.getFullYear()
+
++
+
+String(agora.getMonth()+1)
+.padStart(2,"0")
+
++
+
+String(agora.getDate())
+.padStart(2,"0");
+
+
+
+let chave = "ID_"+loco+"_"+data;
+
+
+let numero = Number(localStorage.getItem(chave) || 0) + 1;
+
+
+localStorage.setItem(chave,numero);
+
+
+
+return "LOCO"
++
+loco
++
+"-"
++
+data
++
+"-"
++
+String(numero).padStart(3,"0");
+
+
+}
+
+
+
+
+function mostrarPopup(status,id){
+
+
+document.getElementById("textoPopup").innerHTML =
+
+"Checklist salvo com sucesso!<br><br>ID:<br><b>"
+
++
+
+id
+
++
+
+"</b><br><br>Status:<br><b>"
+
++
+
+status
+
++
+
+"</b>";
+
+
+
+document.getElementById("popup").style.display="block";
+
+document.getElementById("fundoPopup").style.display="block";
+
+
+}
+
+
+
+
+
+function fecharPopup(){
+
+
+document.getElementById("popup").style.display="none";
+
+
+document.getElementById("fundoPopup").style.display="none";
+
+
+document.getElementById("locomotiva").focus();
+
+
+}
+
+
+
+
+
+/* Aviso de repetição recente no mesmo navegador/dispositivo.
+   Não bloqueia um novo checklist e não modifica registros já enviados. */
+const CHAVE_RECENTES = "checklistLocomotivasRecentesV3_TESTE";
+const JANELA_DUPLICIDADE_MS = 5 * 60 * 1000;
+function obterRegistrosRecentes(){
+  try {
+    const lista = JSON.parse(localStorage.getItem(CHAVE_RECENTES) || "[]");
+    return Array.isArray(lista) ? lista.filter(x => x && x.locomotiva && Number.isFinite(x.hora) && Date.now()-x.hora < 24*60*60*1000) : [];
+  } catch(e){ return []; }
+}
+function registrarLocomotivaRecente(locomotiva){
+  try {
+    const lista = obterRegistrosRecentes();
+    lista.push({locomotiva, hora:Date.now()});
+    localStorage.setItem(CHAVE_RECENTES, JSON.stringify(lista.slice(-150)));
+  } catch(e){ console.warn("Histórico local indisponível",e); }
+}
+function registroDuplicadoRecente(locomotiva){
+  return obterRegistrosRecentes().filter(x => x.locomotiva === locomotiva && Date.now()-x.hora <= JANELA_DUPLICIDADE_MS).sort((a,b)=>b.hora-a.hora)[0];
+}
+function verificarDuplicidadeDigitacao(){
+  const campo = document.getElementById("locomotiva");
+  const aviso = document.getElementById("alertaDuplicidade");
+  if(!campo || !aviso) return;
+  const repetido = campo.value.length === 4 && registroDuplicadoRecente(campo.value);
+  aviso.style.display = repetido ? "block" : "none";
+  if(repetido) aviso.textContent = "⚠️ Atenção: a locomotiva " + campo.value + " já teve um checklist registrado neste aparelho há menos de 5 minutos. Confira antes de salvar novamente.";
+}
+
+
+async function salvarChecklist(){
+ alert("V3 de testes: salvamento desativado para proteger a planilha oficial.");
+ return;
+
+
+if(enviando){
+
+return;
+
+}
+
+
+
+let botao =
+document.getElementById("btnSalvar");
+
+
+
+let locomotiva =
+document.getElementById("locomotiva").value.trim();
+
+
+
+let colaborador =
+formatarNome(
+document.getElementById("colaborador").value
+);
+
+
+
+
+
+if(!locomotiva){
+
+alert("Informe a locomotiva");
+
+return;
+
+}
+
+
+
+if(!/^[0-9]{4}$/.test(locomotiva)){
+
+alert("A locomotiva deve ter exatamente 4 números");
+
+document.getElementById("locomotiva").focus();
+
+return;
+
+}
+
+if(registroDuplicadoRecente(locomotiva)){
+  const continuar = confirm("⚠️ POSSÍVEL DUPLICIDADE\n\nA locomotiva " + locomotiva + " já foi registrada neste aparelho há menos de 5 minutos.\n\nDeseja continuar e salvar outro checklist?");
+  if(!continuar){ document.getElementById("locomotiva").focus(); return; }
+}
+
+
+
+
+
+if(!colaborador){
+
+alert("Informe o colaborador");
+
+return;
+
+}
+
+
+
+if(!/^[A-Za-zÀ-ÿ\s]+$/.test(colaborador)){
+
+alert("O colaborador deve conter somente texto");
+
+return;
+
+}
+
+document.getElementById(
+"colaborador"
+).value =
+colaborador;
+
+localStorage.setItem(
+"colaborador",
+colaborador
+);
+
+
+
+
+
+if(itens.some(item=>!respostas[item[0]])){
+ alert("Responda os dez itens antes de salvar.");
+ return;
+}
+if(tipoAtualV3()==="REINSPECAO" && !referenciaV3){
+ alert("Para vincular a reinspeção, é necessário consultar uma pendência aberta. Se for uma nova passagem, escolha Nova inspeção.");
+ return;
+}
+enviando=true;
+botao.disabled=true;
+
+
+botao.innerHTML =
+
+conexaoDisponivel
+
+?
+
+"⏳ ENVIANDO..."
+
+:
+
+"💾 SALVANDO NO APARELHO...";
+
+
+
+itens.forEach(item=>{
+
+
+if(!respostas[item[0]]){
+
+
+respostas[item[0]]="CONFORME";
+
+
+}
+
+
+});
+
+
+
+
+
+
+let status =
+
+Object.values(respostas)
+.includes("NÃO CONFORME")
+
+?
+
+"PENDÊNCIA"
+
+:
+
+"CONFORME";
+
+
+
+
+
+
+let idRegistro =
+gerarID();
+
+
+
+
+
+
+let dados={
+
+
+id:idRegistro,
+
+
+locomotiva:locomotiva,
+
+
+colaborador:colaborador,
+
+
+...respostas,
+
+
+status:status,
+
+
+observacao:
+document.getElementById("observacao").value
+
+
+};
+
+
+
+
+
+try{
+
+
+if(!conexaoDisponivel){
+
+
+adicionarPendente(
+dados
+);
+
+registrarLocomotivaRecente(locomotiva);
+
+mostrarPopupOffline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+return;
+
+
+}
+
+
+
+
+try{
+
+
+await enviarRegistro(
+dados
+);
+
+registrarLocomotivaRecente(locomotiva);
+
+mostrarPopupOnline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+}
+catch(e){
+
+
+adicionarPendente(
+dados
+);
+
+registrarLocomotivaRecente(locomotiva);
+
+mostrarPopupOffline(
+status,
+idRegistro
+);
+
+
+limparFormularioDepoisDeSalvar();
+
+
+}
+
+
+}
+finally{
+
+
+enviando=false;
+
+
+botao.disabled=false;
+
+
+botao.innerHTML =
+"💾 SALVAR CHECKLIST";
+
+
+atualizarStatusConexao();
+
+
+}
+
+
+
+}
+
+
+
+carregarChecklist();
+
+carregarColaborador();
+
+
+atualizarStatusConexao();
+
+iniciarMonitorConexao();
+
+
+setTimeout(
+()=>{
+
+verificarConexaoReal()
+.then(
+online => {
+
+if(online){
+sincronizarPendentes();
+
+}
+
+}
+);
+
+},
+1000
+);
+
+
+
+// ETAPA 27: envio isolado de JSON ficticio, sem relacao com o formulario.
+// O Apps Script publicado deve continuar SEM comandos de escrita.
+// Em no-cors, uma promessa resolvida NAO confirma processamento no servidor.
+async function testarComunicacaoPost27V3(){
+  const botao=document.getElementById("btnTestePost27V3");
+  const resultado=document.getElementById("resultadoPost27V3");
+  if(!botao || !resultado || botao.disabled)return;
+  botao.disabled=true;
+  resultado.textContent="⏳ Tentando enviar POST fictício para a API V3...";
+  const dadosFicticios={
+    acao:"registrarReinspecaoV3",
+    idAnomalia:"TESTE-V3-API23-1250-001",
+    locomotiva:"1250",
+    resultado:"CONFORME",
+    colaborador:"COLABORADOR TESTE"
+  };
+  try{
+    const resposta=await fetch(URL_SCRIPT,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(dadosFicticios),
+      cache:"no-store",
+      credentials:"omit",
+      redirect:"follow"
+    });
+    resultado.textContent="📡 Tentativa de envio concluída pelo navegador.\n⚠️ Resposta opaca (no-cors): recebimento, validação e ausência de gravação NÃO são comprovados aqui.\nConfira a execução doPost na versão 4 do Apps Script. O botão Salvar permanece desativado.";
+    console.info("Etapa 27: resposta do navegador",resposta.type,"(não comprova processamento)");
+  }catch(erro){
+    resultado.textContent="❌ O navegador reportou falha na tentativa de POST: "+erro.message+". Nenhum checklist foi enviado por esta página.";
+  }finally{
+    botao.disabled=false;
+  }
+}
+
+
+
+
+</script>
+
+
+
+<!-- V3 TESTE: sem registro ou atualizacao de service worker compartilhado. -->
+
+</body>
+
+</html>
+

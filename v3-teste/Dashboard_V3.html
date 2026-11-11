@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dashboard V3 — Movimentações | Testes</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}body{margin:0;padding:16px;background:linear-gradient(180deg,#f4f9ff,#e6f1fc);color:#17324d}.app{max-width:960px;margin:auto}.header{background:linear-gradient(135deg,#064b8c,#0877c7);padding:22px;border-radius:15px;color:#fff}.header h1{margin:0 0 5px;font-size:24px}.header p{margin:0;font-size:13px;opacity:.95}.nav{display:inline-block;margin:16px 0;color:#064b8c;font-weight:bold}.panel{background:white;border:1px solid #dceaf9;border-radius:15px;padding:20px;box-shadow:0 5px 18px #1234  ;box-shadow:0 5px 18px rgba(20,60,90,.09)}
+/* Etapa 31.21: painel demonstrativo, totalmente isolado */
+.painel-mov-v3{margin:20px 0;padding:15px;border:1px solid #b8d6ed;border-radius:13px;background:#f7fbff}
+.painel-mov-v3 h2{margin:0 0 8px;font-size:19px;color:#064b8c}
+.painel-mov-v3 .aviso-mov{font-size:12px;line-height:1.5;background:#fff3d8;border:1px solid #e7c375;padding:10px;border-radius:9px}
+.cards-mov-v3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}
+.cards-mov-v3>div{background:white;border:1px solid #d5e5f2;border-radius:10px;padding:10px 6px;text-align:center}
+.cards-mov-v3 strong{display:block;font-size:25px;color:#064b8c}
+.cards-mov-v3 span{display:block;font-size:11px;color:#475569;margin-top:4px}
+.painel-mov-v3 .tabela-rolagem{overflow-x:auto;margin-top:10px}
+.painel-mov-v3 table{width:100%;border-collapse:collapse;font-size:12px;min-width:460px}
+.painel-mov-v3 th,.painel-mov-v3 td{padding:9px 7px;border-bottom:1px solid #d9e5f0;text-align:left;vertical-align:top}
+.painel-mov-v3 th{background:#e8f2fc;color:#064b8c}
+.painel-mov-v3 .legenda-mov{font-size:12px;color:#475569;line-height:1.5}
+
+@media(max-width:500px){.cards-mov-v3{grid-template-columns:1fr 1fr}.cards-mov-v3>div:last-child{grid-column:1/-1}}
+</style></head><body><main class="app"><header class="header"><h1>📊 Dashboard V3</h1><p>Movimentações e pendências — ambiente de testes</p></header><a class="nav" href="Checklist_V3.html">← Voltar ao Checklist V3</a><div class="panel"><!-- ETAPA 31.21: PAINEL DEMONSTRATIVO, SEM CONSULTA OU GRAVACAO -->
+<section class="painel-mov-v3" id="painelMovimentacoes3121V3" aria-label="Painel demonstrativo de movimentações">
+  <h2>🚂 Movimentações — Dashboard V3</h2>
+  <div class="aviso-mov" role="status"><strong>🧪 PRÉVIA DEMONSTRATIVA — NÃO É DADO AO VIVO.</strong> Os valores abaixo reproduzem o cenário validado nas etapas 31.19 e 31.20. Esta página não consulta nem confirma saídas reais.</div>
+  <div class="cards-mov-v3">
+    <div><strong id="movSaidas3121">0</strong><span>Saídas reais confirmadas*</span></div>
+    <div><strong id="movComandadas3121">0</strong><span>Comandadas com pendência*</span></div>
+    <div><strong id="movSimulacoes3121">2</strong><span>Registros simulados*</span></div>
+  </div>
+  <p class="legenda-mov">* Valores do último teste validado, não atualizados automaticamente. Confirmação registrada não equivale à verificação independente da circulação.</p>
+  <strong>Histórico demonstrativo — locomotiva 1250</strong>
+  <div class="tabela-rolagem"><table>
+    <thead><tr><th>Locomotiva</th><th>Condição</th><th>Restrição</th><th>Anomalia na saída</th><th>Status</th></tr></thead>
+    <tbody id="movHistorico3121"></tbody>
+  </table></div>
+  <p class="legenda-mov" id="movMensagem3121" role="status" aria-live="polite">Nenhuma movimentação real é exibida nesta prévia.</p>
+</section>
+
+</div><p style="font-size:12px;color:#52657b">Somente consulta demonstrativa. Não autoriza circulação e não modifica dados.</p></main><script>// ETAPA 31.21: apenas renderizacao local de dados ficticios conhecidos.
+// Nao acessa API, nao altera formulario, nao grava e nao autoriza circulacao.
+function renderizarPainelMovimentacoes3121V3(){
+  const ficticios=[
+    {locomotiva:'1250',condicao:'COMANDADA',restricao:'SOMENTE COMANDADA',anomalia:'TESTE-V3-RESTRICAO-1250-314',status:'SIMULADA'},
+    {locomotiva:'1250',condicao:'COMANDADA',restricao:'SOMENTE COMANDADA',anomalia:'TESTE-V3-RESTRICAO-1250-314',status:'SIMULADA'}
+  ];
+  const tbody=document.getElementById('movHistorico3121');
+  if(!tbody)return;
+  tbody.replaceChildren();
+  ficticios.forEach(m=>{
+    const tr=document.createElement('tr');
+    [m.locomotiva,m.condicao,m.restricao,m.anomalia,m.status].forEach(valor=>{
+      const td=document.createElement('td');
+      td.textContent=valor;
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  document.getElementById('movSaidas3121').textContent='0';
+  document.getElementById('movComandadas3121').textContent='0';
+  document.getElementById('movSimulacoes3121').textContent=String(ficticios.length);
+  document.getElementById('movMensagem3121').textContent='Exibindo '+ficticios.length+' registros SIMULADOS. Histórico operacional não conectado nesta etapa.';
+}
+renderizarPainelMovimentacoes3121V3();</script></body></html>
